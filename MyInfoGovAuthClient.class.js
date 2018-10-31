@@ -639,3 +639,5 @@ module.exports = class MyInfoGovAuthClient {
     return verifier.verify(publicKey, signature)
   }
 }
+
+module.exports = MyInfoGovAuthClient
