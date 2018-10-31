@@ -1,0 +1,23 @@
+{
+  "name": "myinfo-gov-auth-client",
+  "version": "0.1.0",
+  "description": "A lightweight client to easily call the MyInfo TUO endpoint for the Singapore government. Compatible with NodeJS version >=6.",
+  "main": "MyInfoGovAuthClient.class.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datagovsg/myinfo-gov-auth-client.git"
+  },
+  "keywords": [
+    "myinfo",
+    "singpass"
+  ],
+  "author": "Yuanruo Liang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/datagovsg/myinfo-gov-auth-client/issues"
+  },
+  "homepage": "https://github.com/datagovsg/myinfo-gov-auth-client#readme"
+}
