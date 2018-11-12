@@ -4,7 +4,8 @@
   "description": "A lightweight client to easily call the MyInfo TUO endpoint for the Singapore government. Compatible with NodeJS version >=6.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --ext .js --ignore-path .gitignore --fix ."
   },
   "repository": {
     "type": "git",
@@ -14,7 +15,7 @@
     "myinfo",
     "singpass"
   ],
-  "author": "Yuanruo Liang",
+  "author": "Government Technology Agency of Singapore (https://www.tech.gov.sg)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/datagovsg/myinfo-gov-client/issues"
@@ -25,5 +26,15 @@
     "node-jose": "^1.1.0",
     "path": "^0.12.7",
     "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "@opengovsg/eslint-config-opengovsg": "^1.0.5",
+    "eslint": "^5.9.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-mocha": "^5.2.0",
+    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
   }
 }

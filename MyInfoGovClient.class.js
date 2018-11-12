@@ -619,7 +619,6 @@ class MyInfoGovClient {
       'apex_l2_eg_version="1.0"'
     )
   }
-
 }
 
 module.exports = MyInfoGovClient
