@@ -622,6 +622,4 @@ class MyInfoGovClient {
 
 }
 
-module.exports = {
-  MyInfoGovClient
-}
+module.exports = MyInfoGovClient
