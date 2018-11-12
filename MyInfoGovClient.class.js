@@ -64,11 +64,11 @@ const ALL_ATTRIBUTES = {
   ],
 }
 
-module.exports = class MyInfoGovAuthClient {
+class MyInfoGovClient {
   /**
-   *  Constructor for MyInfoGovAuthClient, which helps call the internal,
+   *  Constructor for MyInfoGovClient, which helps call the internal,
    *  non-public-facing MyInfo TUO.
-   *  @param {Object} config Config object to create an MyInfoAuthClient.
+   *  @param {Object} config Config object to create an MyInfoGovClient.
    *  @param {string} config.realm - Name of MyInfo application e.g. 'FormSG'
    *  @param {string} config.appId - ID of MyInfo application
    *  e.g. 'STG2-GOVTECH-FORMSG-SP' or 'PROD2-GOVTECH-FORMSG-SP'
@@ -640,4 +640,6 @@ module.exports = class MyInfoGovAuthClient {
   }
 }
 
-module.exports = MyInfoGovAuthClient
+module.exports = {
+  MyInfoGovClient
+}
