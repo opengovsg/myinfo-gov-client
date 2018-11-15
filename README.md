@@ -96,4 +96,4 @@ main()
 ```
 
 # Available Test accounts
-See a list of available MyInfo test accounts [here](https://github.com/datagovsg/myinfo-gov-client/blob/master/TESTACCOUNTS.md).
+See a list of available MyInfo test accounts [here](docs/TESTACCOUNTS.md).

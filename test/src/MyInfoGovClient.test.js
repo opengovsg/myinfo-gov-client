@@ -108,6 +108,7 @@ describe('MyInfoGovClient', function () {
         expect(authHeaderObj['apex_l2_eg_signature_method']).to.equal('SHA256withRSA')
         expect(authHeaderObj['apex_l2_eg_version']).to.equal('1.0')
         expect(authHeaderObj['apex_l2_eg_signature']).to.exist
+        expect(authHeaderObj['apex_l2_eg_timestamp']).to.exist
       }
 
       let MyInfoGovClient = proxyquire(
