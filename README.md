@@ -97,3 +97,10 @@ main()
 
 # Available Test accounts
 See a list of available MyInfo test accounts [here](docs/TESTACCOUNTS.md).
+
+# Contributing
+
+We welcome contributions to code open-sourced by the Government Technology
+Agency of Singapore. All contributors will be asked to sign a Contributor
+License Agreement (CLA) in order to ensure that everybody is free to use their
+contributions.
