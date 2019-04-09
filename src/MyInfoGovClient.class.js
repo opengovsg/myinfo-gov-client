@@ -384,7 +384,7 @@ class MyInfoGovClient {
    *          }
    *        }
    */
-  getPersonBasic ({ uinFin, requestedAttributes, txnNo }) {
+  getPersonBasic ({ uinFin, requestedAttributes, txnNo, singpassEserviceId: seId }) {
     if (!requestedAttributes || !requestedAttributes.length > 0) {
       requestedAttributes = ALL_ATTRIBUTES.personBasic
     }
@@ -393,13 +393,15 @@ class MyInfoGovClient {
     const nonce = crypto.randomBytes(32).toString('base64')
     const timestamp = Date.now()
 
+    const singpassEserviceId = seId || this.singpassEserviceId
+
     // Construct the request basestring
     const basestring = this._formulateBaseString({
       httpMethod: 'GET',
       url,
       appId: this.appId,
       clientId: this.clientId,
-      singpassEserviceId: this.singpassEserviceId,
+      singpassEserviceId,
       nonce,
       requestedAttributes,
       timestamp,
@@ -436,7 +438,7 @@ class MyInfoGovClient {
     const querystring = {
       attributes: requestedAttributes.join(),
       client_id: this.clientId,
-      singpassEserviceId: this.singpassEserviceId,
+      singpassEserviceId,
       txnNo: txnNo,
     }
 
