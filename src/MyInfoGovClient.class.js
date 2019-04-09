@@ -117,6 +117,9 @@ class MyInfoGovClient {
    *    attributes of person to request from MyInfo. Will query all fields if
    *    not provided, or if it is an empty list.
    *    @param  {int} [personRequest.txnNo] - Optional transaction number
+   *    @param  {string} [singpassEserviceId] - Optional Singpass eService ID.
+   *    If provided, the API will be called with this Singpass eService ID
+   *    instead of the one provided to the constructor during object instantiation.
    *    @return {Promise<Object>} - Promise resolving to a person object
    *    containing requested fields
    *    @example
