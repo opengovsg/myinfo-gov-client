@@ -456,7 +456,9 @@ class MyInfoGovClient {
     // Send request, decrypt JWE response and return Promise<Object>
     return new Promise((resolve, reject) => {
       request(requestDetails, (error, response, body) => {
-        if (error || response.statusCode !== 200) {
+        if (error) {
+          reject(error)
+        } else if (response && response.statusCode !== 200) {
           const message = error && error.message
             ? error.message : response.statusMessage
           const returnedError = new Error(message)
