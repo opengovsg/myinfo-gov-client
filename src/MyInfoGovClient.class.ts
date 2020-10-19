@@ -1,9 +1,9 @@
 'use strict'
 
-const crypto = require('crypto')
-const jose = require('node-jose')
-const path = require('path')
-const request = require('request')
+import crypto from 'crypto'
+import jose from 'node-jose'
+import path from 'path'
+import request from 'request'
 
 const BASE_URL = {
   dev: 'https://myinfosgstg.api.gov.sg/gov/dev/v1/',
@@ -82,7 +82,7 @@ class MyInfoGovClient {
    *  endpoint to call. Defaults to prod if not provided.
    */
   constructor (config) {
-    let {
+    const {
       realm,
       appId,
       clientId,
@@ -94,7 +94,7 @@ class MyInfoGovClient {
     if (!realm || !appId || !singpassEserviceId || !privateKey) {
       throw new Error(
         'Missing required parameter(s) in constructor:' +
-          ' realm, appId, singpassEserviceId, privateKey'
+          ' realm, appId, singpassEserviceId, privateKey',
       )
     }
 
@@ -416,7 +416,7 @@ class MyInfoGovClient {
     const signature = this._signBaseString(
       basestring,
       this.privateKey,
-      'base64'
+      'base64',
     )
 
     // Construct the authentication header using the signature, nonce and
@@ -454,19 +454,14 @@ class MyInfoGovClient {
     }
 
     // Send request, decrypt JWE response and return Promise<Object>
-    return new Promise((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       request(requestDetails, (error, response, body) => {
         if (error) {
           reject(error)
         } else if (response && response.statusCode !== 200) {
           const message = error && error.message
             ? error.message : response.statusMessage
-          const returnedError = new Error(message)
-          returnedError.reason = error
-          returnedError.statusCode = response.statusCode
-          returnedError.statusMessage = response.statusMessage
-          returnedError.body = body
-          reject(returnedError)
+          reject(new Error(message))
         } else {
           resolve(body)
         }
@@ -474,7 +469,7 @@ class MyInfoGovClient {
     })
       .then(
         body =>
-          this.mode === 'dev' ? Promise.resolve(body) : this._decryptJwe(body)
+          this.mode === 'dev' ? Promise.resolve(body) : this._decryptJwe(body),
       )
       .then(JSON.parse)
       .then(personObject => {
@@ -494,7 +489,7 @@ class MyInfoGovClient {
     // JSON Web Encryption (JWE)
     const [header, encryptedKey, iv, cipherText, tag] = jweParts
 
-    let keystore = jose.JWK.createKeyStore()
+    const keystore = jose.JWK.createKeyStore()
 
     return keystore
       .add(this.privateKey, 'pem')
