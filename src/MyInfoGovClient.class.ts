@@ -91,7 +91,7 @@ const ALL_ATTRIBUTES = {
   ],
 }
 
-export default class MyInfoGovClient {
+export class MyInfoGovClient {
   realm: string
   appId: string
   clientId: string
