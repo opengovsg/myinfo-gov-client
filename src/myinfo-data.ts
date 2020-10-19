@@ -1,6 +1,6 @@
-'use strict'
+type Countries = Record<string, { description: string }>
 
-const COUNTRIES = {
+const COUNTRIES: Countries = {
   AB: {
     description: 'ARUBA',
   },
@@ -765,7 +765,7 @@ const COUNTRIES = {
   },
 }
 
-const CATEGORICAL_DATA_DICT = {
+export const CATEGORICAL_DATA_DICT = {
   sex: {
     F: {
       description: 'FEMALE',
@@ -7244,5 +7244,3 @@ const CATEGORICAL_DATA_DICT = {
   },
   countryofmarriage: COUNTRIES,
 }
-
-module.exports.CATEGORICAL_DATA_DICT = CATEGORICAL_DATA_DICT
