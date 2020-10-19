@@ -5,10 +5,37 @@ import jose from 'node-jose'
 import path from 'path'
 import request from 'request'
 
-const BASE_URL = {
-  dev: 'https://myinfosgstg.api.gov.sg/gov/dev/v1/',
-  stg: 'https://myinfosgstg.api.gov.sg/gov/test/v2/',
-  prod: 'https://myinfosg.api.gov.sg/gov/v2/',
+enum Mode {
+  Dev = 'dev',
+  Staging = 'sg',
+  Production = 'prod'
+}
+
+interface IConfig {
+  realm: string
+  appId: string
+  singpassEserviceId: string
+  privateKey: Buffer | string
+  clientId?: string
+  mode?: Mode
+}
+
+interface IBaseStringSpec {
+  httpMethod: string
+  url: string
+  appId: string
+  clientId: string
+  singpassEserviceId: string
+  nonce: string
+  requestedAttributes: string[]
+  timestamp: number
+  txnNo?: string
+}
+
+const BASE_URL: { [M in Mode]: string } = {
+  [Mode.Dev]: 'https://myinfosgstg.api.gov.sg/gov/dev/v1/',
+  [Mode.Staging]: 'https://myinfosgstg.api.gov.sg/gov/test/v2/',
+  [Mode.Production]: 'https://myinfosg.api.gov.sg/gov/v2/',
 }
 
 const ENDPOINT = {
@@ -64,24 +91,31 @@ const ALL_ATTRIBUTES = {
   ],
 }
 
-class MyInfoGovClient {
+export default class MyInfoGovClient {
+  realm: string
+  appId: string
+  clientId: string
+  singpassEserviceId: string
+  mode: Mode
+  privateKey: string
+  baseUrl: string
   /**
    *  Constructor for MyInfoGovClient, which helps call the internal,
    *  non-public-facing MyInfo TUO.
-   *  @param {Object} config Config object to create an MyInfoGovClient.
-   *  @param {string} config.realm - Name of MyInfo application e.g. 'FormSG'
-   *  @param {string} config.appId - ID of MyInfo application
+   *  @param config Config object to create an MyInfoGovClient.
+   *  @param config.realm - Name of MyInfo application e.g. 'FormSG'
+   *  @param config.appId - ID of MyInfo application
    *  e.g. 'STG2-GOVTECH-FORMSG-SP' or 'PROD2-GOVTECH-FORMSG-SP'
-   *  @param {string} config.singpassEserviceId - ID registered with SingPass
+   *  @param config.singpassEserviceId - ID registered with SingPass
    *  e.g. 'GOVTECH-FORMSG-SP'
-   *  @param {(Buffer|String)} config.privateKey` - RSA-SHA256 private key, which must
+   *  @param config.privateKey` - RSA-SHA256 private key, which must
    *  correspond with public key provided to MyInfo during onboarding process.
-   *  @param {string} [config.clientId] - ID of MyInfo client. Defaults to `appId`
+   *  @param [config.clientId] - ID of MyInfo client. Defaults to `appId`
    *  if not provided.
-   *  @param {string} [config.mode] - dev/stg/prod, which sets up the correct
+   *  @param [config.mode] - dev/stg/prod, which sets up the correct
    *  endpoint to call. Defaults to prod if not provided.
    */
-  constructor (config) {
+  constructor (config: IConfig) {
     const {
       realm,
       appId,
@@ -102,25 +136,25 @@ class MyInfoGovClient {
     this.appId = appId
     this.clientId = clientId || appId
     this.singpassEserviceId = singpassEserviceId
-    this.mode = mode
+    this.mode = mode || Mode.Production
     this.privateKey = privateKey.toString().replace(/\n$/, '')
 
-    this.baseUrl = BASE_URL[mode] || BASE_URL.prod
+    this.baseUrl = BASE_URL[this.mode] || BASE_URL.prod
   }
 
   /**
    *    Make a GET request to Person-Basic endpoint.
    *    @param  {Object} personRequest - A request for attributes of a person to
    *    MyInfo
-   *    @param  {string} personRequest.uinFin - NRIC number
-   *    @param  {Array<string>} [personRequest.requestedAttributes] - Array of
+   *    @param personRequest.uinFin - NRIC number
+   *    @param [personRequest.requestedAttributes] - Array of
    *    attributes of person to request from MyInfo. Will query all fields if
    *    not provided, or if it is an empty list.
-   *    @param  {int} [personRequest.txnNo] - Optional transaction number
-   *    @param  {string} [singpassEserviceId] - Optional Singpass eService ID.
+   *    @param [personRequest.txnNo] - Optional transaction number
+   *    @param [singpassEserviceId] - Optional Singpass eService ID.
    *    If provided, the API will be called with this Singpass eService ID
    *    instead of the one provided to the constructor during object instantiation.
-   *    @return {Promise<Object>} - Promise resolving to a person object
+   *    @return - Promise resolving to a person object
    *    containing requested fields
    *    @example
    *    myInfo.getPersonBasic({uinFin, requestedAttributes, txnNo})
@@ -387,8 +421,13 @@ class MyInfoGovClient {
    *          }
    *        }
    */
-  getPersonBasic ({ uinFin, requestedAttributes, txnNo, singpassEserviceId: seId }) {
-    if (!requestedAttributes || !requestedAttributes.length > 0) {
+  getPersonBasic ({ uinFin, requestedAttributes, txnNo, singpassEserviceId: seId }: {
+    uinFin: string,
+    requestedAttributes?: string[],
+    txnNo?: string,
+    singpassEserviceId?: string
+  }): Promise<Record<string, unknown>> {
+    if (!requestedAttributes || requestedAttributes.length === 0) {
       requestedAttributes = ALL_ATTRIBUTES.personBasic
     }
 
@@ -483,7 +522,7 @@ class MyInfoGovClient {
    *    @param  {string} jweResponse Fullstop-delimited jweResponse string
    *    @return {Promise<string>}    Promise which resolves to a JSON string
    */
-  _decryptJwe (jweResponse) {
+  _decryptJwe (jweResponse: string) {
     const jweParts = jweResponse.split('.')
 
     // JSON Web Encryption (JWE)
@@ -541,7 +580,7 @@ class MyInfoGovClient {
     requestedAttributes,
     timestamp,
     txnNo,
-  }) {
+  }: IBaseStringSpec) {
     return (
       httpMethod.toUpperCase() +
       // url string replacement was dictated by MyInfo docs - no explanation
@@ -582,7 +621,7 @@ class MyInfoGovClient {
    *    crypto.sign.sign()
    *    @return {string|Buffer} - Signature of basestring signed with privateKey.
    */
-  _signBaseString (basestring, privateKey, outputFormat) {
+  _signBaseString (basestring: string, privateKey: string, outputFormat: 'latin1' | 'hex' | 'base64') {
     const signer = crypto.createSign('RSA-SHA256')
     signer.update(basestring)
     signer.end()
@@ -599,7 +638,13 @@ class MyInfoGovClient {
    *    @return {[string]}           Authentication header to be included in API
    *    call
    */
-  _formulateAuthHeader ({ realm, appId, nonce, signature, timestamp }) {
+  _formulateAuthHeader ({ realm, appId, nonce, signature, timestamp }: {
+    realm: string,
+    appId: string,
+    nonce: string,
+    signature: string,
+    timestamp: number
+  }) {
     return (
       'Apex_l2_Eg ' +
       'realm="' +
@@ -622,5 +667,3 @@ class MyInfoGovClient {
     )
   }
 }
-
-module.exports = MyInfoGovClient
