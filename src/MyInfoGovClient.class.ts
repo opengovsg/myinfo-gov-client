@@ -523,25 +523,12 @@ export default class MyInfoGovClient {
    *    @return {Promise<string>}    Promise which resolves to a JSON string
    */
   _decryptJwe (jweResponse: string) {
-    const jweParts = jweResponse.split('.')
-
-    // JSON Web Encryption (JWE)
-    const [header, encryptedKey, iv, cipherText, tag] = jweParts
-
     const keystore = jose.JWK.createKeyStore()
 
     return keystore
       .add(this.privateKey, 'pem')
       .then(jweKey => {
-        return jose.JWE.createDecrypt(jweKey).decrypt({
-          type: 'compact',
-          ciphertext: cipherText,
-          protected: header,
-          encrypted_key: encryptedKey,
-          tag: tag,
-          iv: iv,
-          header: header,
-        })
+        return jose.JWE.createDecrypt(jweKey).decrypt(jweResponse)
       })
       .then(result => result.payload.toString())
   }
