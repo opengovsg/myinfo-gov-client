@@ -2,10 +2,12 @@
   "name": "@opengovsg/myinfo-gov-client",
   "version": "2.0.0",
   "description": "A lightweight client to easily call the MyInfo TUO endpoint for the Singapore government. Compatible with NodeJS version >=6.",
-  "main": "index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "test": "npx nyc --reporter=text mocha --recursive",
-    "lint": "eslint --ext .js --ignore-path .gitignore --fix ."
+    "lint": "eslint --ext .js --ignore-path .gitignore --fix .",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
