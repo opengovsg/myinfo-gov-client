@@ -106,4 +106,5 @@ export interface IPersonBasic {
     workpassexpirydate: IMyInfoBasicField
     householdincome: IMyInfoHighLowField
     vehno: IMyInfoBasicField
+    uinFin: string
 }
