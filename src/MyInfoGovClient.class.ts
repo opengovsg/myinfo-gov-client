@@ -4,6 +4,7 @@ import crypto from 'crypto'
 import jose from 'node-jose'
 import path from 'path'
 import request from 'request'
+import { IPersonBasic } from './myinfo-types'
 
 enum Mode {
   Dev = 'dev',
@@ -426,7 +427,7 @@ export class MyInfoGovClient {
     requestedAttributes?: string[],
     txnNo?: string,
     singpassEserviceId?: string
-  }): Promise<Record<string, unknown>> {
+  }): Promise<IPersonBasic> {
     if (!requestedAttributes || requestedAttributes.length === 0) {
       requestedAttributes = ALL_ATTRIBUTES.personBasic
     }
