@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "test": "npx nyc --reporter=text mocha --recursive",
+    "test": "npm run build && npx nyc --reporter=text mocha --recursive",
     "lint": "eslint --ext .js --ignore-path .gitignore --fix .",
     "build": "tsc"
   },
