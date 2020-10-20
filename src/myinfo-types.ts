@@ -4,7 +4,7 @@ export enum MyInfoSource {
     NotApplicable = '3',
     SingPassVerified = '4',
 }
-  
+
 export enum MyInfoSex {
     Male = 'M',
     Female = 'F',
@@ -18,7 +18,7 @@ interface IMyInfoMetadata {
 }
 
 interface IMyInfoBasicField extends IMyInfoMetadata {
-value: string
+    value: string
 }
 
 interface IMyInfoHighLowField extends IMyInfoMetadata {
@@ -50,13 +50,13 @@ interface IChildrenBirthRecord {
     lifestatus: IMyInfoBasicField
 }
 
-interface IMyInfoPhoneNo extends IMyInfoMetadata {
+export interface IMyInfoPhoneNo extends IMyInfoMetadata {
     code: string
     prefix: string
     nbr: string
 }
 
-interface IMyInfoAddr extends IMyInfoMetadata {
+export interface IMyInfoAddr extends IMyInfoMetadata {
     country: string
     unit: string
     street: string
@@ -96,7 +96,7 @@ export interface IPersonBasic {
     marriagedate: IMyInfoBasicField
     divorcedate: IMyInfoBasicField
     childrenbirthrecords: IChildrenBirthRecord[]
-    relationships: object[] // deprecated
+    relationships: Record<string, unknown>[] // deprecated
     edulevel: IMyInfoBasicField
     gradyear: IMyInfoBasicField
     schoolname: IMyInfoFieldWithDesc

@@ -523,7 +523,7 @@ export class MyInfoGovClient {
    *    @param  {string} jweResponse Fullstop-delimited jweResponse string
    *    @return {Promise<string>}    Promise which resolves to a JSON string
    */
-  _decryptJwe (jweResponse: string) {
+  _decryptJwe (jweResponse: string): Promise<string> {
     const keystore = jose.JWK.createKeyStore()
 
     return keystore
@@ -568,7 +568,7 @@ export class MyInfoGovClient {
     requestedAttributes,
     timestamp,
     txnNo,
-  }: IBaseStringSpec) {
+  }: IBaseStringSpec): string {
     return (
       httpMethod.toUpperCase() +
       // url string replacement was dictated by MyInfo docs - no explanation
@@ -609,7 +609,11 @@ export class MyInfoGovClient {
    *    crypto.sign.sign()
    *    @return {string|Buffer} - Signature of basestring signed with privateKey.
    */
-  _signBaseString (basestring: string, privateKey: string, outputFormat: 'latin1' | 'hex' | 'base64') {
+  _signBaseString (
+    basestring: string,
+    privateKey: string,
+    outputFormat: 'latin1' | 'hex' | 'base64',
+  ): string {
     const signer = crypto.createSign('RSA-SHA256')
     signer.update(basestring)
     signer.end()
@@ -632,7 +636,7 @@ export class MyInfoGovClient {
     nonce: string,
     signature: string,
     timestamp: number
-  }) {
+  }): string {
     return (
       'Apex_l2_Eg ' +
       'realm="' +
