@@ -520,8 +520,8 @@ export class MyInfoGovClient {
 
   /**
    *    Decrypts a JWE response string
-   *    @param  {string} jweResponse Fullstop-delimited jweResponse string
-   *    @return {Promise<string>}    Promise which resolves to a JSON string
+   *    @param jweResponse Fullstop-delimited jweResponse string
+   *    @return Promise which resolves to a JSON string
    */
   _decryptJwe (jweResponse: string): Promise<string> {
     const keystore = jose.JWK.createKeyStore()
@@ -538,24 +538,24 @@ export class MyInfoGovClient {
    *  Internal function to generate the APEX signature basestring. The
    *  resultant basestring must be signed with the private key and attached
    *  to the request header when calling MyInfo.
-   *  @param {Object} basestrConfig Object containing all the fields
+   *  @param basestrConfig Object containing all the fields
    *  necessary for generating basestring
-   *  @param {string} basestrConfig.httpMethod One of GET/POST/PUT/DELETE
-   *  @param {string} basestrConfig.url Full url endpoint, such as
+   *  @param basestrConfig.httpMethod One of GET/POST/PUT/DELETE
+   *  @param basestrConfig.url Full url endpoint, such as
    *  https://myinfosgstg.api.gov.sg/gov/test/v2/person-basic/
-   *  @param {string} basestrConfig.appId MyInfo App ID
-   *  @param {string} basestrConfig.clientId MyInfo Client ID
-   *  @param {string} basestrConfig.singpassEserviceId Client SingPass
+   *  @param basestrConfig.appId MyInfo App ID
+   *  @param basestrConfig.clientId MyInfo Client ID
+   *  @param basestrConfig.singpassEserviceId Client SingPass
    *  e-Service ID
-   *  @param {string} basestrConfig.nonce A randomly generated base64
+   *  @param basestrConfig.nonce A randomly generated base64
    *  number
-   *  @param {string[]} basestrConfig.requestedAttributes List of person
+   *  @param basestrConfig.requestedAttributes List of person
    *  attributes being requested.
-   *  @param {string} basestrConfig.timestamp Timestamp of request using
+   *  @param basestrConfig.timestamp Timestamp of request using
    *  Date.now().
-   *  @param {string} [basestrConfig.txnNo] Optional transaction number.
+   *  @param [basestrConfig.txnNo] Optional transaction number.
    *
-   *  @return {string} [basestring] The basestring to be signed by
+   *  @return [basestring] The basestring to be signed by
    *  _signBaseString().
    */
   _formulateBaseString ({
@@ -603,11 +603,11 @@ export class MyInfoGovClient {
 
   /**
    *    Returns signature of basestring signed with private key
-   *    @param  {string} basestring - Basestring
-   *    @param  {string} privateKey - Private key
-   *    @param  {string} outputFormat - One of latin1/hex/base64, passed to
+   *    @param basestring - Basestring
+   *    @param privateKey - Private key
+   *    @param outputFormat - One of latin1/hex/base64, passed to
    *    crypto.sign.sign()
-   *    @return {string|Buffer} - Signature of basestring signed with privateKey.
+   *    @return Signature of basestring signed with privateKey.
    */
   _signBaseString (
     basestring: string,
@@ -622,12 +622,12 @@ export class MyInfoGovClient {
 
   /**
    *    Create the APEX authentication header from constituent parts.
-   *    @param  {[string]} realm     Realm
-   *    @param  {[string]} appId     Client appId
-   *    @param  {[string]} nonce     A randomly generated base64 number
-   *    @param  {[string]} signature Signature generated with _signBaseString
-   *    @param  {[string]} timestamp Current timestamp generated with Date.now()
-   *    @return {[string]}           Authentication header to be included in API
+   *    @param realm     Realm
+   *    @param appId     Client appId
+   *    @param nonce     A randomly generated base64 number
+   *    @param signature Signature generated with _signBaseString
+   *    @param timestamp Current timestamp generated with Date.now()
+   *    @return Authentication header to be included in API
    *    call
    */
   _formulateAuthHeader ({ realm, appId, nonce, signature, timestamp }: {
