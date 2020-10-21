@@ -152,7 +152,7 @@ export class MyInfoGovClient {
    *    attributes of person to request from MyInfo. Will query all fields if
    *    not provided, or if it is an empty list.
    *    @param [personRequest.txnNo] - Optional transaction number
-   *    @param [singpassEserviceId] - Optional Singpass eService ID.
+   *    @param [singpassEserviceId] - Optional Singpass eService ID that if provided, overrides the default eService ID in the constructor.
    *    If provided, the API will be called with this Singpass eService ID
    *    instead of the one provided to the constructor during object instantiation.
    *    @return - Promise resolving to a person object
