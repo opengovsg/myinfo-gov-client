@@ -8,7 +8,7 @@ import { IPersonBasic } from './myinfo-types'
 
 enum Mode {
   Dev = 'dev',
-  Staging = 'sg',
+  Staging = 'stg',
   Production = 'prod'
 }
 
