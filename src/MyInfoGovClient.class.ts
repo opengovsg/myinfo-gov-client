@@ -12,13 +12,20 @@ enum Mode {
   Production = 'prod'
 }
 
-interface IConfig {
+export interface IConfig {
   realm: string
   appId: string
   singpassEserviceId: string
   privateKey: Buffer | string
   clientId?: string
   mode?: Mode
+}
+
+export interface IPersonBasicRequest {
+  uinFin: string,
+  requestedAttributes?: string[],
+  txnNo?: string,
+  singpassEserviceId?: string
 }
 
 interface IBaseStringSpec {
@@ -422,12 +429,12 @@ export class MyInfoGovClient {
    *          }
    *        }
    */
-  getPersonBasic ({ uinFin, requestedAttributes, txnNo, singpassEserviceId: seId }: {
-    uinFin: string,
-    requestedAttributes?: string[],
-    txnNo?: string,
-    singpassEserviceId?: string
-  }): Promise<IPersonBasic> {
+  getPersonBasic ({
+    uinFin,
+    requestedAttributes,
+    txnNo,
+    singpassEserviceId: seId,
+  }: IPersonBasicRequest): Promise<IPersonBasic> {
     if (!requestedAttributes || requestedAttributes.length === 0) {
       requestedAttributes = ALL_ATTRIBUTES.personBasic
     }
