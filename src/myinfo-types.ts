@@ -17,24 +17,24 @@ interface IMyInfoMetadata {
     classification: 'C'
 }
 
-interface IMyInfoBasicField extends IMyInfoMetadata {
+export interface IMyInfoBasicField extends IMyInfoMetadata {
     value: string
 }
 
-interface IMyInfoHighLowField extends IMyInfoMetadata {
+export interface IMyInfoHighLowField extends IMyInfoMetadata {
     high: number
     low: number
 }
 
-interface IMyInfoFieldWithDesc extends IMyInfoBasicField {
+export interface IMyInfoFieldWithDesc extends IMyInfoBasicField {
     desc: string
 }
 
-interface IMyInfoSexField extends IMyInfoMetadata {
+export interface IMyInfoSexField extends IMyInfoMetadata {
     value: MyInfoSex
 }
 
-interface IChildrenBirthRecord {
+export interface IChildrenBirthRecord {
     birthcertno: IMyInfoBasicField
     name: IMyInfoBasicField
     hanyupinyinname: IMyInfoBasicField
