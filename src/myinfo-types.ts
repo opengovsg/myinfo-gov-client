@@ -18,7 +18,7 @@ interface IMyInfoMetadata {
 }
 
 export interface IMyInfoBasicField extends IMyInfoMetadata {
-    value: string
+    value?: string
 }
 
 export interface IMyInfoHighLowField extends IMyInfoMetadata {
