@@ -66,6 +66,47 @@ export interface IMyInfoAddr extends IMyInfoMetadata {
     building: string
 }
 
+export enum MyInfoAttribute {
+    Name = 'name',
+    MarriedName = 'marriedname',
+    HanYuPinYinName = 'hanyupinyinname',
+    AliasName = 'aliasname',
+    HanYuPinYinAliasName = 'hanyupinyinaliasname',
+    Sex = 'sex',
+    Race = 'race',
+    Dialect = 'dialect',
+    Nationality = 'nationality',
+    DOB = 'dob',
+    BirthCountry = 'birthcountry',
+    SecondaryRace = 'secondaryrace',
+    ResidentialStatus = 'residentialstatus',
+    PassportNumber = 'passportnumber',
+    PassportExpiryDate = 'passportexpirydate',
+    Email = 'email',
+    MobileNo = 'mobileno',
+    RegisteredAddress = 'regadd',
+    HousingType = 'housingtype',
+    HDBType = 'hdbtype',
+    MailAddress = 'mailadd',
+    BillingAddress = 'billadd',
+    MaritalStatus = 'marital',
+    EducationLevel = 'edulevel',
+    MarriageCertNumber = 'marriagecertno',
+    CountryOfMarriage = 'countryofmarriage',
+    MarriageDate = 'marriagedate',
+    DivorceDate = 'divorcedate',
+    ChildrenBirthRecords = 'childrenbirthrecords',
+    Relationships = 'relationships',
+    GradYear = 'gradyear',
+    SchoolName = 'schoolname',
+    Occupation = 'occupation',
+    Employment = 'employment',
+    WorkPassStatus = 'workpassstatus',
+    WorkPassExpiryDate = 'workpassexpirydate',
+    HouseholdIncome = 'householdincome',
+    VehicleNumber = 'vehno',
+}
+
 export interface IPersonBasic {
     name: IMyInfoBasicField
     hanyupinyinname: IMyInfoBasicField
@@ -108,3 +149,11 @@ export interface IPersonBasic {
     vehno: IMyInfoBasicField
     uinFin: string
 }
+
+// Check that IPersonBasic includes all keys from MyInfoAttribute
+type IPersonBasicCheck = Exclude<MyInfoAttribute, keyof IPersonBasic>
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type VerifyIPersonBasicCheck<
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  Missing extends never = IPersonBasicCheck,
+> = never
