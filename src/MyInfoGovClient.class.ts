@@ -4,7 +4,7 @@ import crypto from 'crypto'
 import jose from 'node-jose'
 import path from 'path'
 import request from 'request'
-import { IPersonBasic } from './myinfo-types'
+import { IPersonBasic, MyInfoAttribute } from './myinfo-types'
 
 enum Mode {
   Dev = 'dev',
@@ -55,49 +55,7 @@ const ENDPOINT = {
   person: 'person',
 }
 
-const ALL_ATTRIBUTES = {
-  personBasic: [
-    'name',
-    'marriedname',
-    'hanyupinyinname',
-    'aliasname',
-    'hanyupinyinaliasname',
-    'sex',
-    'race',
-    'dialect',
-    'nationality',
-    'dob',
-    'birthcountry',
-    'secondaryrace',
-    'residentialstatus',
-    'passportnumber',
-    'passportexpirydate',
-    'email',
-    'mobileno',
-    'regadd',
-    'housingtype',
-    'hdbtype',
-    'mailadd',
-    'billadd',
-    'marital',
-    'edulevel',
-    'marriagecertno',
-    'countryofmarriage',
-    'marriagedate',
-    'divorcedate',
-    'childrenbirthrecords',
-    'relationships',
-    'edulevel',
-    'gradyear',
-    'schoolname',
-    'occupation',
-    'employment',
-    'workpassstatus',
-    'workpassexpirydate',
-    'householdincome',
-    'vehno',
-  ],
-}
+const ALL_ATTRIBUTES = Object.values(MyInfoAttribute)
 
 export class MyInfoGovClient {
   realm: string
@@ -436,7 +394,7 @@ export class MyInfoGovClient {
     singpassEserviceId: seId,
   }: IPersonBasicRequest): Promise<IPersonBasic> {
     if (!requestedAttributes || requestedAttributes.length === 0) {
-      requestedAttributes = ALL_ATTRIBUTES.personBasic
+      requestedAttributes = ALL_ATTRIBUTES
     }
 
     const url = this.baseUrl + path.join(ENDPOINT.personBasic, uinFin) + '/'
