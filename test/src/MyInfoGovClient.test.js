@@ -4,11 +4,11 @@ const path = require('path')
 const proxyquire = require('proxyquire')
 
 const PRIVATE_KEY = fs.readFileSync(
-  path.resolve(__dirname, '../resources/private.pem')
+  path.resolve(__dirname, '../resources/private.pem'),
 )
 
 const SAMPLE_RESPONSE = fs.readFileSync(
-  path.resolve(__dirname, '../resources/response.txt')
+  path.resolve(__dirname, '../resources/response.txt'),
 )
 
 const ALL_ATTRIBUTES = [
@@ -111,9 +111,9 @@ describe('MyInfoGovClient', function () {
         expect(authHeaderObj['apex_l2_eg_timestamp']).to.exist
       }
 
-      let MyInfoGovClient = proxyquire(
-        '../../src/MyInfoGovClient.class.js',
-        { request: requestStub }
+      const { MyInfoGovClient } = proxyquire(
+        '../../build/MyInfoGovClient.class.js',
+        { request: requestStub },
       )
 
       myInfoClient = new MyInfoGovClient({
@@ -138,9 +138,9 @@ describe('MyInfoGovClient', function () {
         callback(undefined, response, SAMPLE_RESPONSE)
       }
 
-      let MyInfoGovClient = proxyquire(
-        '../../src/MyInfoGovClient.class.js',
-        { request: requestStub }
+      const { MyInfoGovClient } = proxyquire(
+        '../../build/MyInfoGovClient.class.js',
+        { request: requestStub },
       )
 
       myInfoClient = new MyInfoGovClient({
@@ -160,7 +160,7 @@ describe('MyInfoGovClient', function () {
       myInfoClient.getPersonBasic(params).then(personObject => {
         const expectedPersonObject = Object.assign({},
           JSON.parse(SAMPLE_RESPONSE),
-          { uinFin }
+          { uinFin },
         )
         expect(personObject).to.deep.equal(expectedPersonObject)
         done()
