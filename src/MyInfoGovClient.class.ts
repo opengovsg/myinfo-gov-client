@@ -6,7 +6,7 @@ import path from 'path'
 import request from 'request'
 import { IPersonBasic, MyInfoAttribute } from './myinfo-types'
 
-enum Mode {
+export enum Mode {
   Dev = 'dev',
   Staging = 'stg',
   Production = 'prod'
