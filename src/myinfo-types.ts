@@ -76,7 +76,7 @@ export enum MyInfoAttribute {
     Race = 'race',
     Dialect = 'dialect',
     Nationality = 'nationality',
-    DOB = 'dob',
+    DateOfBirth = 'dob',
     BirthCountry = 'birthcountry',
     SecondaryRace = 'secondaryrace',
     ResidentialStatus = 'residentialstatus',
