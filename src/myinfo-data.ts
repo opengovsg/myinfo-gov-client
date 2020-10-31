@@ -1,3 +1,5 @@
+import { MyInfoAttribute } from './myinfo-types'
+
 type Countries = Record<string, { description: string }>
 
 const COUNTRIES: Countries = {
@@ -765,7 +767,7 @@ const COUNTRIES: Countries = {
   },
 }
 
-export const CATEGORICAL_DATA_DICT = {
+export const CATEGORICAL_DATA_DICT: Partial<Record<MyInfoAttribute, unknown>> = {
   sex: {
     F: {
       description: 'FEMALE',
@@ -2575,7 +2577,7 @@ export const CATEGORICAL_DATA_DICT = {
       description: 'DIVORCED',
     },
   },
-  relationship: {
+  relationships: {
     REL101: {
       description: 'HUSBAND',
     },
