@@ -474,7 +474,7 @@ export class MyInfoGovClient {
     })
       .then(
         body =>
-          this.mode === 'dev' ? Promise.resolve(body) : this._decryptJwe(body),
+          this.mode === Mode.Dev ? Promise.resolve(body) : this._decryptJwe(body),
       )
       .then(JSON.parse)
       .then(personObject => {
