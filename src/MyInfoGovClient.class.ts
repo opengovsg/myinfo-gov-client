@@ -110,18 +110,17 @@ export class MyInfoGovClient {
 
   /**
    *    Make a GET request to Person-Basic endpoint.
-   *    @param  {Object} personRequest - A request for attributes of a person to
+   *    @param {IPersonBasicRequest} personRequest - A request for attributes of a person to
    *    MyInfo
    *    @param personRequest.uinFin - NRIC number
-   *    @param [personRequest.requestedAttributes] - Array of
+   *    @param personRequest.requestedAttributes Array of
    *    attributes of person to request from MyInfo. Will query all fields if
    *    not provided, or if it is an empty list.
-   *    @param [personRequest.txnNo] - Optional transaction number
-   *    @param [singpassEserviceId] - Optional Singpass eService ID that if provided, overrides the default eService ID in the constructor.
+   *    @param personRequest.txnNo - Optional transaction number
+   *    @param singpassEserviceId - Optional Singpass eService ID that if provided, overrides the default eService ID in the constructor.
    *    If provided, the API will be called with this Singpass eService ID
    *    instead of the one provided to the constructor during object instantiation.
-   *    @return - Promise resolving to a person object
-   *    containing requested fields
+   *    @return - Promise resolving to a person object containing requested fields
    *    @example
    *    myInfo.getPersonBasic({uinFin, requestedAttributes, txnNo})
    *    .then(function(personObject) {
@@ -518,10 +517,9 @@ export class MyInfoGovClient {
    *  attributes being requested.
    *  @param basestrConfig.timestamp Timestamp of request using
    *  Date.now().
-   *  @param [basestrConfig.txnNo] Optional transaction number.
+   *  @param basestrConfig.txnNo Optional transaction number.
    *
-   *  @return [basestring] The basestring to be signed by
-   *  _signBaseString().
+   *  @return The basestring to be signed by _signBaseString().
    */
   _formulateBaseString ({
     httpMethod,
