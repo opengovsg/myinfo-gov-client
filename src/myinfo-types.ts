@@ -84,6 +84,7 @@ export enum MyInfoAttribute {
     PassportExpiryDate = 'passportexpirydate',
     Email = 'email',
     MobileNo = 'mobileno',
+    HomeNo = 'homeno',
     RegisteredAddress = 'regadd',
     HousingType = 'housingtype',
     HDBType = 'hdbtype',
