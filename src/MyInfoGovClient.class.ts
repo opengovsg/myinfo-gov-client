@@ -1,9 +1,8 @@
-'use strict'
-
 import crypto from 'crypto'
 import jose from 'node-jose'
 import path from 'path'
 import axios from 'axios'
+import qs from 'qs'
 import { IPersonBasic, MyInfoAttribute } from './myinfo-types'
 
 export enum Mode {
@@ -448,31 +447,10 @@ export class MyInfoGovClient {
       txnNo: txnNo,
     }
 
-    // Put the request parameters together
-    // const requestDetails = {
-    //   headers: headers,
-    //   uri: url,
-    //   qs: querystring,
-    //   method: 'GET',
-    // }
-
-    // Send request, decrypt JWE response and return Promise<Object>
-    // return new Promise<string>((resolve, reject) => {
-    //   request(requestDetails, (error, response, body) => {
-    //     if (error) {
-    //       reject(error)
-    //     } else if (response && response.statusCode !== 200) {
-    //       const message = error && error.message
-    //         ? error.message : response.statusMessage
-    //       reject(new Error(message))
-    //     } else {
-    //       resolve(body)
-    //     }
-    //   })
-    // })
     return axios.get(url, {
       headers,
       params: querystring,
+      paramsSerializer: (params) => qs.stringify(params),
     })
       .then((response) =>
         this.mode === Mode.Dev ? Promise.resolve(response.data) : this._decryptJwe(response.data),
