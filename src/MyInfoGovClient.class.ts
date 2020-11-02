@@ -437,7 +437,6 @@ export class MyInfoGovClient {
     const headers = {
       'Content-Type': 'application/json',
       Authorization: authHeader,
-      'Content-Encoding': 'gzip',
       Accept: 'application/json',
     }
 
