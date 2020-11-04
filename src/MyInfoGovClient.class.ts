@@ -455,7 +455,6 @@ export class MyInfoGovClient {
       .then((response) =>
         this.mode === Mode.Dev ? Promise.resolve(response.data) : this._decryptJwe(response.data),
       )
-      .then(JSON.parse)
       .then(personObject => {
         personObject.uinFin = uinFin
         return personObject
@@ -476,6 +475,7 @@ export class MyInfoGovClient {
         return jose.JWE.createDecrypt(jweKey).decrypt(jweResponse)
       })
       .then(result => result.payload.toString())
+      .then(JSON.parse)
   }
 
   /**
