@@ -63,3 +63,4 @@ typings/
 # Custom script
 main.js
 secrets/*
+build

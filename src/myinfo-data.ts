@@ -1,6 +1,8 @@
-'use strict'
+import { MyInfoAttribute } from './myinfo-types'
 
-const COUNTRIES = {
+type MyInfoDict = Record<string, { description: string }>
+
+const COUNTRIES: MyInfoDict = {
   AB: {
     description: 'ARUBA',
   },
@@ -765,7 +767,7 @@ const COUNTRIES = {
   },
 }
 
-const CATEGORICAL_DATA_DICT = {
+export const CATEGORICAL_DATA_DICT: Partial<Record<MyInfoAttribute, MyInfoDict>> = {
   sex: {
     F: {
       description: 'FEMALE',
@@ -2575,7 +2577,7 @@ const CATEGORICAL_DATA_DICT = {
       description: 'DIVORCED',
     },
   },
-  relationship: {
+  relationships: {
     REL101: {
       description: 'HUSBAND',
     },
@@ -7244,5 +7246,3 @@ const CATEGORICAL_DATA_DICT = {
   },
   countryofmarriage: COUNTRIES,
 }
-
-module.exports.CATEGORICAL_DATA_DICT = CATEGORICAL_DATA_DICT

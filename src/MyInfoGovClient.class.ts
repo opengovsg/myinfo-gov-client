@@ -1,14 +1,48 @@
-'use strict'
+import crypto from 'crypto'
+import jose from 'node-jose'
+import path from 'path'
+import axios from 'axios'
+import qs from 'qs'
+import { IPersonBasic, MyInfoAttribute } from './myinfo-types'
 
-const crypto = require('crypto')
-const jose = require('node-jose')
-const path = require('path')
-const request = require('request')
+export enum Mode {
+  Dev = 'dev',
+  Staging = 'stg',
+  Production = 'prod'
+}
 
-const BASE_URL = {
-  dev: 'https://myinfosgstg.api.gov.sg/gov/dev/v1/',
-  stg: 'https://myinfosgstg.api.gov.sg/gov/test/v2/',
-  prod: 'https://myinfosg.api.gov.sg/gov/v2/',
+export interface IConfig {
+  realm: string
+  appId: string
+  singpassEserviceId: string
+  privateKey: Buffer | string
+  clientId?: string
+  mode?: Mode
+}
+
+export interface IPersonBasicRequest {
+  uinFin: string,
+  requestedAttributes?: string[],
+  txnNo?: string,
+  singpassEserviceId?: string
+}
+
+interface IBaseStringSpec {
+  httpMethod: string
+  url: string
+  appId: string
+  clientId: string
+  singpassEserviceId: string
+  nonce: string
+  requestedAttributes: string[]
+  timestamp: number
+  txnNo?: string
+}
+
+const BASE_URL: { [M in Mode]: string } = {
+  [Mode.Dev]: 'https://myinfosgstg.api.gov.sg/gov/dev/v1/',
+  [Mode.Staging]: 'https://myinfosgstg.api.gov.sg/gov/test/v2/',
+  [Mode.Production]: 'https://myinfosg.api.gov.sg/gov/v2/',
 }
 
 const ENDPOINT = {
@@ -20,69 +54,34 @@ const ENDPOINT = {
   person: 'person',
 }
 
-const ALL_ATTRIBUTES = {
-  personBasic: [
-    'name',
-    'marriedname',
-    'hanyupinyinname',
-    'aliasname',
-    'hanyupinyinaliasname',
-    'sex',
-    'race',
-    'dialect',
-    'nationality',
-    'dob',
-    'birthcountry',
-    'secondaryrace',
-    'residentialstatus',
-    'passportnumber',
-    'passportexpirydate',
-    'email',
-    'mobileno',
-    'regadd',
-    'housingtype',
-    'hdbtype',
-    'mailadd',
-    'billadd',
-    'marital',
-    'edulevel',
-    'marriagecertno',
-    'countryofmarriage',
-    'marriagedate',
-    'divorcedate',
-    'childrenbirthrecords',
-    'relationships',
-    'edulevel',
-    'gradyear',
-    'schoolname',
-    'occupation',
-    'employment',
-    'workpassstatus',
-    'workpassexpirydate',
-    'householdincome',
-    'vehno',
-  ],
-}
+const ALL_ATTRIBUTES = Object.values(MyInfoAttribute)
 
-class MyInfoGovClient {
+export class MyInfoGovClient {
+  realm: string
+  appId: string
+  clientId: string
+  singpassEserviceId: string
+  mode: Mode
+  privateKey: string
+  baseUrl: string
   /**
    *  Constructor for MyInfoGovClient, which helps call the internal,
    *  non-public-facing MyInfo TUO.
-   *  @param {Object} config Config object to create an MyInfoGovClient.
-   *  @param {string} config.realm - Name of MyInfo application e.g. 'FormSG'
-   *  @param {string} config.appId - ID of MyInfo application
+   *  @param config Config object to create an MyInfoGovClient.
+   *  @param config.realm - Name of MyInfo application e.g. 'FormSG'
+   *  @param config.appId - ID of MyInfo application
    *  e.g. 'STG2-GOVTECH-FORMSG-SP' or 'PROD2-GOVTECH-FORMSG-SP'
-   *  @param {string} config.singpassEserviceId - ID registered with SingPass
+   *  @param config.singpassEserviceId - ID registered with SingPass
    *  e.g. 'GOVTECH-FORMSG-SP'
-   *  @param {(Buffer|String)} config.privateKey` - RSA-SHA256 private key, which must
+   *  @param config.privateKey` - RSA-SHA256 private key, which must
    *  correspond with public key provided to MyInfo during onboarding process.
-   *  @param {string} [config.clientId] - ID of MyInfo client. Defaults to `appId`
+   *  @param [config.clientId] - ID of MyInfo client. Defaults to `appId`
    *  if not provided.
-   *  @param {string} [config.mode] - dev/stg/prod, which sets up the correct
+   *  @param [config.mode] - dev/stg/prod, which sets up the correct
    *  endpoint to call. Defaults to prod if not provided.
    */
-  constructor (config) {
-    let {
+  constructor (config: IConfig) {
+    const {
       realm,
       appId,
       clientId,
@@ -94,7 +93,7 @@ class MyInfoGovClient {
     if (!realm || !appId || !singpassEserviceId || !privateKey) {
       throw new Error(
         'Missing required parameter(s) in constructor:' +
-          ' realm, appId, singpassEserviceId, privateKey'
+          ' realm, appId, singpassEserviceId, privateKey',
       )
     }
 
@@ -102,26 +101,25 @@ class MyInfoGovClient {
     this.appId = appId
     this.clientId = clientId || appId
     this.singpassEserviceId = singpassEserviceId
-    this.mode = mode
+    this.mode = mode || Mode.Production
     this.privateKey = privateKey.toString().replace(/\n$/, '')
 
-    this.baseUrl = BASE_URL[mode] || BASE_URL.prod
+    this.baseUrl = BASE_URL[this.mode] || BASE_URL.prod
   }
 
   /**
    *    Make a GET request to Person-Basic endpoint.
-   *    @param  {Object} personRequest - A request for attributes of a person to
+   *    @param {IPersonBasicRequest} personRequest - A request for attributes of a person to
    *    MyInfo
-   *    @param  {string} personRequest.uinFin - NRIC number
-   *    @param  {Array<string>} [personRequest.requestedAttributes] - Array of
+   *    @param personRequest.uinFin - NRIC number
+   *    @param personRequest.requestedAttributes Array of
    *    attributes of person to request from MyInfo. Will query all fields if
    *    not provided, or if it is an empty list.
-   *    @param  {int} [personRequest.txnNo] - Optional transaction number
-   *    @param  {string} [singpassEserviceId] - Optional Singpass eService ID.
+   *    @param personRequest.txnNo - Optional transaction number
+   *    @param singpassEserviceId - Optional Singpass eService ID that if provided, overrides the default eService ID in the constructor.
    *    If provided, the API will be called with this Singpass eService ID
    *    instead of the one provided to the constructor during object instantiation.
-   *    @return {Promise<Object>} - Promise resolving to a person object
-   *    containing requested fields
+   *    @return - Promise resolving to a person object containing requested fields
    *    @example
    *    myInfo.getPersonBasic({uinFin, requestedAttributes, txnNo})
    *    .then(function(personObject) {
@@ -387,9 +385,14 @@ class MyInfoGovClient {
    *          }
    *        }
    */
-  getPersonBasic ({ uinFin, requestedAttributes, txnNo, singpassEserviceId: seId }) {
-    if (!requestedAttributes || !requestedAttributes.length > 0) {
-      requestedAttributes = ALL_ATTRIBUTES.personBasic
+  getPersonBasic ({
+    uinFin,
+    requestedAttributes,
+    txnNo,
+    singpassEserviceId: seId,
+  }: IPersonBasicRequest): Promise<IPersonBasic> {
+    if (!requestedAttributes || requestedAttributes.length === 0) {
+      requestedAttributes = ALL_ATTRIBUTES
     }
 
     const url = this.baseUrl + path.join(ENDPOINT.personBasic, uinFin) + '/'
@@ -416,7 +419,7 @@ class MyInfoGovClient {
     const signature = this._signBaseString(
       basestring,
       this.privateKey,
-      'base64'
+      'base64',
     )
 
     // Construct the authentication header using the signature, nonce and
@@ -433,7 +436,6 @@ class MyInfoGovClient {
     const headers = {
       'Content-Type': 'application/json',
       Authorization: authHeader,
-      'Content-Encoding': 'gzip',
       Accept: 'application/json',
     }
 
@@ -445,36 +447,13 @@ class MyInfoGovClient {
       txnNo: txnNo,
     }
 
-    // Put the request parameters together
-    const requestDetails = {
-      headers: headers,
-      uri: url,
-      qs: querystring,
-      method: 'GET',
-    }
-
-    // Send request, decrypt JWE response and return Promise<Object>
-    return new Promise((resolve, reject) => {
-      request(requestDetails, (error, response, body) => {
-        if (error) {
-          reject(error)
-        } else if (response && response.statusCode !== 200) {
-          const message = error && error.message
-            ? error.message : response.statusMessage
-          const returnedError = new Error(message)
-          returnedError.reason = error
-          returnedError.statusCode = response.statusCode
-          returnedError.statusMessage = response.statusMessage
-          returnedError.body = body
-          reject(returnedError)
-        } else {
-          resolve(body)
-        }
-      })
+    return axios.get(url, {
+      headers,
+      params: querystring,
+      paramsSerializer: (params) => qs.stringify(params),
     })
-      .then(
-        body =>
-          this.mode === 'dev' ? Promise.resolve(body) : this._decryptJwe(body)
+      .then((response) =>
+        this.mode === Mode.Dev ? Promise.resolve(response.data) : this._decryptJwe(response.data),
       )
       .then(JSON.parse)
       .then(personObject => {
@@ -485,29 +464,16 @@ class MyInfoGovClient {
 
   /**
    *    Decrypts a JWE response string
-   *    @param  {string} jweResponse Fullstop-delimited jweResponse string
-   *    @return {Promise<string>}    Promise which resolves to a JSON string
+   *    @param jweResponse Fullstop-delimited jweResponse string
+   *    @return Promise which resolves to a JSON string
    */
-  _decryptJwe (jweResponse) {
-    const jweParts = jweResponse.split('.')
-
-    // JSON Web Encryption (JWE)
-    const [header, encryptedKey, iv, cipherText, tag] = jweParts
-
-    let keystore = jose.JWK.createKeyStore()
+  _decryptJwe (jweResponse: string): Promise<string> {
+    const keystore = jose.JWK.createKeyStore()
 
     return keystore
       .add(this.privateKey, 'pem')
       .then(jweKey => {
-        return jose.JWE.createDecrypt(jweKey).decrypt({
-          type: 'compact',
-          ciphertext: cipherText,
-          protected: header,
-          encrypted_key: encryptedKey,
-          tag: tag,
-          iv: iv,
-          header: header,
-        })
+        return jose.JWE.createDecrypt(jweKey).decrypt(jweResponse)
       })
       .then(result => result.payload.toString())
   }
@@ -516,25 +482,24 @@ class MyInfoGovClient {
    *  Internal function to generate the APEX signature basestring. The
    *  resultant basestring must be signed with the private key and attached
    *  to the request header when calling MyInfo.
-   *  @param {Object} basestrConfig Object containing all the fields
+   *  @param basestrConfig Object containing all the fields
    *  necessary for generating basestring
-   *  @param {string} basestrConfig.httpMethod One of GET/POST/PUT/DELETE
-   *  @param {string} basestrConfig.url Full url endpoint, such as
+   *  @param basestrConfig.httpMethod One of GET/POST/PUT/DELETE
+   *  @param basestrConfig.url Full url endpoint, such as
    *  https://myinfosgstg.api.gov.sg/gov/test/v2/person-basic/
-   *  @param {string} basestrConfig.appId MyInfo App ID
-   *  @param {string} basestrConfig.clientId MyInfo Client ID
-   *  @param {string} basestrConfig.singpassEserviceId Client SingPass
+   *  @param basestrConfig.appId MyInfo App ID
+   *  @param basestrConfig.clientId MyInfo Client ID
+   *  @param basestrConfig.singpassEserviceId Client SingPass
    *  e-Service ID
-   *  @param {string} basestrConfig.nonce A randomly generated base64
+   *  @param basestrConfig.nonce A randomly generated base64
    *  number
-   *  @param {string[]} basestrConfig.requestedAttributes List of person
+   *  @param basestrConfig.requestedAttributes List of person
    *  attributes being requested.
-   *  @param {string} basestrConfig.timestamp Timestamp of request using
+   *  @param basestrConfig.timestamp Timestamp of request using
    *  Date.now().
-   *  @param {string} [basestrConfig.txnNo] Optional transaction number.
+   *  @param basestrConfig.txnNo Optional transaction number.
    *
-   *  @return {string} [basestring] The basestring to be signed by
-   *  _signBaseString().
+   *  @return The basestring to be signed by _signBaseString().
    */
   _formulateBaseString ({
     httpMethod,
@@ -546,7 +511,7 @@ class MyInfoGovClient {
     requestedAttributes,
     timestamp,
     txnNo,
-  }) {
+  }: IBaseStringSpec): string {
     return (
       httpMethod.toUpperCase() +
       // url string replacement was dictated by MyInfo docs - no explanation
@@ -581,13 +546,17 @@ class MyInfoGovClient {
 
   /**
    *    Returns signature of basestring signed with private key
-   *    @param  {string} basestring - Basestring
-   *    @param  {string} privateKey - Private key
-   *    @param  {string} outputFormat - One of latin1/hex/base64, passed to
+   *    @param basestring - Basestring
+   *    @param privateKey - Private key
+   *    @param outputFormat - One of latin1/hex/base64, passed to
    *    crypto.sign.sign()
-   *    @return {string|Buffer} - Signature of basestring signed with privateKey.
+   *    @return Signature of basestring signed with privateKey.
    */
-  _signBaseString (basestring, privateKey, outputFormat) {
+  _signBaseString (
+    basestring: string,
+    privateKey: string,
+    outputFormat: 'latin1' | 'hex' | 'base64',
+  ): string {
     const signer = crypto.createSign('RSA-SHA256')
     signer.update(basestring)
     signer.end()
@@ -596,15 +565,21 @@ class MyInfoGovClient {
 
   /**
    *    Create the APEX authentication header from constituent parts.
-   *    @param  {[string]} realm     Realm
-   *    @param  {[string]} appId     Client appId
-   *    @param  {[string]} nonce     A randomly generated base64 number
-   *    @param  {[string]} signature Signature generated with _signBaseString
-   *    @param  {[string]} timestamp Current timestamp generated with Date.now()
-   *    @return {[string]}           Authentication header to be included in API
+   *    @param realm     Realm
+   *    @param appId     Client appId
+   *    @param nonce     A randomly generated base64 number
+   *    @param signature Signature generated with _signBaseString
+   *    @param timestamp Current timestamp generated with Date.now()
+   *    @return Authentication header to be included in API
    *    call
    */
-  _formulateAuthHeader ({ realm, appId, nonce, signature, timestamp }) {
+  _formulateAuthHeader ({ realm, appId, nonce, signature, timestamp }: {
+    realm: string,
+    appId: string,
+    nonce: string,
+    signature: string,
+    timestamp: number
+  }): string {
     return (
       'Apex_l2_Eg ' +
       'realm="' +
@@ -627,5 +602,3 @@ class MyInfoGovClient {
     )
   }
 }
-
-module.exports = MyInfoGovClient

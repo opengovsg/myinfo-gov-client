@@ -1,9 +1,12 @@
 {
   "extends": [
-    "@opengovsg/eslint-config-opengovsg"
+    "@opengovsg/eslint-config-opengovsg",
+    "plugin:@typescript-eslint/recommended"
   ],
+  "parser": "@typescript-eslint/parser",
   "plugins": [
-    "mocha"
+    "mocha",
+    "@typescript-eslint"
   ],
   "overrides": [{
     "files": "*.test.js",
@@ -16,4 +19,3 @@
     "node": true
   }
 }
-
