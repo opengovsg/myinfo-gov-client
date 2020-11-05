@@ -477,11 +477,10 @@ export class MyInfoGovClient {
 
     return keystore
       .add(this.privateKey, 'pem')
-      .then(jweKey => {
+      .then((jweKey) => {
         return jose.JWE.createDecrypt(jweKey).decrypt(jweResponse)
       })
-      .then(result => result.payload.toString())
-      .then(JSON.parse)
+      .then(({ payload }) => JSON.parse(payload.toString()))
   }
 
   /**
