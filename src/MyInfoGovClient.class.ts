@@ -39,6 +39,9 @@ interface IBaseStringSpec {
   txnNo?: string
 }
 
+type MyInfoParsedResponse = Omit<IPersonBasic, 'uinFin'>
+type MyInfoResponse = MyInfoParsedResponse | string
+
 const BASE_URL: { [M in Mode]: string } = {
   [Mode.Dev]: 'https://myinfosgstg.api.gov.sg/gov/dev/v1/',
   [Mode.Staging]: 'https://myinfosgstg.api.gov.sg/gov/test/v2/',
@@ -446,18 +449,21 @@ export class MyInfoGovClient {
       singpassEserviceId,
       txnNo: txnNo,
     }
-
-    return axios.get(url, {
+    return axios.get<MyInfoResponse>(url, {
       headers,
       params: querystring,
       paramsSerializer: (params) => qs.stringify(params),
     })
       .then((response) =>
-        this.mode === Mode.Dev ? Promise.resolve(response.data) : this._decryptJwe(response.data),
+        // In dev mode, Axios parses the response for us, otherwise we need to decrypt the JWE
+        typeof response.data === 'string' ? this._decryptJwe(response.data) : Promise.resolve(response.data),
       )
-      .then(personObject => {
-        personObject.uinFin = uinFin
-        return personObject
+      .then((personObject) => {
+        const personWithUinFin: IPersonBasic = {
+          ...personObject,
+          uinFin,
+        }
+        return personWithUinFin
       })
   }
 
@@ -466,7 +472,7 @@ export class MyInfoGovClient {
    *    @param jweResponse Fullstop-delimited jweResponse string
    *    @return Promise which resolves to a JSON string
    */
-  _decryptJwe (jweResponse: string): Promise<string> {
+  _decryptJwe (jweResponse: string): Promise<MyInfoParsedResponse> {
     const keystore = jose.JWK.createKeyStore()
 
     return keystore
