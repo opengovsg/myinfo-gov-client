@@ -13,7 +13,7 @@ const SAMPLE_RESPONSE = fs.readFileSync(
 
 const MOCK_RESPONSE = {
   statusCode: 200,
-  data: JSON.stringify({ mockKey: 'mockValue' }),
+  data: { mockKey: 'mockValue' },
 }
 
 const ALL_ATTRIBUTES = [
@@ -137,7 +137,7 @@ describe('MyInfoGovClient', function () {
     it('should parse the response correctly', function (done) {
       const axiosStub = {
         get: function () {
-          return Promise.resolve({ data: SAMPLE_RESPONSE.toString() })
+          return Promise.resolve({ data: JSON.parse(SAMPLE_RESPONSE.toString()) })
         },
       }
 
