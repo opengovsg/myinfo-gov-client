@@ -470,7 +470,7 @@ export class MyInfoGovClient {
   /**
    *    Decrypts a JWE response string
    *    @param jweResponse Fullstop-delimited jweResponse string
-   *    @return Promise which resolves to a JSON string
+   *    @return Promise which resolves to a parsed response
    */
   _decryptJwe (jweResponse: string): Promise<MyInfoParsedResponse> {
     const keystore = jose.JWK.createKeyStore()
