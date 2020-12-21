@@ -30,7 +30,7 @@
     "node-jose": "^2.0.0",
     "path": "^0.12.7",
     "qs": "^6.9.4",
-    "request": "^2.88.0"
+    "request": "^2.88.2"
   },
   "devDependencies": {
     "@opengovsg/eslint-config-opengovsg": "^1.0.5",
