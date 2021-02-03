@@ -1,19 +1,13 @@
-import axios from 'axios'
 import { MyInfoGovClient, MyInfoMode } from '../../src/MyInfoGovClientV3.class'
-
-export const MOCK_TARGET_URL = 'https://myinfo.gov.client/target'
-export const MOCK_CLIENT_ID = 'mockClientId'
-export const MOCK_CLIENT_SECRET = 'mockClientSecret'
-export const MOCK_ESRVC_ID = 'mockEsrvcId'
-export const MOCK_PURPOSE = 'purpose'
-export const MOCK_RELAY_STATE = 'relayState1,relayState2'
-export const MOCK_REQUESTED_ATTRIBUTES = [
-  'name',
-  'sex',
-  'mobileno',
-  'occupation',
-  'marital',
-]
+import {
+  MOCK_CLIENT_ID,
+  MOCK_CLIENT_SECRET,
+  MOCK_ESRVC_ID,
+  MOCK_PURPOSE,
+  MOCK_RELAY_STATE,
+  MOCK_REQUESTED_ATTRIBUTES,
+  MOCK_TARGET_URL,
+} from '../constants'
 
 describe('MyInfoGovClient', () => {
   const client = new MyInfoGovClient({
