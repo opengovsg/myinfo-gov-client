@@ -111,6 +111,7 @@ export class MyInfoGovClient {
   }
 
   async _getAccessToken(authCode: string): Promise<string> {
+    const postUrl = `${this.baseAPIUrl}${Endpoint.Token}`
     const postParams = {
       grant_type: 'authorization_code',
       code: authCode,
@@ -121,13 +122,13 @@ export class MyInfoGovClient {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Cache-Control': 'no-cache',
-      Authorization: this._generateAuthHeader(postParams),
+      Authorization: this._generateAuthHeader('POST', postUrl, postParams),
     }
     return (
       axios
         // eslint-disable-next-line camelcase
         .post<{ access_token: string }>(
-          `${this.baseAPIUrl}${Endpoint.Token}`,
+          postUrl,
           objToSearchParams(postParams),
           { headers },
         )
@@ -135,19 +136,22 @@ export class MyInfoGovClient {
     )
   }
 
-  _generateAuthHeader(postParams: Record<string, string>): string {
+  _generateAuthHeader(
+    method: 'POST' | 'GET',
+    url: string,
+    urlParams: Record<string, string>,
+  ): string {
     const timestamp = String(Date.now())
     const nonce = crypto.randomBytes(32).toString('base64')
     const authParams = sortObjKeys({
-      ...postParams,
+      ...urlParams,
       signature_method: 'RS256',
       nonce,
       timestamp,
       app_id: this.clientId,
     })
     const paramString = qs.stringify(authParams, { encode: false })
-    const apiUrl = `${this.baseAPIUrl}${Endpoint.Token}`
-    const baseString = `POST&${apiUrl}&${paramString}`
+    const baseString = `${method.toUpperCase()}&${url}&${paramString}`
     const signature = crypto
       .createSign('RSA-SHA256')
       .update(baseString)
