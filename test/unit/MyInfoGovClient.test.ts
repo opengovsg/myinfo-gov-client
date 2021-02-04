@@ -12,6 +12,7 @@ import {
   MOCK_REQUESTED_ATTRIBUTES,
   MOCK_TARGET_URL,
   TEST_PRIVATE_KEY,
+  TEST_PUBLIC_KEY,
 } from '../constants'
 
 describe('MyInfoGovClient', () => {
@@ -20,9 +21,13 @@ describe('MyInfoGovClient', () => {
     clientSecret: MOCK_CLIENT_SECRET,
     mode: MyInfoMode.Dev,
     singpassEserviceId: MOCK_ESRVC_ID,
-    privateKey: TEST_PRIVATE_KEY,
+    clientPrivateKey: TEST_PRIVATE_KEY,
     redirectEndpoint: MOCK_TARGET_URL,
+    myInfoPublicKey: TEST_PUBLIC_KEY,
   }
+
+  afterEach(() => jest.restoreAllMocks())
+
   describe('constructor', () => {
     it('should instantiate without errors', () => {
       expect(new MyInfoGovClient(clientParams)).toBeTruthy()
@@ -41,10 +46,20 @@ describe('MyInfoGovClient', () => {
       const mockPrivateKey = 'mockPrivateKey'
       const params = {
         ...clientParams,
-        privateKey: Buffer.from(`${mockPrivateKey}\n`),
+        clientPrivateKey: Buffer.from(`${mockPrivateKey}\n`),
       }
       const client = new MyInfoGovClient((params as unknown) as IMyInfoConfig)
-      expect(client.privateKey).toBe(mockPrivateKey)
+      expect(client.clientPrivateKey).toBe(mockPrivateKey)
+    })
+
+    it('should strip the final newline from the public key', () => {
+      const mockPublicKey = 'mockPublicKey'
+      const params = {
+        ...clientParams,
+        myInfoPublicKey: Buffer.from(`${mockPublicKey}\n`),
+      }
+      const client = new MyInfoGovClient((params as unknown) as IMyInfoConfig)
+      expect(client.myInfoPublicKey).toBe(mockPublicKey)
     })
 
     it('should throw an error when client ID is not specified', () => {
@@ -89,7 +104,17 @@ describe('MyInfoGovClient', () => {
     it('should throw an error when private key is not specified', () => {
       const params = {
         ...clientParams,
-        privateKey: undefined,
+        clientPrivateKey: undefined,
+      }
+      const construct = () =>
+        new MyInfoGovClient((params as unknown) as IMyInfoConfig)
+      expect(construct).toThrow()
+    })
+
+    it('should throw an error when public key is not specified', () => {
+      const params = {
+        ...clientParams,
+        myInfoPublicKey: undefined,
       }
       const construct = () =>
         new MyInfoGovClient((params as unknown) as IMyInfoConfig)

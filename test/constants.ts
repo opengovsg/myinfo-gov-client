@@ -1,4 +1,4 @@
-import fs from 'fs'
+import * as fs from 'fs'
 
 export const MOCK_BASE_URL = 'https://myinfo.gov.client'
 export const MOCK_REDIRECT_PATH = '/target'
@@ -18,4 +18,7 @@ export const MOCK_REQUESTED_ATTRIBUTES = [
 export const TEST_SERVER_PORT = 5000
 export const TEST_PRIVATE_KEY = fs.readFileSync(
   './node_modules/@opengovsg/mockpass/static/certs/key.pem',
+)
+export const TEST_PUBLIC_KEY = fs.readFileSync(
+  './node_modules/@opengovsg/mockpass/static/certs/spcp.crt',
 )
