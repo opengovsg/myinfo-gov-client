@@ -1,7 +1,8 @@
 import qs from 'qs'
 import crypto from 'crypto'
 import axios from 'axios'
-import { objToSearchParams, sortObjKeys } from './util'
+import { hasProp, objToSearchParams, sortObjKeys } from './util'
+import { verify as verifyJwt } from 'jsonwebtoken'
 
 export enum MyInfoMode {
   Dev = 'dev',
@@ -20,7 +21,8 @@ export interface IMyInfoConfig {
   clientSecret: string
   singpassEserviceId: string
   redirectEndpoint: string
-  privateKey: string | Buffer
+  clientPrivateKey: string | Buffer
+  myInfoPublicKey: string | Buffer
   mode?: MyInfoMode
 }
 
@@ -42,7 +44,8 @@ export class MyInfoGovClient {
   clientId: string
   clientSecret: string
   redirectEndpoint: string
-  privateKey: string
+  clientPrivateKey: string
+  myInfoPublicKey: string
   singpassEserviceId: string
   mode: MyInfoMode
   baseAPIUrl: string
@@ -54,7 +57,8 @@ export class MyInfoGovClient {
       mode,
       singpassEserviceId,
       redirectEndpoint,
-      privateKey,
+      clientPrivateKey,
+      myInfoPublicKey,
     } = config
 
     if (
@@ -62,10 +66,11 @@ export class MyInfoGovClient {
       !clientSecret ||
       !singpassEserviceId ||
       !redirectEndpoint ||
-      !privateKey
+      !clientPrivateKey ||
+      !myInfoPublicKey
     ) {
       throw new Error(
-        `Missing required parameter(s) in constructor: clientId, clientSecret, singpassEserviceId, redirectEndpoint, privateKey`,
+        `Missing required parameter(s) in constructor: clientId, clientSecret, singpassEserviceId, redirectEndpoint, clientPrivateKey, myInfoPublicKey`,
       )
     }
 
@@ -74,7 +79,8 @@ export class MyInfoGovClient {
     this.redirectEndpoint = redirectEndpoint
     this.mode = mode || MyInfoMode.Production
     this.singpassEserviceId = singpassEserviceId
-    this.privateKey = privateKey.toString().replace(/\n$/, '')
+    this.clientPrivateKey = clientPrivateKey.toString().replace(/\n$/, '')
+    this.myInfoPublicKey = myInfoPublicKey.toString().replace(/\n$/, '')
     this.baseAPIUrl = BASE_URL[this.mode] || BASE_URL.prod
   }
 
@@ -98,7 +104,11 @@ export class MyInfoGovClient {
     )}`
   }
 
-  async getPerson(authCode: string): Promise<unknown> {
+  async getPerson(
+    authCode: string,
+    requestedAttributes: string[],
+  ): Promise<{ accessToken: string; data: unknown }> {
+    // Obtain access token
     let accessToken: string
     try {
       accessToken = await this._getAccessToken(authCode)
@@ -107,7 +117,69 @@ export class MyInfoGovClient {
         `The following error occurred while retrieving the access token: ${err}`,
       )
     }
-    return accessToken
+
+    // Extract NRIC
+    let uinFin
+    try {
+      uinFin = this._extractUinFin(accessToken)
+    } catch (err) {
+      throw new Error(
+        `The following error occurred while decoding the token from MyInfo: ${err}`,
+      )
+    }
+
+    // Get Person data
+    let data
+    try {
+      data = await this._sendPersonRequest(
+        accessToken,
+        requestedAttributes,
+        uinFin,
+      )
+    } catch (err) {
+      throw new Error(
+        `The following error occurred while calling the Person API: ${err}`,
+      )
+    }
+    return { accessToken, data }
+  }
+
+  async _sendPersonRequest(
+    accessToken: string,
+    requestedAttributes: string[],
+    uinFin?: string,
+  ): Promise<unknown> {
+    const definedUinFin = uinFin ?? this._extractUinFin(accessToken)
+    const url = `${this.baseAPIUrl}${Endpoint.Person}/${definedUinFin}/`
+    const params = {
+      client_id: this.clientId,
+      attributes: requestedAttributes.join(),
+    }
+    const paramsAuthHeader = this._generateAuthHeader('GET', url, params)
+    const headers = {
+      'Cache-Control': 'no-cache',
+      Authorization: `${paramsAuthHeader},Bearer ${accessToken}`,
+    }
+    return axios
+      .get(url, {
+        headers,
+        params,
+        paramsSerializer: (params) => qs.stringify(params),
+      })
+      .then((response) => response.data)
+  }
+
+  _extractUinFin(jwt: string): string {
+    const decoded = verifyJwt(jwt, this.myInfoPublicKey, {
+      algorithms: ['RS256'],
+    })
+    if (typeof decoded !== 'object') {
+      throw new Error('JWT returned from MyInfo had unexpected shape')
+    }
+    if (hasProp(decoded, 'sub') && typeof decoded.sub === 'string') {
+      return decoded.sub
+    }
+    throw new Error('JWT returned from MyInfo did not contain UIN/FIN')
   }
 
   async _getAccessToken(authCode: string): Promise<string> {
@@ -155,7 +227,7 @@ export class MyInfoGovClient {
     const signature = crypto
       .createSign('RSA-SHA256')
       .update(baseString)
-      .sign(this.privateKey, 'base64')
+      .sign(this.clientPrivateKey, 'base64')
     return `PKI_SIGN timestamp="${timestamp}",nonce="${nonce}",app_id="${this.clientId}",signature_method="RS256",signature="${signature}"`
   }
 }

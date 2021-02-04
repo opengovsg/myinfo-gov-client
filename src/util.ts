@@ -18,3 +18,11 @@ export const objToSearchParams = (
   })
   return params
 }
+
+export const hasProp = <K extends string>(
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  obj: object,
+  prop: K,
+): obj is Record<K, unknown> => {
+  return prop in obj
+}

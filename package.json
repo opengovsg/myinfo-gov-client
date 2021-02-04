@@ -29,6 +29,7 @@
   "dependencies": {
     "axios": "^0.21.0",
     "jose": "^0.3.2",
+    "jsonwebtoken": "^8.5.1",
     "node-jose": "^2.0.0",
     "path": "^0.12.7",
     "qs": "^6.9.5",
@@ -39,6 +40,7 @@
     "@opengovsg/mockpass": "^2.6.1",
     "@types/express": "^4.17.11",
     "@types/jest": "^26.0.20",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^14.11.10",
     "@types/node-jose": "^1.1.5",
     "@types/qs": "^6.9.5",
