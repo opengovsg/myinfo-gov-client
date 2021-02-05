@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import axios from 'axios'
 import { hasProp, objToSearchParams, sortObjKeys } from './util'
 import { verify as verifyJwt } from 'jsonwebtoken'
+import { IPerson } from './myinfo-types-v3'
 
 export enum MyInfoMode {
   Dev = 'dev',
@@ -107,7 +108,7 @@ export class MyInfoGovClient {
   async getPerson(
     authCode: string,
     requestedAttributes: string[],
-  ): Promise<{ accessToken: string; data: unknown }> {
+  ): Promise<{ accessToken: string; data: IPerson }> {
     // Obtain access token
     let accessToken: string
     try {
@@ -129,7 +130,7 @@ export class MyInfoGovClient {
     }
 
     // Get Person data
-    let data
+    let data: IPerson
     try {
       data = await this._sendPersonRequest(
         accessToken,
@@ -148,7 +149,7 @@ export class MyInfoGovClient {
     accessToken: string,
     requestedAttributes: string[],
     uinFin?: string,
-  ): Promise<unknown> {
+  ): Promise<IPerson> {
     const definedUinFin = uinFin ?? this._extractUinFin(accessToken)
     const url = `${this.baseAPIUrl}${Endpoint.Person}/${definedUinFin}/`
     const params = {
@@ -161,7 +162,7 @@ export class MyInfoGovClient {
       Authorization: `${paramsAuthHeader},Bearer ${accessToken}`,
     }
     return axios
-      .get(url, {
+      .get<IPerson>(url, {
         headers,
         params,
         paramsSerializer: (params) => qs.stringify(params),
