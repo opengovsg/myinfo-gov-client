@@ -1,5 +1,9 @@
 import { Selector } from 'testcafe'
-import { MOCK_RELAY_STATE, TEST_SERVER_PORT } from '../constants'
+import {
+  EXPECTED_PERSON_DATA,
+  MOCK_RELAY_STATE,
+  TEST_SERVER_PORT,
+} from '../constants'
 
 fixture`MyInfoGovClient`.page`http://localhost:${TEST_SERVER_PORT}`
 
@@ -9,5 +13,12 @@ const contentContainer = Selector('.content')
 
 test('fetches MyInfo data correctly', async (t) => {
   await t.click(loginLink).click(consentButton)
-  await t.expect(contentContainer.textContent).contains('GALVIN NG JIA SHENG')
+  const result = JSON.parse(await contentContainer.textContent)
+  await t
+    .expect(result.accessToken)
+    .typeOf('string')
+    .expect(result.state)
+    .eql(MOCK_RELAY_STATE)
+    .expect(result.data)
+    .eql(EXPECTED_PERSON_DATA)
 })
