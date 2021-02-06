@@ -22,6 +22,8 @@ jobs:
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
       - run: npm install
+      - name: Compile
+        run: npm run build
       - name: Unit tests
         run: npm run test-unit
       - name: End-to-end tests
