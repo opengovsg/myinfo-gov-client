@@ -16,6 +16,10 @@ export const MOCK_REQUESTED_ATTRIBUTES = [
   'occupation',
   'marital',
 ]
+export const MOCK_AUTH_CODE = 'mockAuthCode'
+export const MOCK_ACCESS_TOKEN = 'mockAccessToken'
+export const MOCK_UIN_FIN = 'mockUinFin'
+export const MOCK_JWT = 'mockJwt'
 export const TEST_SERVER_PORT = 5000
 export const TEST_PRIVATE_KEY = fs.readFileSync(
   './node_modules/@opengovsg/mockpass/static/certs/key.pem',
