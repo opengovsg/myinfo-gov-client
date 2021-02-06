@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import { AddressType, IPerson, MyInfoSource } from '../src/myinfo-types-v3'
+import { AddressType, IPerson, MyInfoSource } from '../src/myinfo-types'
 
 export const MOCK_BASE_URL = 'https://myinfo.gov.client'
 export const MOCK_REDIRECT_PATH = '/target'

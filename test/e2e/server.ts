@@ -1,6 +1,6 @@
 import Express, { RequestHandler } from 'express'
-import { MyInfoAttribute } from '../../src/myinfo-types-v3'
-import { MyInfoGovClient, MyInfoMode } from '../../src/MyInfoGovClientV3.class'
+import { MyInfoAttribute } from '../../src/myinfo-types'
+import { MyInfoGovClient, MyInfoMode } from '../../src/MyInfoGovClient.class'
 import {
   MOCK_CLIENT_ID,
   MOCK_CLIENT_SECRET,

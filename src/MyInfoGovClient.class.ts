@@ -1,609 +1,234 @@
-import crypto from 'crypto'
-import jose from 'node-jose'
-import path from 'path'
-import axios from 'axios'
 import qs from 'qs'
-import { IPersonBasic, MyInfoAttribute } from './myinfo-types'
+import crypto from 'crypto'
+import axios from 'axios'
+import { hasProp, objToSearchParams, sortObjKeys } from './util'
+import { verify as verifyJwt } from 'jsonwebtoken'
+import { IPerson } from './myinfo-types'
 
-export enum Mode {
+export enum MyInfoMode {
   Dev = 'dev',
   Staging = 'stg',
-  Production = 'prod'
+  Production = 'prod',
 }
 
-export interface IConfig {
-  realm: string
-  appId: string
-  singpassEserviceId: string
-  privateKey: Buffer | string
-  clientId?: string
-  mode?: Mode
+const BASE_URL: { [M in MyInfoMode]: string } = {
+  [MyInfoMode.Dev]: 'http://localhost:5156/myinfo/v3',
+  [MyInfoMode.Staging]: 'https://myinfosgstg.api.gov.sg/gov/test/v3',
+  [MyInfoMode.Production]: 'https://myinfosg.api.gov.sg/gov/v3',
 }
 
-export interface IPersonBasicRequest {
-  uinFin: string,
-  requestedAttributes?: string[],
-  txnNo?: string,
-  singpassEserviceId?: string
-}
-
-interface IBaseStringSpec {
-  httpMethod: string
-  url: string
-  appId: string
+export interface IMyInfoConfig {
   clientId: string
+  clientSecret: string
   singpassEserviceId: string
-  nonce: string
+  redirectEndpoint: string
+  clientPrivateKey: string | Buffer
+  myInfoPublicKey: string | Buffer
+  mode?: MyInfoMode
+}
+
+export interface IPersonRequest {
+  purpose: string
   requestedAttributes: string[]
-  timestamp: number
-  txnNo?: string
+  relayState: string
+  singpassEserviceId?: string
+  redirectEndpoint?: string
 }
 
-type MyInfoParsedResponse = Omit<IPersonBasic, 'uinFin'>
-type MyInfoResponse = MyInfoParsedResponse | string
-
-const BASE_URL: { [M in Mode]: string } = {
-  [Mode.Dev]: 'https://myinfosgstg.api.gov.sg/gov/dev/v1/',
-  [Mode.Staging]: 'https://myinfosgstg.api.gov.sg/gov/test/v2/',
-  [Mode.Production]: 'https://myinfosg.api.gov.sg/gov/v2/',
+enum Endpoint {
+  Authorise = '/authorise',
+  Token = '/token',
+  Person = '/person',
 }
-
-const ENDPOINT = {
-  // Person-Basic API
-  personBasic: 'person-basic',
-  // TODO: Create functions to help with Person API
-  authorise: 'authorise',
-  token: 'token',
-  person: 'person',
-}
-
-const ALL_ATTRIBUTES = Object.values(MyInfoAttribute)
 
 export class MyInfoGovClient {
-  realm: string
-  appId: string
   clientId: string
+  clientSecret: string
+  redirectEndpoint: string
+  clientPrivateKey: string
+  myInfoPublicKey: string
   singpassEserviceId: string
-  mode: Mode
-  privateKey: string
-  baseUrl: string
-  /**
-   *  Constructor for MyInfoGovClient, which helps call the internal,
-   *  non-public-facing MyInfo TUO.
-   *  @param config Config object to create an MyInfoGovClient.
-   *  @param config.realm - Name of MyInfo application e.g. 'FormSG'
-   *  @param config.appId - ID of MyInfo application
-   *  e.g. 'STG2-GOVTECH-FORMSG-SP' or 'PROD2-GOVTECH-FORMSG-SP'
-   *  @param config.singpassEserviceId - ID registered with SingPass
-   *  e.g. 'GOVTECH-FORMSG-SP'
-   *  @param config.privateKey` - RSA-SHA256 private key, which must
-   *  correspond with public key provided to MyInfo during onboarding process.
-   *  @param [config.clientId] - ID of MyInfo client. Defaults to `appId`
-   *  if not provided.
-   *  @param [config.mode] - dev/stg/prod, which sets up the correct
-   *  endpoint to call. Defaults to prod if not provided.
-   */
-  constructor (config: IConfig) {
+  mode: MyInfoMode
+  baseAPIUrl: string
+
+  constructor(config: IMyInfoConfig) {
     const {
-      realm,
-      appId,
       clientId,
-      singpassEserviceId,
+      clientSecret,
       mode,
-      privateKey,
+      singpassEserviceId,
+      redirectEndpoint,
+      clientPrivateKey,
+      myInfoPublicKey,
     } = config
 
-    if (!realm || !appId || !singpassEserviceId || !privateKey) {
+    if (
+      !clientId ||
+      !clientSecret ||
+      !singpassEserviceId ||
+      !redirectEndpoint ||
+      !clientPrivateKey ||
+      !myInfoPublicKey
+    ) {
       throw new Error(
-        'Missing required parameter(s) in constructor:' +
-          ' realm, appId, singpassEserviceId, privateKey',
+        `Missing required parameter(s) in constructor: clientId, clientSecret, singpassEserviceId, redirectEndpoint, clientPrivateKey, myInfoPublicKey`,
       )
     }
 
-    this.realm = realm
-    this.appId = appId
-    this.clientId = clientId || appId
+    this.clientId = clientId
+    this.clientSecret = clientSecret
+    this.redirectEndpoint = redirectEndpoint
+    this.mode = mode || MyInfoMode.Production
     this.singpassEserviceId = singpassEserviceId
-    this.mode = mode || Mode.Production
-    this.privateKey = privateKey.toString().replace(/\n$/, '')
-
-    this.baseUrl = BASE_URL[this.mode] || BASE_URL.prod
+    this.clientPrivateKey = clientPrivateKey.toString().replace(/\n$/, '')
+    this.myInfoPublicKey = myInfoPublicKey.toString().replace(/\n$/, '')
+    this.baseAPIUrl = BASE_URL[this.mode] || BASE_URL.prod
   }
 
-  /**
-   *    Make a GET request to Person-Basic endpoint.
-   *    @param {IPersonBasicRequest} personRequest - A request for attributes of a person to
-   *    MyInfo
-   *    @param personRequest.uinFin - NRIC number
-   *    @param personRequest.requestedAttributes Array of
-   *    attributes of person to request from MyInfo. Will query all fields if
-   *    not provided, or if it is an empty list.
-   *    @param personRequest.txnNo - Optional transaction number
-   *    @param singpassEserviceId - Optional Singpass eService ID that if provided, overrides the default eService ID in the constructor.
-   *    If provided, the API will be called with this Singpass eService ID
-   *    instead of the one provided to the constructor during object instantiation.
-   *    @return - Promise resolving to a person object containing requested fields
-   *    @example
-   *    myInfo.getPersonBasic({uinFin, requestedAttributes, txnNo})
-   *    .then(function(personObject) {
-   *      console.log(personObject)
-   *    })
-   *
-   *    {
-   *          "name": {
-   *            "lastupdated": "2015-06-01",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "TAN XIAO HUI"
-   *          },
-   *          "hanyupinyinname": {
-   *            "lastupdated": "2015-06-01",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "CHEN XIAO HUI"
-   *          },
-   *          "aliasname": {
-   *            "lastupdated": "2015-06-01",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "TRICIA TAN XIAO HUI"
-   *          },
-   *          "hanyupinyinaliasname": {
-   *            "lastupdated": "2015-06-01",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": ""
-   *          },
-   *          "marriedname": {
-   *            "lastupdated": "2015-06-01",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": ""
-   *          },
-   *          "sex": {
-   *            "lastupdated": "2016-03-11",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "F"
-   *          },
-   *          "race": {
-   *            "lastupdated": "2016-03-11",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "CN"
-   *          },
-   *          "secondaryrace": {
-   *            "lastupdated": "2017-08-25",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "EU"
-   *          },
-   *          "dialect": {
-   *            "lastupdated": "2016-03-11",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "SG"
-   *          },
-   *          "nationality": {
-   *            "lastupdated": "2016-03-11",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "SG"
-   *          },
-   *          "dob": {
-   *            "lastupdated": "2016-03-11",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "1958-05-17"
-   *          },
-   *          "birthcountry": {
-   *            "lastupdated": "2016-03-11",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "SG"
-   *          },
-   *          "residentialstatus": {
-   *            "lastupdated": "2017-08-25",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "C"
-   *          },
-   *          "passportnumber": {
-   *            "lastupdated": "2017-08-25",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "E35463874W"
-   *          },
-   *          "passportexpirydate": {
-   *            "lastupdated": "2017-08-25",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "2020-01-01"
-   *          },
-   *          "regadd": {
-   *            "country": "SG",
-   *            "unit": "128",
-   *            "street": "BEDOK NORTH AVENUE 1",
-   *            "lastupdated": "2016-03-11",
-   *            "block": "548",
-   *            "source": "1",
-   *            "postal": "460548",
-   *            "classification": "C",
-   *            "floor": "09",
-   *            "building": ""
-   *          },
-   *          "mailadd": {
-   *            "country": "SG",
-   *            "unit": "128",
-   *            "street": "BEDOK NORTH AVENUE 1",
-   *            "lastupdated": "2016-03-11",
-   *            "block": "548",
-   *            "source": "2",
-   *            "postal": "460548",
-   *            "classification": "C",
-   *            "floor": "09",
-   *            "building": ""
-   *          },
-   *          "billadd": {
-   *            "country": "SG",
-   *            "unit": "",
-   *            "street": "",
-   *            "lastupdated": "",
-   *            "block": "",
-   *            "source": "",
-   *            "postal": "",
-   *            "classification": "",
-   *            "floor": "",
-   *            "building": ""
-   *          },
-   *          "housingtype": {
-   *            "lastupdated": null,
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": ""
-   *          },
-   *          "hdbtype": {
-   *            "lastupdated": "2015-12-23",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "111"
-   *          },
-   *          "email": {
-   *            "lastupdated": "2017-12-13",
-   *            "source": "4",
-   *            "classification": "C",
-   *            "value": "test@gmail.com"
-   *          },
-   *          "homeno": {
-   *            "code": "65",
-   *            "prefix": "+",
-   *            "lastupdated": "2017-11-20",
-   *            "source": "2",
-   *            "classification": "C",
-   *            "nbr": "66132665"
-   *          },
-   *          "mobileno": {
-   *            "code": "65",
-   *            "prefix": "+",
-   *            "lastupdated": "2017-12-13",
-   *            "source": "4",
-   *            "classification": "C",
-   *            "nbr": "97324992"
-   *          },
-   *          "marital": {
-   *            "lastupdated": "2017-03-29",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "1"
-   *          },
-   *          "marriagecertno": {
-   *            "lastupdated": "2018-03-02",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "123456789012345"
-   *          },
-   *          "countryofmarriage": {
-   *            "lastupdated": "2018-03-02",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "SG"
-   *          },
-   *          "marriagedate": {
-   *            "lastupdated": "",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": ""
-   *          },
-   *          "divorcedate": {
-   *            "lastupdated": "",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": ""
-   *          },
-   *          "childrenbirthrecords": [
-   *          {},
-   *          {},
-   *          {}
-   *          ],
-   *          "relationships": [
-   *          {},
-   *          {}
-   *          ],
-   *          "edulevel": {
-   *            "lastupdated": "2017-10-11",
-   *            "source": "2",
-   *            "classification": "C",
-   *            "value": "3"
-   *          },
-   *          "gradyear": {
-   *            "lastupdated": "2017-10-11",
-   *            "source": "2",
-   *            "classification": "C",
-   *            "value": "1978"
-   *          },
-   *          "schoolname": {
-   *            "lastupdated": "2017-10-11",
-   *            "source": "2",
-   *            "classification": "C",
-   *            "value": "T07GS3011J",
-   *            "desc": "SIGLAP SECONDARY SCHOOL"
-   *          },
-   *          "occupation": {
-   *            "lastupdated": "2017-10-11",
-   *            "source": "2",
-   *            "classification": "C",
-   *            "value": "53201",
-   *            "desc": "HEALTHCARE ASSISTANT"
-   *          },
-   *          "employment": {
-   *            "lastupdated": "2017-10-11",
-   *            "source": "2",
-   *            "classification": "C",
-   *            "value": "ALPHA"
-   *          },
-   *          "workpassstatus": {
-   *            "lastupdated": "2018-03-02",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "Live"
-   *          },
-   *          "workpassexpirydate": {
-   *            "lastupdated": "2018-03-02",
-   *            "source": "1",
-   *            "classification": "C",
-   *            "value": "2018-12-31"
-   *          },
-   *          "householdincome": {
-   *            "high": "5999",
-   *            "low": "5000",
-   *            "lastupdated": "2017-10-24",
-   *            "source": "2",
-   *            "classification": "C"
-   *          },
-   *          "vehno": {
-   *            "lastupdated": "",
-   *            "source": "2",
-   *            "classification": "C",
-   *            "value": ""
-   *          }
-   *        }
-   */
-  getPersonBasic ({
-    uinFin,
+  createRedirectURL({
+    purpose,
+    relayState,
     requestedAttributes,
-    txnNo,
-    singpassEserviceId: seId,
-  }: IPersonBasicRequest): Promise<IPersonBasic> {
-    if (!requestedAttributes || requestedAttributes.length === 0) {
-      requestedAttributes = ALL_ATTRIBUTES
-    }
-
-    const url = this.baseUrl + path.join(ENDPOINT.personBasic, uinFin) + '/'
-    const nonce = crypto.randomBytes(32).toString('base64')
-    const timestamp = Date.now()
-
-    const singpassEserviceId = seId || this.singpassEserviceId
-
-    // Construct the request basestring
-    const basestring = this._formulateBaseString({
-      httpMethod: 'GET',
-      url,
-      appId: this.appId,
-      clientId: this.clientId,
-      singpassEserviceId,
-      nonce,
-      requestedAttributes,
-      timestamp,
-      txnNo,
-    })
-
-    // Generate the request signature by signing the constructed basestring
-    // with private key
-    const signature = this._signBaseString(
-      basestring,
-      this.privateKey,
-      'base64',
-    )
-
-    // Construct the authentication header using the signature, nonce and
-    // timestamp
-    const authHeader = this._formulateAuthHeader({
-      realm: this.realm,
-      appId: this.appId,
-      nonce,
-      signature,
-      timestamp,
-    })
-
-    // Construct the request headers
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: authHeader,
-      Accept: 'application/json',
-    }
-
-    // Construct the querystring params
-    const querystring = {
-      attributes: requestedAttributes.join(),
-      client_id: this.clientId,
-      singpassEserviceId,
-      txnNo: txnNo,
-    }
-    return axios.get<MyInfoResponse>(url, {
-      headers,
-      params: querystring,
-      paramsSerializer: (params) => qs.stringify(params),
-    })
-      .then((response) =>
-        // In dev mode, Axios parses the response for us, otherwise we need to decrypt the JWE
-        typeof response.data === 'string' ? this._decryptJwe(response.data) : Promise.resolve(response.data),
-      )
-      .then((personObject) => {
-        const personWithUinFin: IPersonBasic = {
-          ...personObject,
-          uinFin,
-        }
-        return personWithUinFin
-      })
-  }
-
-  /**
-   *    Decrypts a JWE response string
-   *    @param jweResponse Fullstop-delimited jweResponse string
-   *    @return Promise which resolves to a parsed response
-   */
-  _decryptJwe (jweResponse: string): Promise<MyInfoParsedResponse> {
-    const keystore = jose.JWK.createKeyStore()
-
-    return keystore
-      .add(this.privateKey, 'pem')
-      .then((jweKey) => {
-        return jose.JWE.createDecrypt(jweKey).decrypt(jweResponse)
-      })
-      .then(({ payload }) => JSON.parse(payload.toString()))
-  }
-
-  /**
-   *  Internal function to generate the APEX signature basestring. The
-   *  resultant basestring must be signed with the private key and attached
-   *  to the request header when calling MyInfo.
-   *  @param basestrConfig Object containing all the fields
-   *  necessary for generating basestring
-   *  @param basestrConfig.httpMethod One of GET/POST/PUT/DELETE
-   *  @param basestrConfig.url Full url endpoint, such as
-   *  https://myinfosgstg.api.gov.sg/gov/test/v2/person-basic/
-   *  @param basestrConfig.appId MyInfo App ID
-   *  @param basestrConfig.clientId MyInfo Client ID
-   *  @param basestrConfig.singpassEserviceId Client SingPass
-   *  e-Service ID
-   *  @param basestrConfig.nonce A randomly generated base64
-   *  number
-   *  @param basestrConfig.requestedAttributes List of person
-   *  attributes being requested.
-   *  @param basestrConfig.timestamp Timestamp of request using
-   *  Date.now().
-   *  @param basestrConfig.txnNo Optional transaction number.
-   *
-   *  @return The basestring to be signed by _signBaseString().
-   */
-  _formulateBaseString ({
-    httpMethod,
-    url,
-    appId,
-    clientId,
     singpassEserviceId,
-    nonce,
-    requestedAttributes,
-    timestamp,
-    txnNo,
-  }: IBaseStringSpec): string {
+    redirectEndpoint,
+  }: IPersonRequest): string {
+    const queryParams = {
+      purpose,
+      attributes: requestedAttributes.join(),
+      state: relayState,
+      client_id: this.clientId,
+      redirect_uri: redirectEndpoint ?? this.redirectEndpoint,
+      sp_esvcId: singpassEserviceId ?? this.singpassEserviceId,
+    }
+    return `${this.baseAPIUrl}${Endpoint.Authorise}?${qs.stringify(
+      queryParams,
+    )}`
+  }
+
+  async getPerson(
+    authCode: string,
+    requestedAttributes: string[],
+  ): Promise<{ accessToken: string; data: IPerson }> {
+    // Obtain access token
+    let accessToken: string
+    try {
+      accessToken = await this._getAccessToken(authCode)
+    } catch (err) {
+      throw new Error(
+        `The following error occurred while retrieving the access token: ${err}`,
+      )
+    }
+
+    // Extract NRIC
+    let uinFin
+    try {
+      uinFin = this._extractUinFin(accessToken)
+    } catch (err) {
+      throw new Error(
+        `The following error occurred while decoding the token from MyInfo: ${err}`,
+      )
+    }
+
+    // Get Person data
+    let data: IPerson
+    try {
+      data = await this._sendPersonRequest(
+        accessToken,
+        requestedAttributes,
+        uinFin,
+      )
+    } catch (err) {
+      throw new Error(
+        `The following error occurred while calling the Person API: ${err}`,
+      )
+    }
+    return { accessToken, data }
+  }
+
+  async _sendPersonRequest(
+    accessToken: string,
+    requestedAttributes: string[],
+    uinFin?: string,
+  ): Promise<IPerson> {
+    const definedUinFin = uinFin ?? this._extractUinFin(accessToken)
+    const url = `${this.baseAPIUrl}${Endpoint.Person}/${definedUinFin}/`
+    const params = {
+      client_id: this.clientId,
+      attributes: requestedAttributes.join(),
+    }
+    const paramsAuthHeader = this._generateAuthHeader('GET', url, params)
+    const headers = {
+      'Cache-Control': 'no-cache',
+      Authorization: `${paramsAuthHeader},Bearer ${accessToken}`,
+    }
+    return axios
+      .get<IPerson>(url, {
+        headers,
+        params,
+        paramsSerializer: (params) => qs.stringify(params),
+      })
+      .then((response) => response.data)
+  }
+
+  _extractUinFin(jwt: string): string {
+    const decoded = verifyJwt(jwt, this.myInfoPublicKey, {
+      algorithms: ['RS256'],
+    })
+    if (typeof decoded !== 'object') {
+      throw new Error('JWT returned from MyInfo had unexpected shape')
+    }
+    if (hasProp(decoded, 'sub') && typeof decoded.sub === 'string') {
+      return decoded.sub
+    }
+    throw new Error('JWT returned from MyInfo did not contain UIN/FIN')
+  }
+
+  async _getAccessToken(authCode: string): Promise<string> {
+    const postUrl = `${this.baseAPIUrl}${Endpoint.Token}`
+    const postParams = {
+      grant_type: 'authorization_code',
+      code: authCode,
+      redirect_uri: this.redirectEndpoint,
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
+    }
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Cache-Control': 'no-cache',
+      Authorization: this._generateAuthHeader('POST', postUrl, postParams),
+    }
     return (
-      httpMethod.toUpperCase() +
-      // url string replacement was dictated by MyInfo docs - no explanation
-      // was provided for why this is necessary
-      '&' +
-      url.replace('.api.gov.sg', '.e.api.gov.sg') +
-      '&' +
-      'apex_l2_eg_app_id=' +
-      appId +
-      '&' +
-      'apex_l2_eg_nonce=' +
-      nonce +
-      '&' +
-      'apex_l2_eg_signature_method=SHA256withRSA' +
-      '&' +
-      'apex_l2_eg_timestamp=' +
-      timestamp +
-      '&' +
-      'apex_l2_eg_version=1.0' +
-      '&' +
-      'attributes=' +
-      requestedAttributes.join() +
-      '&' +
-      'client_id=' +
-      clientId +
-      '&' +
-      'singpassEserviceId=' +
-      singpassEserviceId +
-      (txnNo ? '&' + 'txnNo=' + txnNo : '')
+      axios
+        // eslint-disable-next-line camelcase
+        .post<{ access_token: string }>(
+          postUrl,
+          objToSearchParams(postParams),
+          { headers },
+        )
+        .then((response) => response.data.access_token)
     )
   }
 
-  /**
-   *    Returns signature of basestring signed with private key
-   *    @param basestring - Basestring
-   *    @param privateKey - Private key
-   *    @param outputFormat - One of latin1/hex/base64, passed to
-   *    crypto.sign.sign()
-   *    @return Signature of basestring signed with privateKey.
-   */
-  _signBaseString (
-    basestring: string,
-    privateKey: string,
-    outputFormat: 'latin1' | 'hex' | 'base64',
+  _generateAuthHeader(
+    method: 'POST' | 'GET',
+    url: string,
+    urlParams: Record<string, string>,
   ): string {
-    const signer = crypto.createSign('RSA-SHA256')
-    signer.update(basestring)
-    signer.end()
-    return signer.sign(privateKey, outputFormat)
-  }
-
-  /**
-   *    Create the APEX authentication header from constituent parts.
-   *    @param realm     Realm
-   *    @param appId     Client appId
-   *    @param nonce     A randomly generated base64 number
-   *    @param signature Signature generated with _signBaseString
-   *    @param timestamp Current timestamp generated with Date.now()
-   *    @return Authentication header to be included in API
-   *    call
-   */
-  _formulateAuthHeader ({ realm, appId, nonce, signature, timestamp }: {
-    realm: string,
-    appId: string,
-    nonce: string,
-    signature: string,
-    timestamp: number
-  }): string {
-    return (
-      'Apex_l2_Eg ' +
-      'realm="' +
-      realm +
-      '",' +
-      'apex_l2_eg_app_id="' +
-      appId +
-      '",' +
-      'apex_l2_eg_nonce="' +
-      nonce +
-      '",' +
-      'apex_l2_eg_signature_method="SHA256withRSA",' +
-      'apex_l2_eg_signature="' +
-      signature +
-      '",' +
-      'apex_l2_eg_timestamp="' +
-      timestamp +
-      '",' +
-      'apex_l2_eg_version="1.0"'
-    )
+    const timestamp = String(Date.now())
+    const nonce = crypto.randomBytes(32).toString('base64')
+    const authParams = sortObjKeys({
+      ...urlParams,
+      signature_method: 'RS256',
+      nonce,
+      timestamp,
+      app_id: this.clientId,
+    })
+    const paramString = qs.stringify(authParams, { encode: false })
+    const baseString = `${method.toUpperCase()}&${url}&${paramString}`
+    const signature = crypto
+      .createSign('RSA-SHA256')
+      .update(baseString)
+      .sign(this.clientPrivateKey, 'base64')
+    return `PKI_SIGN timestamp="${timestamp}",nonce="${nonce}",app_id="${this.clientId}",signature_method="RS256",signature="${signature}"`
   }
 }

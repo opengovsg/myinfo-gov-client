@@ -5,7 +5,7 @@ import {
   IMyInfoConfig,
   MyInfoGovClient,
   MyInfoMode,
-} from '../../src/MyInfoGovClientV3.class'
+} from '../../src/MyInfoGovClient.class'
 import {
   EXPECTED_PERSON_DATA,
   MOCK_ACCESS_TOKEN,
