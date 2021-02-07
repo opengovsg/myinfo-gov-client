@@ -58,6 +58,15 @@ describe('MyInfoGovClient', () => {
       expect(client.mode).toBe(MyInfoMode.Production)
     })
 
+    it('should convert client secret to string if provided as Buffer', () => {
+      const params = {
+        ...clientParams,
+        clientSecret: Buffer.from(MOCK_CLIENT_SECRET),
+      }
+      const client = new MyInfoGovClient(params)
+      expect(client.clientSecret).toBe(MOCK_CLIENT_SECRET)
+    })
+
     it('should strip the final newline from the private key', () => {
       const mockPrivateKey = 'mockPrivateKey'
       const params = {

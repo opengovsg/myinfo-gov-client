@@ -26,7 +26,7 @@ const BASE_URL: { [M in MyInfoMode]: string } = {
  */
 export interface IMyInfoConfig {
   clientId: string
-  clientSecret: string
+  clientSecret: string | Buffer
   singpassEserviceId: string
   redirectEndpoint: string
   clientPrivateKey: string | Buffer
@@ -108,7 +108,7 @@ export class MyInfoGovClient {
     }
 
     this.clientId = clientId
-    this.clientSecret = clientSecret
+    this.clientSecret = clientSecret.toString()
     this.redirectEndpoint = redirectEndpoint
     this.mode = mode || MyInfoMode.Production
     this.singpassEserviceId = singpassEserviceId
