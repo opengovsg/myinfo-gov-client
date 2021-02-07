@@ -506,6 +506,21 @@ describe('MyInfoGovClient', () => {
       MockAxios.post.mockResolvedValueOnce({
         data: { access_token: MOCK_ACCESS_TOKEN },
       })
+      MockJwtModule.verify.mockImplementationOnce(() => {
+        throw new Error('Error while decoding')
+      })
+
+      const functionCall = () =>
+        client.getPerson(MOCK_AUTH_CODE, MOCK_REQUESTED_ATTRIBUTES)
+
+      expect(functionCall()).rejects.toThrow()
+    })
+
+    it('should reject when access token has wrong type', async () => {
+      const client = new MyInfoGovClient(clientParams)
+      MockAxios.post.mockResolvedValueOnce({
+        data: { access_token: MOCK_ACCESS_TOKEN },
+      })
       MockJwtModule.verify.mockImplementationOnce(() => 'invalid')
 
       const functionCall = () =>
