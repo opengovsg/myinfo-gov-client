@@ -27,7 +27,7 @@ export interface IMyInfoConfig {
   mode?: MyInfoMode
 }
 
-export interface IPersonRequest {
+export interface IAuthRequest {
   purpose: string
   requestedAttributes: string[]
   relayState: string
@@ -91,7 +91,7 @@ export class MyInfoGovClient {
     requestedAttributes,
     singpassEserviceId,
     redirectEndpoint,
-  }: IPersonRequest): string {
+  }: IAuthRequest): string {
     const queryParams = {
       purpose,
       attributes: requestedAttributes.join(),
