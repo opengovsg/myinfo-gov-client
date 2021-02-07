@@ -19,6 +19,8 @@ test('fetches MyInfo data correctly', async (t) => {
     .typeOf('string')
     .expect(result.state)
     .eql(MOCK_RELAY_STATE)
+    .expect(result.uinFin)
+    .eql(process.env.MOCKPASS_NRIC)
     .expect(result.data)
     .eql(EXPECTED_PERSON_DATA)
 })

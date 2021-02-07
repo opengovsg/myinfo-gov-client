@@ -163,7 +163,7 @@ export class MyInfoGovClient {
   async getPerson(
     authCode: string,
     requestedAttributes: string[],
-  ): Promise<{ accessToken: string; data: IPerson }> {
+  ): Promise<{ accessToken: string; uinFin: string; data: IPerson }> {
     // Obtain access token
     let accessToken: string
     try {
@@ -175,7 +175,7 @@ export class MyInfoGovClient {
     }
 
     // Extract NRIC
-    let uinFin
+    let uinFin: string
     try {
       uinFin = this._extractUinFin(accessToken)
     } catch (err) {
@@ -197,7 +197,7 @@ export class MyInfoGovClient {
         `The following error occurred while calling the Person API: ${err}`,
       )
     }
-    return { accessToken, data }
+    return { accessToken, uinFin, data }
   }
 
   async _sendPersonRequest(

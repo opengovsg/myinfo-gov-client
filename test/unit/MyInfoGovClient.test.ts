@@ -451,6 +451,7 @@ describe('MyInfoGovClient', () => {
 
       expect(result).toEqual({
         accessToken: MOCK_ACCESS_TOKEN,
+        uinFin: MOCK_UIN_FIN,
         data: EXPECTED_PERSON_DATA,
       })
     })
