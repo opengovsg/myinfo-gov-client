@@ -5,6 +5,10 @@ import { hasProp, objToSearchParams, sortObjKeys } from './util'
 import { verify as verifyJwt } from 'jsonwebtoken'
 import { IPerson } from './myinfo-types'
 
+/**
+ * Mode in which to initialise the client, which determines the
+ * MyInfo endpoint to call.
+ */
 export enum MyInfoMode {
   Dev = 'dev',
   Staging = 'stg',
@@ -17,6 +21,9 @@ const BASE_URL: { [M in MyInfoMode]: string } = {
   [MyInfoMode.Production]: 'https://myinfosg.api.gov.sg/gov/v3',
 }
 
+/**
+ * Parameters for MyInfoGovClient constructor.
+ */
 export interface IMyInfoConfig {
   clientId: string
   clientSecret: string
@@ -27,6 +34,9 @@ export interface IMyInfoConfig {
   mode?: MyInfoMode
 }
 
+/**
+ * Parameters to create a redirect URL to initialise MyInfo login.
+ */
 export interface IAuthRequest {
   purpose: string
   requestedAttributes: string[]
@@ -41,6 +51,10 @@ enum Endpoint {
   Person = '/person',
 }
 
+/**
+ * Convenience wrapper around the MyInfo API for Government
+ * digital services.
+ */
 export class MyInfoGovClient {
   clientId: string
   clientSecret: string
@@ -51,6 +65,24 @@ export class MyInfoGovClient {
   mode: MyInfoMode
   baseAPIUrl: string
 
+  /**
+   * Class constructor. Each instance of MyInfoGovClient uses one set
+   * of credentials registered with MyInfo.
+   * @param config Configuration object
+   * @param config.clientId Client ID (also known as App ID)
+   * @param config.clientSecret Client secret provided by MyInfo
+   * @param config.singpassEserviceId ID registered with SingPass
+   * @param config.redirectEndpoint Endpoint to which user should be redirected
+   *  after login
+   * @param config.clientPrivateKey RSA-SHA256 private key,
+   * which must correspond with public key provided to MyInfo during the
+   * onboarding process
+   * @param config.myInfoPublicKey MyInfo server's public key for verifying
+   * their signature
+   * @param config.mode Optional mode, which determines the MyInfo endpoint
+   * to call. Defaults to production mode.
+   *
+   */
   constructor(config: IMyInfoConfig) {
     const {
       clientId,
@@ -85,6 +117,21 @@ export class MyInfoGovClient {
     this.baseAPIUrl = BASE_URL[this.mode] || BASE_URL.prod
   }
 
+  /**
+   * Constructs a redirect URL which the user can visit to initialise
+   * SingPass login and consent to providing the given MyInfo attributes.
+   * @param config Configuration object
+   * @param config.purpose Purpose of requesting the data, which will be
+   * shown to user
+   * @param config.relayState State to be forwarded to the redirect endpoint
+   * via query parameters
+   * @param config.requestedAttributes MyInfo attributes which the user must
+   * consent to provide
+   * @param config.singpassEserviceId Optional alternative e-service ID.
+   * Defaults to the e-serviceId provided in the constructor.
+   * @param config.redirectEndpoint Optional alternative redirect endpoint.
+   * Defaults to the endpoint provided in the constructor.
+   */
   createRedirectURL({
     purpose,
     relayState,
@@ -105,6 +152,14 @@ export class MyInfoGovClient {
     )}`
   }
 
+  /**
+   * Retrieves the given MyInfo attributes from the Person endpoint after
+   * the client has logged in to SingPass and consented to providing the given
+   * attributes.
+   * @param authCode Authorisation code given by MyInfo
+   * @param requestedAttributes Attributes to request from Myinfo. Should correspond
+   * to the attributes provided when initiating SingPass login.
+   */
   async getPerson(
     authCode: string,
     requestedAttributes: string[],
