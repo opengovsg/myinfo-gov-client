@@ -200,6 +200,14 @@ export class MyInfoGovClient {
     return { accessToken, uinFin, data }
   }
 
+  /**
+   * Requests MyInfo attribute data from the Person endpoint.
+   * @param accessToken Access token provided by Token endpoint
+   * @param requestedAttributes Attributes to request from MyInfo, which
+   * user has consented to provide
+   * @param uinFin Optional uinFin if it has already been decoded. If not
+   * given, it is extracted from the access token.
+   */
   async _sendPersonRequest(
     accessToken: string,
     requestedAttributes: string[],
@@ -225,6 +233,11 @@ export class MyInfoGovClient {
       .then((response) => response.data)
   }
 
+  /**
+   * Extracts the UIN or FIN from the access token.
+   * @param jwt JSON web token, which is the access token provided
+   * by the Token endpoint
+   */
   _extractUinFin(jwt: string): string {
     const decoded = verifyJwt(jwt, this.myInfoPublicKey, {
       algorithms: ['RS256'],
@@ -238,6 +251,10 @@ export class MyInfoGovClient {
     throw new Error('JWT returned from MyInfo did not contain UIN/FIN')
   }
 
+  /**
+   * Retrieves the access token from the Token endpoint.
+   * @param authCode Authorisation code provided to the redirect endpoint
+   */
   async _getAccessToken(authCode: string): Promise<string> {
     const postUrl = `${this.baseAPIUrl}${Endpoint.Token}`
     const postParams = {
@@ -264,6 +281,13 @@ export class MyInfoGovClient {
     )
   }
 
+  /**
+   * Generates the content of the 'Authorization' header to be sent
+   * with a request to MyInfo.
+   * @param method HTTP method to be used for the request
+   * @param url Endpoint to which the request is being sent
+   * @param urlParams Query parameters being sent with the request
+   */
   _generateAuthHeader(
     method: 'POST' | 'GET',
     url: string,
