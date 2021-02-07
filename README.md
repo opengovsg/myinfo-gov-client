@@ -1,6 +1,6 @@
 # myinfo-gov-client
 
-A lightweight client to easily call the MyInfo TUO endpoint for the Singapore government. Compatible with NodeJS version >=10.
+A lightweight client to easily call the MyInfo Person endpoint for the Singapore government. Compatible with NodeJS version >=10.
 
 # Quick Start
 
@@ -8,92 +8,54 @@ A lightweight client to easily call the MyInfo TUO endpoint for the Singapore go
 'use strict'
 
 const fs = require('fs')
+const app = require('express')()
 
-const {
-  MyInfoGovClient,
-  CATEGORICAL_DATA_DICT, // Use this to look up code values
-} = require('@opengovsg/myinfo-gov-client')
+const { MyInfoGovClient } = require('@opengovsg/myinfo-gov-client')
 
-function main() {
-  // Your application configuration
-  const realm = '<Your Realm>'
-  const appId = '<Your App ID>'
-  const clientId = appId // Usually the same value
-  const singpassEserviceId = '<Your SingPass e-Service ID>'
+// Application configuration
+const APP_DOMAIN = '<Your application domain URL>'
+const PORT = 5000
+const REQUESTED_ATTRIBUTES = ['name', 'sex', 'race']
+// Endpoint to which user should be redirected after login
+const REDIRECT_ENDPOINT_PATH = '/login'
 
-  // Used for signing your request basestring with private key
-  const privateKey = fs.readFileSync('./secrets/privateKey.pem')
+// MyInfo credentials
+const clientId = '<Your Client ID>'
+const clientSecret = fs.readFileSync('./secrets/clientSecret.txt')
+const singpassEserviceId = '<Your SingPass e-Service ID>'
+const myInfoPublicKey = fs.readFileSync('./static/myInfoPublicKey.pem')
+const clientPrivateKey = fs.readFileSync('./secrets/privateKey.pem')
 
-  // MyInfo client
-  const myInfo = new MyInfoGovClient({
-    realm,
-    appId,
-    clientId,
-    singpassEserviceId,
-    privateKey,
-    mode: 'stg', // Set to 'dev' to call dev endpoint, leave empty for prod
+// Initialise client
+const myInfoGovClient = new MyInfoGovClient({
+  clientId,
+  clientSecret,
+  singpassEserviceId,
+  redirectEndpoint: `${APP_DOMAIN}${REDIRECT_ENDPOINT_PATH}`,
+  clientPrivateKey,
+  myInfoPublicKey,
+  mode: 'stg', // Set to 'dev' to call dev endpoint, leave empty for prod
+})
+
+app.get('/', (_req, res) => {
+  const redirectUrl = client.createRedirectURL({
+    purpose: 'Information for my application',
+    requestedAttributes: REQUESTED_ATTRIBUTES,
   })
+  return res.send(`
+    <a href=${redirectUrl}>Log in</a>
+  `)
+})
 
-  // API params
-  const uinFin = 'S3000024B' // See list of dev/staging NRICs below
-  const requestedAttributes = [
-    'name',
-    'marriedname',
-    'hanyupinyinname',
-    'aliasname',
-    'hanyupinyinaliasname',
-    'sex',
-    'race',
-    'dialect',
-    'nationality',
-    'dob',
-    'birthcountry',
-    'secondaryrace',
-    'residentialstatus',
-    'passportnumber',
-    'passportexpirydate',
-    'email',
-    'mobileno',
-    'regadd',
-    'housingtype',
-    'hdbtype',
-    'mailadd',
-    'billadd',
-    'marital',
-    'edulevel',
-    'marriagecertno',
-    'countryofmarriage',
-    'marriagedate',
-    'divorcedate',
-    'childrenbirthrecords',
-    'relationships',
-    'edulevel',
-    'gradyear',
-    'schoolname',
-    'occupation',
-    'employment',
-    'workpassstatus',
-    'workpassexpirydate',
-    'householdincome',
-    'vehno',
-  ]
-  const txnNo = 1234 // an optional transaction number
+app.get(REDIRECT_ENDPOINT_PATH, (req, res) => {
+  // Authorisation code passed via query parameters
+  const { code } = req.query
+  // Result contains access token, NRIC and MyInfo data
+  const result = await client.getPerson(code, REQUESTED_ATTRIBUTES)
+  return res.json(result.data)
+})
 
-  // API parameters
-  var params = { uinFin, requestedAttributes, txnNo }
-
-  // Make API call
-  myInfo
-    .getPersonBasic(params)
-    .then(function (personObject) {
-      console.log('Results of Person-Basic endpoint:\n', personObject)
-    })
-    .catch(function (error) {
-      console.log('Error:\n', error)
-    })
-}
-
-main()
+app.listen(PORT, () => console.log(`App listening on port ${PORT}`))
 ```
 
 # Available Test accounts
