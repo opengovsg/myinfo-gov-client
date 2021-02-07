@@ -47,7 +47,7 @@ app.get('/', (_req, res) => {
   `)
 })
 
-app.get(REDIRECT_ENDPOINT_PATH, (req, res) => {
+app.get(REDIRECT_ENDPOINT_PATH, async (req, res) => {
   // Authorisation code passed via query parameters
   const { code } = req.query
   // Result contains access token, NRIC and MyInfo data
