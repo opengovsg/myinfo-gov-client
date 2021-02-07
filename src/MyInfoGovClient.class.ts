@@ -52,6 +52,15 @@ enum Endpoint {
 }
 
 /**
+ * Response shape of getPerson.
+ */
+export interface IPersonResponse {
+  accessToken: string
+  uinFin: string
+  data: IPerson
+}
+
+/**
  * Convenience wrapper around the MyInfo API for Government
  * digital services.
  */
@@ -167,7 +176,7 @@ export class MyInfoGovClient {
   async getPerson(
     authCode: string,
     requestedAttributes: string[],
-  ): Promise<{ accessToken: string; uinFin: string; data: IPerson }> {
+  ): Promise<IPersonResponse> {
     // Obtain access token
     let accessToken: string
     try {
