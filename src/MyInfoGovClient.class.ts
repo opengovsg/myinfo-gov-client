@@ -131,6 +131,8 @@ export class MyInfoGovClient {
    * Defaults to the e-serviceId provided in the constructor.
    * @param config.redirectEndpoint Optional alternative redirect endpoint.
    * Defaults to the endpoint provided in the constructor.
+   * @returns The URL which the user should visit to log in to SingPass
+   * and consent to providing the given attributes.
    */
   createRedirectURL({
     purpose,
@@ -159,6 +161,8 @@ export class MyInfoGovClient {
    * @param authCode Authorisation code given by MyInfo
    * @param requestedAttributes Attributes to request from Myinfo. Should correspond
    * to the attributes provided when initiating SingPass login.
+   * @returns Object containing access token used to retrieve the data,
+   * the NRIC/FIN and the data
    */
   async getPerson(
     authCode: string,
@@ -207,6 +211,7 @@ export class MyInfoGovClient {
    * user has consented to provide
    * @param uinFin Optional uinFin if it has already been decoded. If not
    * given, it is extracted from the access token.
+   * @returns Response object from the API call to the Person endpoint
    */
   async _sendPersonRequest(
     accessToken: string,
@@ -237,6 +242,7 @@ export class MyInfoGovClient {
    * Extracts the UIN or FIN from the access token.
    * @param jwt JSON web token, which is the access token provided
    * by the Token endpoint
+   * @returns The UIN or FIN decoded from the JWT
    */
   _extractUinFin(jwt: string): string {
     const decoded = verifyJwt(jwt, this.myInfoPublicKey, {
@@ -254,6 +260,7 @@ export class MyInfoGovClient {
   /**
    * Retrieves the access token from the Token endpoint.
    * @param authCode Authorisation code provided to the redirect endpoint
+   * @returns The access token as a JWT
    */
   async _getAccessToken(authCode: string): Promise<string> {
     const postUrl = `${this.baseAPIUrl}${Endpoint.Token}`
@@ -287,6 +294,8 @@ export class MyInfoGovClient {
    * @param method HTTP method to be used for the request
    * @param url Endpoint to which the request is being sent
    * @param urlParams Query parameters being sent with the request
+   * @returns The content which should be provided as the Authorization
+   * header
    */
   _generateAuthHeader(
     method: 'POST' | 'GET',
