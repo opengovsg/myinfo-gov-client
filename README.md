@@ -58,6 +58,136 @@ app.get(REDIRECT_ENDPOINT_PATH, (req, res) => {
 app.listen(PORT, () => console.log(`App listening on port ${PORT}`))
 ```
 
+# API
+
+### Constructor
+
+```
+MyInfoGovClient(config: IMyInfoConfig)
+```
+
+#### Configuration parameters
+
+Type: `IMyInfoConfig`
+
+**clientId**
+
+Type: `string`
+
+Client ID (also known as App ID).
+
+**clientSecret**
+
+Type: `string | Buffer`
+
+Client secret provided by MyInfo.
+
+**singpassEserviceId**
+
+Type: `string`
+
+ID registered with SingPass.
+
+**redirectEndpoint**
+
+Type: `string`
+
+Endpoint to which user should be redirected after login.
+
+**clientPrivateKey**
+
+Type: `string | Buffer`
+
+RSA-SHA256 private key, which must correspond with public key provided to MyInfo during the onboarding process.
+
+**myInfoPublicKey**
+
+Type: `string | Buffer`
+
+MyInfo server's public key for verifying their signature
+
+**mode**
+
+Type: `MyInfoMode`
+
+Optional mode, which determines the MyInfo endpoint to call. One of `'dev'`, `'stg'` or `'prod'`. Defaults to `'prod'`.
+
+### Returns
+
+Type: `MyInfoGovClient`
+
+Instance of `MyInfoGovClient`.
+
+### createRedirectUrl
+
+```
+.createRedirectUrl(authRequest)
+```
+
+#### Parameters
+
+Type: `IAuthRequest`
+
+**purpose**
+
+Type: `string`
+
+Purpose of requesting the data, which will be shown to user.
+
+**requestedAttributes**
+
+Type: `string[]`
+
+MyInfo attributes which the user must consent to provide.
+
+**relayState**
+
+Type: `string`
+
+Optional state to be forwarded to the redirect endpoint via query parameters.
+
+**singpassEserviceId**
+
+Type: `string`
+
+Optional alternative e-service ID. Defaults to the e-serviceId provided in the constructor.
+
+**redirectEndpoint**
+
+Type: `string`
+
+Optional alternative redirect endpoint. Defaults to the endpoint provided in the constructor.
+
+### Returns
+
+Type: `string`
+
+The URL to which the user should be redirected to log in to SingPass and consent to providing the given attributes.
+
+### getPerson
+
+```
+.getPerson(authCode, requestedAttributes)
+```
+
+**authCode**
+
+Type: `string`
+
+Authorisation code given by MyInfo in query parameters.
+
+**requestedAttributes**
+
+Type: `string[]`
+
+Attributes to request from Myinfo. Should correspond to the attributes provided when initiating SingPass login.
+
+### Returns
+
+Type: `Promise<IPersonResponse>`
+
+An object containing the access token used to retrieve the data, the NRIC/FIN of the user and the attributes retrieved from MyInfo.
+
 # Available Test accounts
 
 See a list of available MyInfo test accounts [here](docs/TESTACCOUNTS.md).
