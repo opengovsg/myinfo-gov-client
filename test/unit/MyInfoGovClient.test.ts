@@ -41,6 +41,7 @@ describe('MyInfoGovClient', () => {
     redirectEndpoint: MOCK_TARGET_URL,
     myInfoPublicKey: TEST_PUBLIC_KEY,
   }
+  const missingParamsErrorMsg = `Missing required parameter(s) in constructor: clientId, clientSecret, singpassEserviceId, redirectEndpoint, clientPrivateKey, myInfoPublicKey`
 
   afterEach(() => jest.restoreAllMocks())
 
@@ -94,7 +95,7 @@ describe('MyInfoGovClient', () => {
       }
       const construct = () =>
         new MyInfoGovClient((params as unknown) as IMyInfoConfig)
-      expect(construct).toThrow()
+      expect(construct).toThrowError(missingParamsErrorMsg)
     })
 
     it('should throw an error when client secret is not specified', () => {
@@ -104,7 +105,7 @@ describe('MyInfoGovClient', () => {
       }
       const construct = () =>
         new MyInfoGovClient((params as unknown) as IMyInfoConfig)
-      expect(construct).toThrow()
+      expect(construct).toThrowError(missingParamsErrorMsg)
     })
 
     it('should throw an error when e-service ID is not specified', () => {
@@ -114,7 +115,7 @@ describe('MyInfoGovClient', () => {
       }
       const construct = () =>
         new MyInfoGovClient((params as unknown) as IMyInfoConfig)
-      expect(construct).toThrow()
+      expect(construct).toThrowError(missingParamsErrorMsg)
     })
 
     it('should throw an error when redirect URL is not specified', () => {
@@ -124,7 +125,7 @@ describe('MyInfoGovClient', () => {
       }
       const construct = () =>
         new MyInfoGovClient((params as unknown) as IMyInfoConfig)
-      expect(construct).toThrow()
+      expect(construct).toThrowError(missingParamsErrorMsg)
     })
 
     it('should throw an error when private key is not specified', () => {
@@ -134,7 +135,7 @@ describe('MyInfoGovClient', () => {
       }
       const construct = () =>
         new MyInfoGovClient((params as unknown) as IMyInfoConfig)
-      expect(construct).toThrow()
+      expect(construct).toThrowError(missingParamsErrorMsg)
     })
 
     it('should throw an error when public key is not specified', () => {
@@ -144,7 +145,7 @@ describe('MyInfoGovClient', () => {
       }
       const construct = () =>
         new MyInfoGovClient((params as unknown) as IMyInfoConfig)
-      expect(construct).toThrow()
+      expect(construct).toThrowError(missingParamsErrorMsg)
     })
   })
 
@@ -444,7 +445,9 @@ describe('MyInfoGovClient', () => {
 
       const functionCall = () => client._extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrow()
+      expect(functionCall).toThrowError(
+        'JWT returned from MyInfo had unexpected shape',
+      )
     })
 
     it('should throw error when decoded JWT has invalid shape', () => {
@@ -454,7 +457,9 @@ describe('MyInfoGovClient', () => {
 
       const functionCall = () => client._extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrow()
+      expect(functionCall).toThrowError(
+        'JWT returned from MyInfo did not contain UIN/FIN',
+      )
     })
 
     it('should throw error when NRIC has invalid type', () => {
@@ -464,7 +469,9 @@ describe('MyInfoGovClient', () => {
 
       const functionCall = () => client._extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrow()
+      expect(functionCall).toThrowError(
+        'JWT returned from MyInfo did not contain UIN/FIN',
+      )
     })
   })
 
@@ -493,27 +500,33 @@ describe('MyInfoGovClient', () => {
 
     it('should reject when access token cannot be obtained', async () => {
       const client = new MyInfoGovClient(clientParams)
-      MockAxios.post.mockRejectedValueOnce('error')
+      const mockErrorMessage = 'someErrorMessage'
+      MockAxios.post.mockRejectedValueOnce(new Error(mockErrorMessage))
 
       const functionCall = () =>
         client.getPerson(MOCK_AUTH_CODE, MOCK_REQUESTED_ATTRIBUTES)
 
-      expect(functionCall()).rejects.toThrow()
+      await expect(functionCall()).rejects.toThrowError(
+        `An error occurred while retrieving the access token from MyInfo: ${mockErrorMessage}`,
+      )
     })
 
     it('should reject when access token cannot be verified', async () => {
       const client = new MyInfoGovClient(clientParams)
+      const mockErrorMessage = 'someErrorMessage'
       MockAxios.post.mockResolvedValueOnce({
         data: { access_token: MOCK_ACCESS_TOKEN },
       })
       MockJwtModule.verify.mockImplementationOnce(() => {
-        throw new Error('Error while decoding')
+        throw new Error(mockErrorMessage)
       })
 
       const functionCall = () =>
         client.getPerson(MOCK_AUTH_CODE, MOCK_REQUESTED_ATTRIBUTES)
 
-      expect(functionCall()).rejects.toThrow()
+      await expect(functionCall()).rejects.toThrowError(
+        `An error occurred while decoding the access token from MyInfo: ${mockErrorMessage}`,
+      )
     })
 
     it('should reject when access token has wrong type', async () => {
@@ -526,21 +539,26 @@ describe('MyInfoGovClient', () => {
       const functionCall = () =>
         client.getPerson(MOCK_AUTH_CODE, MOCK_REQUESTED_ATTRIBUTES)
 
-      expect(functionCall()).rejects.toThrow()
+      await expect(functionCall()).rejects.toThrowError(
+        `An error occurred while decoding the access token from MyInfo: JWT returned from MyInfo had unexpected shape`,
+      )
     })
 
     it('should reject when Person API call fails', async () => {
       const client = new MyInfoGovClient(clientParams)
+      const mockErrorMessage = 'someErrorMessage'
       MockAxios.post.mockResolvedValueOnce({
         data: { access_token: MOCK_ACCESS_TOKEN },
       })
       MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
-      MockAxios.get.mockRejectedValueOnce('error')
+      MockAxios.get.mockRejectedValueOnce(new Error(mockErrorMessage))
 
       const functionCall = () =>
         client.getPerson(MOCK_AUTH_CODE, MOCK_REQUESTED_ATTRIBUTES)
 
-      expect(functionCall()).rejects.toThrow()
+      await expect(functionCall()).rejects.toThrowError(
+        `An error occurred while calling the Person API: ${mockErrorMessage}`,
+      )
     })
   })
 })
