@@ -55,7 +55,6 @@ enum Endpoint {
  * Response shape of getPerson.
  */
 export interface IPersonResponse {
-  accessToken: string
   uinFin: string
   data: IPerson
 }
@@ -174,20 +173,9 @@ export class MyInfoGovClient {
    * the NRIC/FIN and the data
    */
   async getPerson(
-    authCode: string,
+    accessToken: string,
     requestedAttributes: MyInfoAttributeString[],
   ): Promise<IPersonResponse> {
-    // Obtain access token
-    let accessToken: string
-    try {
-      accessToken = await this._getAccessToken(authCode)
-    } catch (err) {
-      throw wrapError(
-        err,
-        'An error occurred while retrieving the access token from MyInfo',
-      )
-    }
-
     // Extract NRIC
     let uinFin: string
     try {
@@ -210,7 +198,7 @@ export class MyInfoGovClient {
     } catch (err) {
       throw wrapError(err, 'An error occurred while calling the Person API')
     }
-    return { accessToken, uinFin, data }
+    return { uinFin, data }
   }
 
   /**
@@ -271,7 +259,7 @@ export class MyInfoGovClient {
    * @param authCode Authorisation code provided to the redirect endpoint
    * @returns The access token as a JWT
    */
-  async _getAccessToken(authCode: string): Promise<string> {
+  async getAccessToken(authCode: string): Promise<string> {
     const postUrl = `${this.baseAPIUrl}${Endpoint.Token}`
     const postParams = {
       grant_type: 'authorization_code',
@@ -293,7 +281,17 @@ export class MyInfoGovClient {
           objToSearchParams(postParams),
           { headers },
         )
-        .then((response) => response.data.access_token)
+        .then((response) => {
+          if (
+            !response?.data?.access_token ||
+            typeof response.data.access_token !== 'string'
+          ) {
+            throw new Error(
+              'MyInfo response did not contain valid access token',
+            )
+          }
+          return response.data.access_token
+        })
     )
   }
 

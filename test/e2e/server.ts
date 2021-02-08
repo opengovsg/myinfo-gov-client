@@ -43,7 +43,11 @@ const handleReceiveRedirect: RequestHandler<
   { code: string; state: string }
 > = async (req, res) => {
   const { code, state } = req.query
-  const result = await client.getPerson(code, Object.values(MyInfoAttribute))
+  const accessToken = await client.getAccessToken(code)
+  const result = await client.getPerson(
+    accessToken,
+    Object.values(MyInfoAttribute),
+  )
   const toStringify = {
     ...result,
     state,

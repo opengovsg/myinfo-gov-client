@@ -326,7 +326,7 @@ describe('MyInfoGovClient', () => {
     })
   })
 
-  describe('_getAccessToken', () => {
+  describe('getAccessToken', () => {
     it('should call the Token endpoint with the correct parameters', async () => {
       const client = new MyInfoGovClient(clientParams)
       const expectedUrl = `${client.baseAPIUrl}/token`
@@ -344,7 +344,7 @@ describe('MyInfoGovClient', () => {
         },
       })
 
-      const result = await client._getAccessToken(MOCK_AUTH_CODE)
+      const result = await client.getAccessToken(MOCK_AUTH_CODE)
       expect(MockAxios.post).toHaveBeenCalledWith(
         expectedUrl,
         expectedQueryParams,
@@ -357,6 +357,32 @@ describe('MyInfoGovClient', () => {
         },
       )
       expect(result).toBe(MOCK_ACCESS_TOKEN)
+    })
+
+    it('should reject if access token is missing from response', async () => {
+      const client = new MyInfoGovClient(clientParams)
+      MockAxios.post.mockResolvedValueOnce({
+        data: {
+          invalidKey: 'invalidValue',
+        },
+      })
+
+      await expect(client.getAccessToken(MOCK_AUTH_CODE)).rejects.toThrowError(
+        'MyInfo response did not contain valid access token',
+      )
+    })
+
+    it('should reject if access token has the wrong type', async () => {
+      const client = new MyInfoGovClient(clientParams)
+      MockAxios.post.mockResolvedValueOnce({
+        data: {
+          access_token: 123,
+        },
+      })
+
+      await expect(client.getAccessToken(MOCK_AUTH_CODE)).rejects.toThrowError(
+        'MyInfo response did not contain valid access token',
+      )
     })
   })
 
@@ -478,51 +504,31 @@ describe('MyInfoGovClient', () => {
   describe('getPerson', () => {
     it('should return the Person data when retrieval succeeds', async () => {
       const client = new MyInfoGovClient(clientParams)
-      MockAxios.post.mockResolvedValueOnce({
-        data: { access_token: MOCK_ACCESS_TOKEN },
-      })
       MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
       MockAxios.get.mockResolvedValueOnce({
         data: EXPECTED_PERSON_DATA,
       })
 
       const result = await client.getPerson(
-        MOCK_AUTH_CODE,
+        MOCK_ACCESS_TOKEN,
         MOCK_REQUESTED_ATTRIBUTES,
       )
 
       expect(result).toEqual({
-        accessToken: MOCK_ACCESS_TOKEN,
         uinFin: MOCK_UIN_FIN,
         data: EXPECTED_PERSON_DATA,
       })
     })
 
-    it('should reject when access token cannot be obtained', async () => {
-      const client = new MyInfoGovClient(clientParams)
-      const mockErrorMessage = 'someErrorMessage'
-      MockAxios.post.mockRejectedValueOnce(new Error(mockErrorMessage))
-
-      const functionCall = () =>
-        client.getPerson(MOCK_AUTH_CODE, MOCK_REQUESTED_ATTRIBUTES)
-
-      await expect(functionCall()).rejects.toThrowError(
-        `An error occurred while retrieving the access token from MyInfo: ${mockErrorMessage}`,
-      )
-    })
-
     it('should reject when access token cannot be verified', async () => {
       const client = new MyInfoGovClient(clientParams)
       const mockErrorMessage = 'someErrorMessage'
-      MockAxios.post.mockResolvedValueOnce({
-        data: { access_token: MOCK_ACCESS_TOKEN },
-      })
       MockJwtModule.verify.mockImplementationOnce(() => {
         throw new Error(mockErrorMessage)
       })
 
       const functionCall = () =>
-        client.getPerson(MOCK_AUTH_CODE, MOCK_REQUESTED_ATTRIBUTES)
+        client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
       await expect(functionCall()).rejects.toThrowError(
         `An error occurred while decoding the access token from MyInfo: ${mockErrorMessage}`,
@@ -531,13 +537,10 @@ describe('MyInfoGovClient', () => {
 
     it('should reject when access token has wrong type', async () => {
       const client = new MyInfoGovClient(clientParams)
-      MockAxios.post.mockResolvedValueOnce({
-        data: { access_token: MOCK_ACCESS_TOKEN },
-      })
       MockJwtModule.verify.mockImplementationOnce(() => 'invalid')
 
       const functionCall = () =>
-        client.getPerson(MOCK_AUTH_CODE, MOCK_REQUESTED_ATTRIBUTES)
+        client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
       await expect(functionCall()).rejects.toThrowError(
         `An error occurred while decoding the access token from MyInfo: JWT returned from MyInfo had unexpected shape`,
@@ -547,14 +550,11 @@ describe('MyInfoGovClient', () => {
     it('should reject when Person API call fails', async () => {
       const client = new MyInfoGovClient(clientParams)
       const mockErrorMessage = 'someErrorMessage'
-      MockAxios.post.mockResolvedValueOnce({
-        data: { access_token: MOCK_ACCESS_TOKEN },
-      })
       MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
       MockAxios.get.mockRejectedValueOnce(new Error(mockErrorMessage))
 
       const functionCall = () =>
-        client.getPerson(MOCK_AUTH_CODE, MOCK_REQUESTED_ATTRIBUTES)
+        client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
       await expect(functionCall()).rejects.toThrowError(
         `An error occurred while calling the Person API: ${mockErrorMessage}`,

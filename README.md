@@ -136,7 +136,7 @@ Purpose of requesting the data, which will be shown to user.
 
 **requestedAttributes**
 
-Type: `string[]`
+Type: `MyInfoAttributeString[]`
 
 MyInfo attributes which the user must consent to provide.
 
@@ -164,10 +164,10 @@ Type: `string`
 
 The URL to which the user should be redirected to log in to SingPass and consent to providing the given attributes.
 
-### getPerson
+### getAccessToken
 
 ```
-.getPerson(authCode, requestedAttributes)
+.getAccessToken(authCode)
 ```
 
 **authCode**
@@ -176,9 +176,27 @@ Type: `string`
 
 Authorisation code given by MyInfo in query parameters.
 
+### Returns
+
+Type: `string`
+
+The access token which can be used to call the Person endpoint. This is a JSON web token containing the user's NRIC.
+
+### getPerson
+
+```
+.getPerson(accessToken, requestedAttributes)
+```
+
+**accessToken**
+
+Type: `string`
+
+The access token retrieved from the Token endpoint using `.getAccessToken`.
+
 **requestedAttributes**
 
-Type: `string[]`
+Type: `MyInfoAttributeString[]`
 
 Attributes to request from Myinfo. Should correspond to the attributes provided when initiating SingPass login.
 
@@ -186,7 +204,7 @@ Attributes to request from Myinfo. Should correspond to the attributes provided 
 
 Type: `Promise<IPersonResponse>`
 
-An object containing the access token used to retrieve the data, the NRIC/FIN of the user and the attributes retrieved from MyInfo.
+An object containing the NRIC/FIN of the user and the attributes retrieved from MyInfo.
 
 # Available Test accounts
 

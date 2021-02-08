@@ -15,8 +15,6 @@ test('fetches MyInfo data correctly', async (t) => {
   await t.click(loginLink).click(consentButton)
   const result = JSON.parse(await contentContainer.textContent)
   await t
-    .expect(result.accessToken)
-    .typeOf('string')
     .expect(result.state)
     .eql(MOCK_RELAY_STATE)
     .expect(result.uinFin)
