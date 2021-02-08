@@ -1,7 +1,7 @@
 import qs from 'qs'
 import crypto from 'crypto'
 import axios from 'axios'
-import { hasProp, objToSearchParams, sortObjKeys } from './util'
+import { hasProp, objToSearchParams, wrapError, sortObjKeys } from './util'
 import { verify as verifyJwt } from 'jsonwebtoken'
 import { IPerson } from './myinfo-types'
 
@@ -182,7 +182,7 @@ export class MyInfoGovClient {
     try {
       accessToken = await this._getAccessToken(authCode)
     } catch (err) {
-      this._rethrowGetPersonError(
+      throw wrapError(
         err,
         'An error occurred while retrieving the access token from MyInfo',
       )
@@ -193,7 +193,7 @@ export class MyInfoGovClient {
     try {
       uinFin = this._extractUinFin(accessToken)
     } catch (err) {
-      this._rethrowGetPersonError(
+      throw wrapError(
         err,
         'An error occurred while decoding the access token from MyInfo',
       )
@@ -208,26 +208,9 @@ export class MyInfoGovClient {
         uinFin,
       )
     } catch (err) {
-      this._rethrowGetPersonError(
-        err,
-        'An error occurred while calling the Person API',
-      )
+      throw wrapError(err, 'An error occurred while calling the Person API')
     }
     return { accessToken, uinFin, data }
-  }
-
-  /**
-   * Helper function for getPerson, which type-checks and re-throws errors.
-   * @param err The error object from a catch block
-   * @param defaultMsg String which will be prefixed to the error's message if
-   * the error is an Error object, otherwise wrapped in an Error and re-thrown
-   */
-  _rethrowGetPersonError(err: any, defaultMsg: string): never {
-    if (err instanceof Error) {
-      err.message = `${defaultMsg}: ${err.message}`
-      throw err
-    }
-    throw new Error(`${defaultMsg}: ${JSON.stringify(err)}`)
   }
 
   /**
