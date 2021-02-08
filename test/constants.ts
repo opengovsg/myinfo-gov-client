@@ -10,11 +10,11 @@ export const MOCK_ESRVC_ID = 'mockEsrvcId'
 export const MOCK_PURPOSE = 'purpose'
 export const MOCK_RELAY_STATE = 'relayState1,relayState2'
 export const MOCK_REQUESTED_ATTRIBUTES = [
-  'name',
-  'sex',
-  'mobileno',
-  'occupation',
-  'marital',
+  'name' as const,
+  'sex' as const,
+  'mobileno' as const,
+  'occupation' as const,
+  'marital' as const,
 ]
 export const MOCK_AUTH_CODE = 'mockAuthCode'
 export const MOCK_ACCESS_TOKEN = 'mockAccessToken'

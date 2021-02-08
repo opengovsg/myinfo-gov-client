@@ -3,7 +3,7 @@ import crypto from 'crypto'
 import axios from 'axios'
 import { hasProp, objToSearchParams, wrapError, sortObjKeys } from './util'
 import { verify as verifyJwt } from 'jsonwebtoken'
-import { IPerson } from './myinfo-types'
+import { IPerson, MyInfoAttributeString } from './myinfo-types'
 
 /**
  * Mode in which to initialise the client, which determines the
@@ -39,7 +39,7 @@ export interface IMyInfoConfig {
  */
 export interface IAuthRequest {
   purpose: string
-  requestedAttributes: string[]
+  requestedAttributes: MyInfoAttributeString[]
   relayState?: string
   singpassEserviceId?: string
   redirectEndpoint?: string
@@ -175,7 +175,7 @@ export class MyInfoGovClient {
    */
   async getPerson(
     authCode: string,
-    requestedAttributes: string[],
+    requestedAttributes: MyInfoAttributeString[],
   ): Promise<IPersonResponse> {
     // Obtain access token
     let accessToken: string
@@ -224,7 +224,7 @@ export class MyInfoGovClient {
    */
   async _sendPersonRequest(
     accessToken: string,
-    requestedAttributes: string[],
+    requestedAttributes: MyInfoAttributeString[],
     uinFin?: string,
   ): Promise<IPerson> {
     const definedUinFin = uinFin ?? this._extractUinFin(accessToken)
