@@ -1,9 +1,16 @@
 import qs from 'qs'
 import crypto from 'crypto'
-import axios from 'axios'
-import { hasProp, objToSearchParams, wrapError, sortObjKeys } from './util'
+import axios, { AxiosResponse } from 'axios'
+import { hasProp, objToSearchParams, sortObjKeys } from './util'
 import { verify as verifyJwt } from 'jsonwebtoken'
 import { IPerson, MyInfoAttributeString } from './myinfo-types'
+import {
+  InvalidJWTError,
+  MissingAccessTokenError,
+  MissingParamsError,
+  MyInfoResponseError,
+  WrongJWTShapeError,
+} from './errors'
 
 /**
  * Mode in which to initialise the client, which determines the
@@ -110,9 +117,7 @@ export class MyInfoGovClient {
       !clientPrivateKey ||
       !myInfoPublicKey
     ) {
-      throw new Error(
-        `Missing required parameter(s) in constructor: clientId, clientSecret, singpassEserviceId, redirectEndpoint, clientPrivateKey, myInfoPublicKey`,
-      )
+      throw new MissingParamsError()
     }
 
     this.clientId = clientId
@@ -175,27 +180,13 @@ export class MyInfoGovClient {
     requestedAttributes: MyInfoAttributeString[],
   ): Promise<IPersonResponse> {
     // Extract NRIC
-    let uinFin: string
-    try {
-      uinFin = this._extractUinFin(accessToken)
-    } catch (err) {
-      throw wrapError(
-        err,
-        'An error occurred while decoding the access token from MyInfo',
-      )
-    }
-
+    const uinFin = this._extractUinFin(accessToken)
     // Get Person data
-    let data: IPerson
-    try {
-      data = await this._sendPersonRequest(
-        accessToken,
-        requestedAttributes,
-        uinFin,
-      )
-    } catch (err) {
-      throw wrapError(err, 'An error occurred while calling the Person API')
-    }
+    const data = await this._sendPersonRequest(
+      accessToken,
+      requestedAttributes,
+      uinFin,
+    )
     return { uinFin, data }
   }
 
@@ -224,13 +215,17 @@ export class MyInfoGovClient {
       'Cache-Control': 'no-cache',
       Authorization: `${paramsAuthHeader},Bearer ${accessToken}`,
     }
-    return axios
-      .get<IPerson>(url, {
+    let response: AxiosResponse<IPerson>
+    try {
+      response = await axios.get<IPerson>(url, {
         headers,
         params,
         paramsSerializer: qs.stringify,
       })
-      .then((response) => response.data)
+    } catch (err: unknown) {
+      throw new MyInfoResponseError(err)
+    }
+    return response.data
   }
 
   /**
@@ -240,16 +235,22 @@ export class MyInfoGovClient {
    * @returns The UIN or FIN decoded from the JWT
    */
   _extractUinFin(jwt: string): string {
-    const decoded = verifyJwt(jwt, this.myInfoPublicKey, {
-      algorithms: ['RS256'],
-    })
-    if (typeof decoded !== 'object') {
-      throw new Error('JWT returned from MyInfo had unexpected shape')
+    let decoded: string | object
+    try {
+      decoded = verifyJwt(jwt, this.myInfoPublicKey, {
+        algorithms: ['RS256'],
+      })
+    } catch (err: unknown) {
+      throw new InvalidJWTError(err)
     }
-    if (hasProp(decoded, 'sub') && typeof decoded.sub === 'string') {
+    if (
+      typeof decoded === 'object' &&
+      hasProp(decoded, 'sub') &&
+      typeof decoded.sub === 'string'
+    ) {
       return decoded.sub
     }
-    throw new Error('JWT returned from MyInfo did not contain UIN/FIN')
+    throw new WrongJWTShapeError()
   }
 
   /**
@@ -271,26 +272,21 @@ export class MyInfoGovClient {
       'Cache-Control': 'no-cache',
       Authorization: this._generateAuthHeader('POST', postUrl, postParams),
     }
-    return (
-      axios
+    let response: AxiosResponse<{ access_token: string }>
+    try {
+      response = await axios
         // eslint-disable-next-line camelcase
-        .post<{ access_token: string }>(
-          postUrl,
-          objToSearchParams(postParams),
-          { headers },
-        )
-        .then((response) => {
-          if (
-            !response?.data?.access_token ||
-            typeof response.data.access_token !== 'string'
-          ) {
-            throw new Error(
-              'MyInfo response did not contain valid access token',
-            )
-          }
-          return response.data.access_token
-        })
-    )
+        .post(postUrl, objToSearchParams(postParams), { headers })
+    } catch (err: unknown) {
+      throw new MyInfoResponseError(err)
+    }
+    if (
+      !response?.data?.access_token ||
+      typeof response.data.access_token !== 'string'
+    ) {
+      throw new MissingAccessTokenError()
+    }
+    return response.data.access_token
   }
 
   /**

@@ -24,6 +24,12 @@ import {
 } from '../constants'
 import { mocked } from 'ts-jest/utils'
 import qs from 'qs'
+import {
+  InvalidJWTError,
+  MissingAccessTokenError,
+  MyInfoResponseError,
+  WrongJWTShapeError,
+} from '../../src/errors'
 
 jest.mock('axios')
 const MockAxios = mocked(axios, true)
@@ -43,7 +49,7 @@ describe('MyInfoGovClient', () => {
   }
   const missingParamsErrorMsg = `Missing required parameter(s) in constructor: clientId, clientSecret, singpassEserviceId, redirectEndpoint, clientPrivateKey, myInfoPublicKey`
 
-  afterEach(() => jest.restoreAllMocks())
+  afterEach(() => jest.restoreAllMocks().resetAllMocks())
 
   describe('constructor', () => {
     it('should instantiate without errors', () => {
@@ -269,17 +275,13 @@ describe('MyInfoGovClient', () => {
     }
     const MOCK_URL = 'mockUrl'
 
-    const mockCryptoSign = jest.fn().mockReturnValue(MOCK_SIGNATURE)
-    const mockCryptoUpdate = jest.fn().mockReturnValue({
-      sign: mockCryptoSign,
-    })
-
-    beforeEach(() => {
-      // Set up mocks
-      jest.spyOn(Date, 'now').mockReturnValue(MOCK_TIMESTAMP)
-    })
-
     it('should generate the correct signed header for POST requests', () => {
+      jest.spyOn(Date, 'now').mockReturnValue(MOCK_TIMESTAMP)
+
+      const mockCryptoSign = jest.fn().mockReturnValue(MOCK_SIGNATURE)
+      const mockCryptoUpdate = jest.fn().mockReturnValue({
+        sign: mockCryptoSign,
+      })
       const randomBytesSpy = jest
         .spyOn(crypto, 'randomBytes')
         .mockImplementation(() => MOCK_RANDOM_BYTES)
@@ -289,6 +291,7 @@ describe('MyInfoGovClient', () => {
             update: mockCryptoUpdate,
           } as unknown) as crypto.Signer),
       )
+
       const client = new MyInfoGovClient(clientParams)
       const method = 'post' as 'POST'
       const expectedNonce = MOCK_RANDOM_BYTES.toString('base64')
@@ -359,6 +362,16 @@ describe('MyInfoGovClient', () => {
       expect(result).toBe(MOCK_ACCESS_TOKEN)
     })
 
+    it('should reject if MyInfo returns error', async () => {
+      const client = new MyInfoGovClient(clientParams)
+      const mockError = new Error('rejected')
+      MockAxios.post.mockRejectedValueOnce(mockError)
+
+      await expect(client.getAccessToken(MOCK_AUTH_CODE)).rejects.toThrowError(
+        new MyInfoResponseError(mockError),
+      )
+    })
+
     it('should reject if access token is missing from response', async () => {
       const client = new MyInfoGovClient(clientParams)
       MockAxios.post.mockResolvedValueOnce({
@@ -368,7 +381,7 @@ describe('MyInfoGovClient', () => {
       })
 
       await expect(client.getAccessToken(MOCK_AUTH_CODE)).rejects.toThrowError(
-        'MyInfo response did not contain valid access token',
+        new MissingAccessTokenError(),
       )
     })
 
@@ -381,7 +394,7 @@ describe('MyInfoGovClient', () => {
       })
 
       await expect(client.getAccessToken(MOCK_AUTH_CODE)).rejects.toThrowError(
-        'MyInfo response did not contain valid access token',
+        new MissingAccessTokenError(),
       )
     })
   })
@@ -444,6 +457,19 @@ describe('MyInfoGovClient', () => {
       })
       expect(result).toEqual(mockData)
     })
+
+    it('should reject if MyInfo returns error', async () => {
+      const client = new MyInfoGovClient(clientParams)
+      const mockError = new Error('mockError')
+      MockAxios.get.mockRejectedValueOnce(mockError)
+
+      const functionCall = () =>
+        client._sendPersonRequest(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
+
+      expect(functionCall()).rejects.toThrowError(
+        new MyInfoResponseError(mockError),
+      )
+    })
   })
 
   describe('_extractUinFin', () => {
@@ -464,6 +490,18 @@ describe('MyInfoGovClient', () => {
       expect(result).toBe(MOCK_UIN_FIN)
     })
 
+    it('should throw error when JWT cannot be verified', () => {
+      const client = new MyInfoGovClient(clientParams)
+      const mockError = new Error('verifyError')
+      MockJwtModule.verify.mockImplementationOnce(() => {
+        throw mockError
+      })
+
+      const functionCall = () => client._extractUinFin(MOCK_JWT)
+
+      expect(functionCall).toThrowError(new InvalidJWTError(mockError))
+    })
+
     it('should throw error when decoded JWT has invalid type', () => {
       const client = new MyInfoGovClient(clientParams)
       const mockData = 'someString'
@@ -471,21 +509,17 @@ describe('MyInfoGovClient', () => {
 
       const functionCall = () => client._extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrowError(
-        'JWT returned from MyInfo had unexpected shape',
-      )
+      expect(functionCall).toThrowError(new WrongJWTShapeError())
     })
 
-    it('should throw error when decoded JWT has invalid shape', () => {
+    it('should throw error when decoded JWT is object with invalid shape', () => {
       const client = new MyInfoGovClient(clientParams)
       const mockData = { invalidKey: 'value' }
       MockJwtModule.verify.mockImplementationOnce(() => mockData)
 
       const functionCall = () => client._extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrowError(
-        'JWT returned from MyInfo did not contain UIN/FIN',
-      )
+      expect(functionCall).toThrowError(new WrongJWTShapeError())
     })
 
     it('should throw error when NRIC has invalid type', () => {
@@ -495,9 +529,7 @@ describe('MyInfoGovClient', () => {
 
       const functionCall = () => client._extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrowError(
-        'JWT returned from MyInfo did not contain UIN/FIN',
-      )
+      expect(functionCall).toThrowError(new WrongJWTShapeError())
     })
   })
 
@@ -522,16 +554,16 @@ describe('MyInfoGovClient', () => {
 
     it('should reject when access token cannot be verified', async () => {
       const client = new MyInfoGovClient(clientParams)
-      const mockErrorMessage = 'someErrorMessage'
+      const mockError = new Error('someErrorMessage')
       MockJwtModule.verify.mockImplementationOnce(() => {
-        throw new Error(mockErrorMessage)
+        throw mockError
       })
 
       const functionCall = () =>
         client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
       await expect(functionCall()).rejects.toThrowError(
-        `An error occurred while decoding the access token from MyInfo: ${mockErrorMessage}`,
+        new InvalidJWTError(mockError),
       )
     })
 
@@ -543,21 +575,21 @@ describe('MyInfoGovClient', () => {
         client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
       await expect(functionCall()).rejects.toThrowError(
-        `An error occurred while decoding the access token from MyInfo: JWT returned from MyInfo had unexpected shape`,
+        new WrongJWTShapeError(),
       )
     })
 
     it('should reject when Person API call fails', async () => {
       const client = new MyInfoGovClient(clientParams)
-      const mockErrorMessage = 'someErrorMessage'
+      const mockError = new Error('someErrorMessage')
       MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
-      MockAxios.get.mockRejectedValueOnce(new Error(mockErrorMessage))
+      MockAxios.get.mockRejectedValueOnce(mockError)
 
       const functionCall = () =>
         client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
       await expect(functionCall()).rejects.toThrowError(
-        `An error occurred while calling the Person API: ${mockErrorMessage}`,
+        new MyInfoResponseError(mockError),
       )
     })
   })

@@ -43,17 +43,3 @@ export const hasProp = <K extends string>(
 ): obj is Record<K, unknown> => {
   return prop in obj
 }
-
-/**
- * Wraps a caught object in an error.
- * @param err Object caught in try-catch block
- * @param defaultMsg String which will be prefixed to the error's message if
- * the error is an Error object, otherwise wrapped in an Error
- */
-export const wrapError = (err: any, defaultMsg: string): Error => {
-  if (err instanceof Error) {
-    err.message = `${defaultMsg}: ${err.message}`
-    throw err
-  }
-  throw new Error(`${defaultMsg}: ${JSON.stringify(err)}`)
-}
