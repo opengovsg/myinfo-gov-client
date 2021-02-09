@@ -149,17 +149,15 @@ export class MyInfoGovClient {
     singpassEserviceId,
     redirectEndpoint,
   }: IAuthRequest): string {
-    const queryParams = {
+    const queryParams = qs.stringify({
       purpose,
       attributes: requestedAttributes.join(),
       state: relayState ?? '',
       client_id: this.clientId,
       redirect_uri: redirectEndpoint ?? this.redirectEndpoint,
       sp_esvcId: singpassEserviceId ?? this.singpassEserviceId,
-    }
-    return `${this.baseAPIUrl}${Endpoint.Authorise}?${qs.stringify(
-      queryParams,
-    )}`
+    })
+    return `${this.baseAPIUrl}${Endpoint.Authorise}?${queryParams}`
   }
 
   /**
