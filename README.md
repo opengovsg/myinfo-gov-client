@@ -50,8 +50,9 @@ app.get('/', (_req, res) => {
 app.get(REDIRECT_ENDPOINT_PATH, async (req, res) => {
   // Authorisation code passed via query parameters
   const { code } = req.query
-  // Result contains access token, NRIC and MyInfo data
-  const result = await client.getPerson(code, REQUESTED_ATTRIBUTES)
+  const accessToken = await client.getAccessToken(code)
+  // Result contains NRIC and MyInfo data
+  const result = await client.getPerson(accessToken, REQUESTED_ATTRIBUTES)
   return res.json(result.data)
 })
 
@@ -60,13 +61,13 @@ app.listen(PORT, () => console.log(`App listening on port ${PORT}`))
 
 # API
 
-### Constructor
+## Constructor
 
 ```
 MyInfoGovClient(config: IMyInfoConfig)
 ```
 
-#### Configuration parameters
+### Configuration parameters
 
 Type: `IMyInfoConfig`
 
@@ -118,13 +119,13 @@ Type: `MyInfoGovClient`
 
 Instance of `MyInfoGovClient`.
 
-### createRedirectUrl
+## createRedirectUrl
 
 ```
 .createRedirectUrl(authRequest)
 ```
 
-#### Parameters
+### Parameters
 
 Type: `IAuthRequest`
 
@@ -164,7 +165,7 @@ Type: `string`
 
 The URL to which the user should be redirected to log in to SingPass and consent to providing the given attributes.
 
-### getAccessToken
+## getAccessToken
 
 ```
 .getAccessToken(authCode)
@@ -182,7 +183,7 @@ Type: `string`
 
 The access token which can be used to call the Person endpoint. This is a JSON web token containing the user's NRIC.
 
-### getPerson
+## getPerson
 
 ```
 .getPerson(accessToken, requestedAttributes)
