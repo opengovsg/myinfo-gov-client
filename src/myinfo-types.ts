@@ -13,22 +13,22 @@ interface IMetadata {
 }
 
 interface OptionalString {
-  value?: string
+  value: string
 }
 
 interface OptionalNumber {
-  value?: number | ''
+  value: number | ''
 }
 
 interface OptionalBoolean {
-  value?: boolean | ''
+  value: boolean | ''
 }
 
 export interface IBasicField extends IMetadata, OptionalString {}
 
 interface CodeAndDesc {
-  code?: string
-  desc?: string
+  code: string
+  desc: string
 }
 
 export interface IFieldWithCodeAndDesc extends IMetadata, CodeAndDesc {}
