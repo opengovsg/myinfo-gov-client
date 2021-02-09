@@ -172,8 +172,7 @@ export class MyInfoGovClient {
    * @param accessToken Access token given by MyInfo
    * @param requestedAttributes Attributes to request from Myinfo. Should correspond
    * to the attributes provided when initiating SingPass login.
-   * @returns Object containing access token used to retrieve the data,
-   * the NRIC/FIN and the data
+   * @returns Object containing the user's NRIC/FIN and the data
    */
   async getPerson(
     accessToken: string,
