@@ -169,7 +169,7 @@ export class MyInfoGovClient {
    * Retrieves the given MyInfo attributes from the Person endpoint after
    * the client has logged in to SingPass and consented to providing the given
    * attributes.
-   * @param authCode Authorisation code given by MyInfo
+   * @param accessToken Access token given by MyInfo
    * @param requestedAttributes Attributes to request from Myinfo. Should correspond
    * to the attributes provided when initiating SingPass login.
    * @returns Object containing access token used to retrieve the data,
