@@ -96,6 +96,7 @@ export class MyInfoGovClient {
    * their signature
    * @param config.mode Optional mode, which determines the MyInfo endpoint
    * to call. Defaults to production mode.
+   * @throws {MissingParamsError} Throws if any required parameter is missing
    *
    */
   constructor(config: IMyInfoConfig) {
@@ -173,6 +174,10 @@ export class MyInfoGovClient {
    * @param requestedAttributes Attributes to request from Myinfo. Should correspond
    * to the attributes provided when initiating SingPass login.
    * @returns Object containing the user's NRIC/FIN and the data
+   * @throws {InvalidJWTError} Throws if the JWT signature is invalid
+   * @throws {WrongJWTShapeError} Throws if decoded JWT has an unexpected
+   * type or shape
+   * @throws {MyInfoResponseError} Throws if MyInfo returns a non-200 response
    */
   async getPerson(
     accessToken: string,
@@ -196,7 +201,8 @@ export class MyInfoGovClient {
    * user has consented to provide
    * @param uinFin Optional uinFin if it has already been decoded. If not
    * given, it is extracted from the access token.
-   * @returns Response object from the API call to the Person endpoint
+   * @returns Data retrieved from the Person endpoint
+   * @throws {MyInfoResponseError} Throws if MyInfo returns a non-200 response
    */
   async _sendPersonRequest(
     accessToken: string,
@@ -232,6 +238,9 @@ export class MyInfoGovClient {
    * @param jwt JSON web token, which is the access token provided
    * by the Token endpoint
    * @returns The UIN or FIN decoded from the JWT
+   * @throws {InvalidJWTError} Throws if the JWT signature is invalid
+   * @throws {WrongJWTShapeError} Throws if decoded JWT has an unexpected
+   * type or shape
    */
   _extractUinFin(jwt: string): string {
     let decoded: string | object
@@ -256,6 +265,9 @@ export class MyInfoGovClient {
    * Retrieves the access token from the Token endpoint.
    * @param authCode Authorisation code provided to the redirect endpoint
    * @returns The access token as a JWT
+   * @throws {MyInfoResponseError} Throws if MyInfo returns a non-200 response
+   * @throws {MissingAccessTokenError} Throws if MyInfo response does not
+   * contain the access token
    */
   async getAccessToken(authCode: string): Promise<string> {
     const postUrl = `${this.baseAPIUrl}${Endpoint.Token}`
