@@ -47,7 +47,7 @@ export interface IMyInfoConfig {
 export interface IAuthRequest {
   purpose: string
   requestedAttributes: MyInfoAttributeString[]
-  relayState?: string
+  relayState: string
   singpassEserviceId?: string
   redirectEndpoint?: string
 }
@@ -138,7 +138,7 @@ export class MyInfoGovClient {
    * shown to user
    * @param config.requestedAttributes MyInfo attributes which the user must
    * consent to provide
-   * @param config.relayState Optional state to be forwarded to the redirect endpoint
+   * @param config.relayState State to be forwarded to the redirect endpoint
    * via query parameters
    * @param config.singpassEserviceId Optional alternative e-service ID.
    * Defaults to the e-serviceId provided in the constructor.
@@ -157,7 +157,7 @@ export class MyInfoGovClient {
     const queryParams = qs.stringify({
       purpose,
       attributes: requestedAttributes.join(),
-      state: relayState ?? '',
+      state: relayState,
       client_id: this.clientId,
       redirect_uri: redirectEndpoint ?? this.redirectEndpoint,
       sp_esvcId: singpassEserviceId ?? this.singpassEserviceId,

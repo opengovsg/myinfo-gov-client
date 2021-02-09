@@ -183,32 +183,6 @@ describe('MyInfoGovClient', () => {
       ])
     })
 
-    it('should pass an empty string as relay state if not provided', () => {
-      const client = new MyInfoGovClient(clientParams)
-      const redirectUrl = client.createRedirectURL({
-        purpose: MOCK_PURPOSE,
-        requestedAttributes: MOCK_REQUESTED_ATTRIBUTES,
-      })
-      const parsedUrl = new URL(redirectUrl)
-      const queryParams = parsedUrl.searchParams
-
-      expect(parsedUrl.origin + parsedUrl.pathname).toBe(
-        client.baseAPIUrl + '/authorise',
-      )
-      expect(queryParams.getAll('purpose')).toEqual([MOCK_PURPOSE])
-      expect(queryParams.getAll('attributes')).toEqual([
-        MOCK_REQUESTED_ATTRIBUTES.join(','),
-      ])
-      expect(queryParams.getAll('state')).toEqual([''])
-      expect(queryParams.getAll('redirect_uri')).toEqual([
-        clientParams.redirectEndpoint,
-      ])
-      expect(queryParams.getAll('client_id')).toEqual([clientParams.clientId])
-      expect(queryParams.getAll('sp_esvcId')).toEqual([
-        clientParams.singpassEserviceId,
-      ])
-    })
-
     it('should create the correct redirect URL when e-service ID is specified', () => {
       const client = new MyInfoGovClient(clientParams)
       const mockEsrvcId = 'someOtherEsrvcId'
