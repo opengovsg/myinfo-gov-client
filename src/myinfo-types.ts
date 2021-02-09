@@ -9,8 +9,19 @@ interface IMetadata {
   lastupdated: string
   source: MyInfoSource
   classification: 'C'
-  unavailable?: boolean
 }
+
+interface IUnavailableField extends IMetadata {
+  unavailable: true
+}
+
+interface IPossiblyAvailableMetadata extends IMetadata {
+  unavailable?: false
+}
+
+type MyInfoField<Fields> =
+  | IUnavailableField
+  | (Fields & IPossiblyAvailableMetadata)
 
 interface OptionalString {
   value: string
@@ -24,14 +35,14 @@ interface OptionalBoolean {
   value: boolean | ''
 }
 
-export interface IBasicField extends IMetadata, OptionalString {}
+export type BasicField = MyInfoField<OptionalString>
 
 interface CodeAndDesc {
   code: string
   desc: string
 }
 
-export interface IFieldWithCodeAndDesc extends IMetadata, CodeAndDesc {}
+export type FieldWithCodeAndDesc = MyInfoField<CodeAndDesc>
 
 export enum AddressType {
   Singapore = 'SG',
@@ -56,10 +67,10 @@ interface IUnformattedAddress {
 }
 
 export type MyInfoAddress =
-  | (ISGAddress & IMetadata)
-  | (IUnformattedAddress & IMetadata)
+  | MyInfoField<ISGAddress>
+  | MyInfoField<IUnformattedAddress>
 
-export interface IHDBOwnership extends IMetadata {
+export type HDBOwnership = MyInfoField<{
   noofowners: OptionalNumber
   address: ISGAddress | IUnformattedAddress
   hdbtype: CodeAndDesc
@@ -75,17 +86,17 @@ export interface IHDBOwnership extends IMetadata {
   }
   outstandingloanbalance: OptionalNumber
   monthlyloaninstalment: OptionalNumber
-}
+}>
 
-export interface IOwnerPrivate extends IMetadata, OptionalBoolean {}
+export type OwnerPrivate = MyInfoField<OptionalBoolean>
 
-export interface IMyInfoPhoneNumber extends IMetadata {
+export type MyInfoPhoneNumber = MyInfoField<{
   prefix: OptionalString
   areacode: OptionalString
   nbr: OptionalString
-}
+}>
 
-export interface IChildBelow21 extends IMetadata {
+export type ChildBelow21 = MyInfoField<{
   birthcertno: OptionalString
   name: OptionalString
   hanyupinyinname: OptionalString
@@ -99,15 +110,15 @@ export interface IChildBelow21 extends IMetadata {
   lifestatus: CodeAndDesc
   dob: OptionalString
   tob: OptionalString
-}
+}>
 
-export interface IChildAbove21 extends IMetadata {
+export type ChildAbove21 = MyInfoField<{
   birthcertno: OptionalString
-}
+}>
 
-export type ChildRecord = IChildBelow21 | IChildAbove21
+export type ChildRecord = ChildBelow21 | ChildAbove21
 
-export interface ISponsoredChildBelow21 extends IMetadata {
+export type SponsoredChildBelow21 = MyInfoField<{
   nric: OptionalString
   name: OptionalString
   hanyupinyinname: OptionalString
@@ -124,24 +135,24 @@ export interface ISponsoredChildBelow21 extends IMetadata {
   residentialstatus: CodeAndDesc
   nationality: CodeAndDesc
   scprgrantdate: OptionalString
-}
+}>
 
-export interface ISponsoredChildAbove21 extends IMetadata {
+export type SponsoredChildAbove21 = MyInfoField<{
   nric: OptionalString
-}
+}>
 
-export type SponsoredChildRecord =
-  | ISponsoredChildBelow21
-  | ISponsoredChildAbove21
+export type SponsoredChildRecord = SponsoredChildBelow21 | SponsoredChildAbove21
 
-export type MyInfoOccupation = IMetadata & OptionalString & CodeAndDesc
+export type MyInfoOccupation =
+  | MyInfoField<OptionalString>
+  | MyInfoField<CodeAndDesc>
 
-export interface HouseholdIncome extends IMetadata {
+export type HouseholdIncome = MyInfoField<{
   high: OptionalNumber
   low: OptionalNumber
-}
+}>
 
-export interface IMyInfoVehicle extends IMetadata {
+export type MyInfoVehicle = MyInfoField<{
   vehicleno: OptionalString
   type: OptionalString
   iulabelno: OptionalString
@@ -179,13 +190,14 @@ export interface IMyInfoVehicle extends IMetadata {
   minimumparfbenefit: OptionalNumber
   nooftransfers: OptionalNumber
   vpc: OptionalString
-}
+}>
 
 interface StartEndDate {
   startdate: OptionalString
   enddate: OptionalString
 }
-export interface IDrivingLicence extends IMetadata {
+
+export type DrivingLicence = MyInfoField<{
   comstatus: CodeAndDesc
   totaldemeritpoints: OptionalNumber
   suspension: StartEndDate
@@ -202,35 +214,35 @@ export interface IDrivingLicence extends IMetadata {
     classes: { class: OptionalString; issuedate: OptionalString }[]
   }
   photocardserialno: OptionalString
-}
+}>
 
-export interface IMerdekaGen extends IMetadata {
+export type MerdekaGen = MyInfoField<{
   eligibility: OptionalBoolean
   quantum: OptionalNumber
   message: CodeAndDesc
-}
+}>
 
-export interface ISilverSupport extends IMetadata {
+export type SilverSupport = MyInfoField<{
   eligibility: OptionalBoolean
   amount: OptionalString
   year: OptionalString
-}
+}>
 
-export interface IGSTVoucher extends IMetadata {
+export type GSTVoucher = MyInfoField<{
   exclusion: OptionalBoolean
   signup: OptionalBoolean
   gstmedisave: OptionalNumber
   gstregular: OptionalNumber
   gstspecial: OptionalNumber
   year: OptionalString
-}
+}>
 
 interface INOABasicFields {
   amount: OptionalNumber
   yearofassessment: OptionalString
 }
 
-export interface INOABasic extends IMetadata, INOABasicFields {}
+export type NOABasic = MyInfoField<INOABasicFields>
 
 interface INOAFullFields {
   amount: OptionalNumber
@@ -243,38 +255,38 @@ interface INOAFullFields {
   category: OptionalString
 }
 
-export interface INOAFull extends IMetadata, INOAFullFields {}
+export type NOAFull = MyInfoField<INOAFullFields>
 
-export interface INOAHistoryBasic extends IMetadata {
+export type NOAHistoryBasic = MyInfoField<{
   noas: INOABasicFields[]
-}
+}>
 
-export interface INOAHistoryFull extends IMetadata {
+export type NOAHistoryFull = MyInfoField<{
   noas: INOAFullFields[]
-}
+}>
 
-export interface ICPFContributions extends IMetadata {
+export type CPFContributions = MyInfoField<{
   history: {
     employer: OptionalString
     date: OptionalString
     month: OptionalString
     amount: OptionalNumber
   }[]
-}
+}>
 
-export interface ICPFEmployers extends IMetadata {
+export type CPFEmployers = MyInfoField<{
   history: {
     employer: OptionalString
     month: OptionalString
   }[]
-}
+}>
 
-export interface ICPFBalances extends IMetadata {
+export type CPFBalances = MyInfoField<{
   ma: OptionalNumber
   oa: OptionalNumber
   sa: OptionalNumber
   ra?: OptionalNumber
-}
+}>
 
 export enum MyInfoAttribute {
   UinFin = 'uinfin',
@@ -329,55 +341,55 @@ export enum MyInfoAttribute {
 }
 
 interface IPersonFull {
-  uinfin: IBasicField
-  name: IBasicField
-  hanyupinyinname: IBasicField
-  aliasname: IBasicField
-  hanyupinyinaliasname: IBasicField
-  marriedname: IBasicField
-  sex: IFieldWithCodeAndDesc
-  race: IFieldWithCodeAndDesc
-  secondaryrace: IFieldWithCodeAndDesc
-  dialect: IFieldWithCodeAndDesc
-  nationality: IFieldWithCodeAndDesc
-  dob: IBasicField
-  birthcountry: IFieldWithCodeAndDesc
-  residentialstatus: IFieldWithCodeAndDesc
-  passportnumber: IBasicField
-  passportexpirydate: IBasicField
+  uinfin: BasicField
+  name: BasicField
+  hanyupinyinname: BasicField
+  aliasname: BasicField
+  hanyupinyinaliasname: BasicField
+  marriedname: BasicField
+  sex: FieldWithCodeAndDesc
+  race: FieldWithCodeAndDesc
+  secondaryrace: FieldWithCodeAndDesc
+  dialect: FieldWithCodeAndDesc
+  nationality: FieldWithCodeAndDesc
+  dob: BasicField
+  birthcountry: FieldWithCodeAndDesc
+  residentialstatus: FieldWithCodeAndDesc
+  passportnumber: BasicField
+  passportexpirydate: BasicField
   regadd: MyInfoAddress
-  housingtype: IFieldWithCodeAndDesc
-  hdbtype: IFieldWithCodeAndDesc
-  hdbownership: IHDBOwnership[]
-  ownerprivate: IOwnerPrivate
-  email: IBasicField
-  mobileno: IMyInfoPhoneNumber
-  marital: IFieldWithCodeAndDesc
-  marriagecertno: IBasicField
-  countryofmarriage: IFieldWithCodeAndDesc
-  marriagedate: IBasicField
-  divorcedate: IBasicField
+  housingtype: FieldWithCodeAndDesc
+  hdbtype: FieldWithCodeAndDesc
+  hdbownership: HDBOwnership[]
+  ownerprivate: OwnerPrivate
+  email: BasicField
+  mobileno: MyInfoPhoneNumber
+  marital: FieldWithCodeAndDesc
+  marriagecertno: BasicField
+  countryofmarriage: FieldWithCodeAndDesc
+  marriagedate: BasicField
+  divorcedate: BasicField
   childrenbirthrecords: ChildRecord[]
   sponsoredchildrenrecords: SponsoredChildRecord[]
   occupation: MyInfoOccupation
-  employment: IBasicField
-  passtype: IFieldWithCodeAndDesc
-  passstatus: IBasicField
-  passexpirydate: IBasicField
-  employmentsector: IBasicField
+  employment: BasicField
+  passtype: FieldWithCodeAndDesc
+  passstatus: BasicField
+  passexpirydate: BasicField
+  employmentsector: BasicField
   householdincome: HouseholdIncome
-  vehicles: IMyInfoVehicle[]
-  drivinglicence: IDrivingLicence
-  merdekagen: IMerdekaGen
-  silversupport: ISilverSupport
-  gstvoucher: IGSTVoucher
-  'noa-basic': INOABasic
-  noa: INOAFull
-  'noahistory-basic': INOAHistoryBasic
-  noahistory: INOAHistoryFull
-  cpfcontributions: ICPFContributions
-  cpfemployers: ICPFEmployers
-  cpfbalances: ICPFBalances
+  vehicles: MyInfoVehicle[]
+  drivinglicence: DrivingLicence
+  merdekagen: MerdekaGen
+  silversupport: SilverSupport
+  gstvoucher: GSTVoucher
+  'noa-basic': NOABasic
+  noa: NOAFull
+  'noahistory-basic': NOAHistoryBasic
+  noahistory: NOAHistoryFull
+  cpfcontributions: CPFContributions
+  cpfemployers: CPFEmployers
+  cpfbalances: CPFBalances
 }
 
 export type IPerson = Partial<IPersonFull>
