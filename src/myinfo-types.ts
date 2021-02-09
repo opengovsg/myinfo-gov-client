@@ -23,19 +23,19 @@ type MyInfoField<Fields> =
   | IUnavailableField
   | (Fields & IPossiblyAvailableMetadata)
 
-interface OptionalString {
+interface StringValue {
   value: string
 }
 
-interface OptionalNumber {
-  value: number | ''
+interface NumberValue {
+  value: number
 }
 
-interface OptionalBoolean {
-  value: boolean | ''
+interface BooleanValue {
+  value: boolean
 }
 
-export type BasicField = MyInfoField<OptionalString>
+export type BasicField = MyInfoField<StringValue>
 
 interface CodeAndDesc {
   code: string
@@ -51,19 +51,19 @@ export enum AddressType {
 
 interface ISGAddress {
   type: AddressType.Singapore
-  block: OptionalString
-  building: OptionalString
-  floor: OptionalString
-  unit: OptionalString
-  street: OptionalString
-  postal: OptionalString
+  block: StringValue
+  building: StringValue
+  floor: StringValue
+  unit: StringValue
+  street: StringValue
+  postal: StringValue
   country: CodeAndDesc
 }
 
 interface IUnformattedAddress {
   type: AddressType.Unformatted
-  line1: OptionalString
-  line2: OptionalString
+  line1: StringValue
+  line2: StringValue
 }
 
 export type MyInfoAddress =
@@ -71,188 +71,188 @@ export type MyInfoAddress =
   | MyInfoField<IUnformattedAddress>
 
 export type HDBOwnership = MyInfoField<{
-  noofowners: OptionalNumber
+  noofowners: NumberValue
   address: ISGAddress | IUnformattedAddress
   hdbtype: CodeAndDesc
-  leasecommencementdate: OptionalString
-  termoflease: OptionalNumber
-  dateofpurchase: OptionalString
-  dateofownershiptransfer: OptionalString
-  loangranted: OptionalNumber
-  originalloanrepayment: OptionalNumber
+  leasecommencementdate: StringValue
+  termoflease: NumberValue
+  dateofpurchase: StringValue
+  dateofownershiptransfer: StringValue
+  loangranted: NumberValue
+  originalloanrepayment: NumberValue
   balanceloanrepayment: {
-    years: OptionalNumber
-    months: OptionalNumber
+    years: NumberValue
+    months: NumberValue
   }
-  outstandingloanbalance: OptionalNumber
-  monthlyloaninstalment: OptionalNumber
+  outstandingloanbalance: NumberValue
+  monthlyloaninstalment: NumberValue
 }>
 
-export type OwnerPrivate = MyInfoField<OptionalBoolean>
+export type OwnerPrivate = MyInfoField<BooleanValue>
 
 export type MyInfoPhoneNumber = MyInfoField<{
-  prefix: OptionalString
-  areacode: OptionalString
-  nbr: OptionalString
+  prefix: StringValue
+  areacode: StringValue
+  nbr: StringValue
 }>
 
 export type ChildBelow21 = MyInfoField<{
-  birthcertno: OptionalString
-  name: OptionalString
-  hanyupinyinname: OptionalString
-  aliasname: OptionalString
-  hanyupinyinaliasname: OptionalString
-  marriedname: OptionalString
+  birthcertno: StringValue
+  name: StringValue
+  hanyupinyinname: StringValue
+  aliasname: StringValue
+  hanyupinyinaliasname: StringValue
+  marriedname: StringValue
   sex: CodeAndDesc
   race: CodeAndDesc
   secondaryrace: CodeAndDesc
   dialect: CodeAndDesc
   lifestatus: CodeAndDesc
-  dob: OptionalString
-  tob: OptionalString
+  dob: StringValue
+  tob: StringValue
 }>
 
 export type ChildAbove21 = MyInfoField<{
-  birthcertno: OptionalString
+  birthcertno: StringValue
 }>
 
 export type ChildRecord = ChildBelow21 | ChildAbove21
 
 export type SponsoredChildBelow21 = MyInfoField<{
-  nric: OptionalString
-  name: OptionalString
-  hanyupinyinname: OptionalString
-  aliasname: OptionalString
-  hanyupinyinaliasname: OptionalString
-  marriedname: OptionalString
+  nric: StringValue
+  name: StringValue
+  hanyupinyinname: StringValue
+  aliasname: StringValue
+  hanyupinyinaliasname: StringValue
+  marriedname: StringValue
   sex: CodeAndDesc
   race: CodeAndDesc
   secondaryrace: CodeAndDesc
   dialect: CodeAndDesc
-  dob: OptionalString
+  dob: StringValue
   birthcountry: CodeAndDesc
   lifestatus: CodeAndDesc
   residentialstatus: CodeAndDesc
   nationality: CodeAndDesc
-  scprgrantdate: OptionalString
+  scprgrantdate: StringValue
 }>
 
 export type SponsoredChildAbove21 = MyInfoField<{
-  nric: OptionalString
+  nric: StringValue
 }>
 
 export type SponsoredChildRecord = SponsoredChildBelow21 | SponsoredChildAbove21
 
 export type MyInfoOccupation =
-  | MyInfoField<OptionalString>
+  | MyInfoField<StringValue>
   | MyInfoField<CodeAndDesc>
 
 export type HouseholdIncome = MyInfoField<{
-  high: OptionalNumber
-  low: OptionalNumber
+  high: NumberValue
+  low: NumberValue
 }>
 
 export type MyInfoVehicle = MyInfoField<{
-  vehicleno: OptionalString
-  type: OptionalString
-  iulabelno: OptionalString
-  make: OptionalString
-  model: OptionalString
-  chassisno: OptionalString
-  engineno: OptionalString
-  motorno: OptionalString
-  yearofmanufacture: OptionalString
-  firstregistrationdate: OptionalString
-  originalregistrationdate: OptionalString
-  coecategory: OptionalString
-  coeexpirydate: OptionalString
-  roadtaxexpirydate: OptionalString
-  quotapremium: OptionalNumber
-  openmarketvalue: OptionalNumber
-  co2emission: OptionalNumber
+  vehicleno: StringValue
+  type: StringValue
+  iulabelno: StringValue
+  make: StringValue
+  model: StringValue
+  chassisno: StringValue
+  engineno: StringValue
+  motorno: StringValue
+  yearofmanufacture: StringValue
+  firstregistrationdate: StringValue
+  originalregistrationdate: StringValue
+  coecategory: StringValue
+  coeexpirydate: StringValue
+  roadtaxexpirydate: StringValue
+  quotapremium: NumberValue
+  openmarketvalue: NumberValue
+  co2emission: NumberValue
   status: CodeAndDesc
-  primarycolour: OptionalString
-  secondarycolour: OptionalString
-  attachment1: OptionalString
-  attachment2: OptionalString
-  attachment3: OptionalString
-  scheme: OptionalString
-  thcemission: OptionalNumber
-  coemission: OptionalNumber
-  noxemission: OptionalNumber
-  pmemission: OptionalNumber
-  enginecapacity: OptionalNumber
-  powerrate: OptionalNumber
-  effectiveownership: OptionalString
-  propellant: OptionalString
-  maximumunladenweight: OptionalNumber
-  maximumladenweight: OptionalNumber
-  minimumparfbenefit: OptionalNumber
-  nooftransfers: OptionalNumber
-  vpc: OptionalString
+  primarycolour: StringValue
+  secondarycolour: StringValue
+  attachment1: StringValue
+  attachment2: StringValue
+  attachment3: StringValue
+  scheme: StringValue
+  thcemission: NumberValue
+  coemission: NumberValue
+  noxemission: NumberValue
+  pmemission: NumberValue
+  enginecapacity: NumberValue
+  powerrate: NumberValue
+  effectiveownership: StringValue
+  propellant: StringValue
+  maximumunladenweight: NumberValue
+  maximumladenweight: NumberValue
+  minimumparfbenefit: NumberValue
+  nooftransfers: NumberValue
+  vpc: StringValue
 }>
 
 interface StartEndDate {
-  startdate: OptionalString
-  enddate: OptionalString
+  startdate: StringValue
+  enddate: StringValue
 }
 
 export type DrivingLicence = MyInfoField<{
   comstatus: CodeAndDesc
-  totaldemeritpoints: OptionalNumber
+  totaldemeritpoints: NumberValue
   suspension: StartEndDate
   disqualification: StartEndDate
   revocation: StartEndDate
   pdl: {
     validity: CodeAndDesc
-    expirydate: OptionalString
-    classes: { class: OptionalString }[]
+    expirydate: StringValue
+    classes: { class: StringValue }[]
   }
   qdl: {
     validity: CodeAndDesc
-    expirydate: OptionalString
-    classes: { class: OptionalString; issuedate: OptionalString }[]
+    expirydate: StringValue
+    classes: { class: StringValue; issuedate: StringValue }[]
   }
-  photocardserialno: OptionalString
+  photocardserialno: StringValue
 }>
 
 export type MerdekaGen = MyInfoField<{
-  eligibility: OptionalBoolean
-  quantum: OptionalNumber
+  eligibility: BooleanValue
+  quantum: NumberValue
   message: CodeAndDesc
 }>
 
 export type SilverSupport = MyInfoField<{
-  eligibility: OptionalBoolean
-  amount: OptionalString
-  year: OptionalString
+  eligibility: BooleanValue
+  amount: StringValue
+  year: StringValue
 }>
 
 export type GSTVoucher = MyInfoField<{
-  exclusion: OptionalBoolean
-  signup: OptionalBoolean
-  gstmedisave: OptionalNumber
-  gstregular: OptionalNumber
-  gstspecial: OptionalNumber
-  year: OptionalString
+  exclusion: BooleanValue
+  signup: BooleanValue
+  gstmedisave: NumberValue
+  gstregular: NumberValue
+  gstspecial: NumberValue
+  year: StringValue
 }>
 
 interface INOABasicFields {
-  amount: OptionalNumber
-  yearofassessment: OptionalString
+  amount: NumberValue
+  yearofassessment: StringValue
 }
 
 export type NOABasic = MyInfoField<INOABasicFields>
 
 interface INOAFullFields {
-  amount: OptionalNumber
-  yearofassessment: OptionalString
-  employment: OptionalNumber
-  trade: OptionalNumber
-  rent: OptionalNumber
-  interest: OptionalNumber
-  taxclearance: OptionalString
-  category: OptionalString
+  amount: NumberValue
+  yearofassessment: StringValue
+  employment: NumberValue
+  trade: NumberValue
+  rent: NumberValue
+  interest: NumberValue
+  taxclearance: StringValue
+  category: StringValue
 }
 
 export type NOAFull = MyInfoField<INOAFullFields>
@@ -267,25 +267,25 @@ export type NOAHistoryFull = MyInfoField<{
 
 export type CPFContributions = MyInfoField<{
   history: {
-    employer: OptionalString
-    date: OptionalString
-    month: OptionalString
-    amount: OptionalNumber
+    employer: StringValue
+    date: StringValue
+    month: StringValue
+    amount: NumberValue
   }[]
 }>
 
 export type CPFEmployers = MyInfoField<{
   history: {
-    employer: OptionalString
-    month: OptionalString
+    employer: StringValue
+    month: StringValue
   }[]
 }>
 
 export type CPFBalances = MyInfoField<{
-  ma: OptionalNumber
-  oa: OptionalNumber
-  sa: OptionalNumber
-  ra?: OptionalNumber
+  ma: NumberValue
+  oa: NumberValue
+  sa: NumberValue
+  ra?: NumberValue
 }>
 
 export enum MyInfoAttribute {

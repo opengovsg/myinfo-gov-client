@@ -28,7 +28,10 @@ export const TEST_PUBLIC_KEY = fs.readFileSync(
   './node_modules/@opengovsg/mockpass/static/certs/spcp.crt',
 )
 
-export const EXPECTED_PERSON_DATA: IPerson = {
+// Note that the MockPass data doesn't exactly conform to the IPerson
+// interface followed by MyInfo, hence we do not assign the IPerson
+// interface to this object
+export const EXPECTED_PERSON_DATA = {
   uinfin: {
     lastupdated: '2020-04-16',
     source: MyInfoSource.GovtVerified,
