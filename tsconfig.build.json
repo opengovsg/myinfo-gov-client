@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.base.json",
+  "extends": "./tsconfig.json",
   "include": ["src/**/*"],
   "compilerOptions": {
     "outDir": "build" /* Redirect output structure to the directory. */
