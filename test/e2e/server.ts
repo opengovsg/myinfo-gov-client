@@ -24,6 +24,7 @@ const client = new MyInfoGovClient({
   myInfoPublicKey: TEST_PUBLIC_KEY,
   mode: MyInfoMode.Dev,
 })
+client.baseAPIUrl = 'http://localhost:5156/myinfo/v3'
 
 const handleGetHome: RequestHandler = (_req, res) => {
   const redirectUrl = client.createRedirectURL({
