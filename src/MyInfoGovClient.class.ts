@@ -23,9 +23,9 @@ export enum MyInfoMode {
 }
 
 const BASE_URL: { [M in MyInfoMode]: string } = {
-  [MyInfoMode.Dev]: 'http://localhost:5156/myinfo/v3',
-  [MyInfoMode.Staging]: 'https://myinfosgstg.api.gov.sg/gov/test/v3',
-  [MyInfoMode.Production]: 'https://myinfosg.api.gov.sg/gov/v3',
+  [MyInfoMode.Dev]: 'https://sandbox.api.myinfo.gov.sg/gov/v3',
+  [MyInfoMode.Staging]: 'https://test.api.myinfo.gov.sg/gov/v3',
+  [MyInfoMode.Production]: 'https://api.myinfo.gov.sg/gov/v3',
 }
 
 /**
