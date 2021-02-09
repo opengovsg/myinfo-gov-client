@@ -19,9 +19,9 @@ interface IPossiblyAvailableMetadata extends IMetadata {
   unavailable?: false
 }
 
-type MyInfoField<Fields> =
+type MyInfoField<CustomFields> =
   | IUnavailableField
-  | (Fields & IPossiblyAvailableMetadata)
+  | (CustomFields & IPossiblyAvailableMetadata)
 
 interface StringValue {
   value: string
