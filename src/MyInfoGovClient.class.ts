@@ -228,7 +228,7 @@ export class MyInfoGovClient {
       .get<IPerson>(url, {
         headers,
         params,
-        paramsSerializer: (params) => qs.stringify(params),
+        paramsSerializer: qs.stringify,
       })
       .then((response) => response.data)
   }
