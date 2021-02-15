@@ -173,6 +173,8 @@ export class MyInfoGovClient {
    * @param accessToken Access token given by MyInfo
    * @param requestedAttributes Attributes to request from Myinfo. Should correspond
    * to the attributes provided when initiating SingPass login.
+   * @param singpassEserviceId Optional alternative e-service ID.
+   * Defaults to the e-serviceId provided in the constructor.
    * @returns Object containing the user's NRIC/FIN and the data
    * @throws {InvalidJWTError} Throws if the JWT signature is invalid
    * @throws {WrongJWTShapeError} Throws if decoded JWT has an unexpected
@@ -182,6 +184,7 @@ export class MyInfoGovClient {
   async getPerson(
     accessToken: string,
     requestedAttributes: MyInfoAttributeString[],
+    singpassEserviceId?: string,
   ): Promise<IPersonResponse> {
     // Extract NRIC
     const uinFin = this.extractUinFin(accessToken)
@@ -189,6 +192,7 @@ export class MyInfoGovClient {
     const data = await this._sendPersonRequest(
       accessToken,
       requestedAttributes,
+      singpassEserviceId ?? this.singpassEserviceId,
       uinFin,
     )
     return { uinFin, data }
@@ -199,6 +203,7 @@ export class MyInfoGovClient {
    * @param accessToken Access token provided by Token endpoint
    * @param requestedAttributes Attributes to request from MyInfo, which
    * user has consented to provide
+   * @param singpassEserviceId ID registered with SingPass
    * @param uinFin Optional uinFin if it has already been decoded. If not
    * given, it is extracted from the access token.
    * @returns Data retrieved from the Person endpoint
@@ -207,6 +212,7 @@ export class MyInfoGovClient {
   async _sendPersonRequest(
     accessToken: string,
     requestedAttributes: MyInfoAttributeString[],
+    singpassEserviceId: string,
     uinFin?: string,
   ): Promise<IPerson> {
     const definedUinFin = uinFin ?? this.extractUinFin(accessToken)
@@ -214,6 +220,7 @@ export class MyInfoGovClient {
     const params = {
       client_id: this.clientId,
       attributes: requestedAttributes.join(),
+      sp_esvcId: singpassEserviceId,
     }
     const paramsAuthHeader = this._generateAuthHeader('GET', url, params)
     const headers = {

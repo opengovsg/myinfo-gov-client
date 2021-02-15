@@ -186,7 +186,7 @@ The access token which can be used to call the Person endpoint. This is a JSON w
 ## getPerson
 
 ```
-.getPerson(accessToken, requestedAttributes)
+.getPerson(accessToken, requestedAttributes, singpassEserviceId)
 ```
 
 **accessToken**
@@ -200,6 +200,12 @@ The access token retrieved from the Token endpoint using `.getAccessToken`.
 Type: `MyInfoAttributeString[]`
 
 Attributes to request from Myinfo. Should correspond to the attributes provided when initiating SingPass login.
+
+**singpassEserviceId**
+
+Type: `string`
+
+Optional alternative e-service ID. Defaults to the e-serviceId provided in the constructor.
 
 ### Returns
 

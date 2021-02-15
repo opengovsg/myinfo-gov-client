@@ -380,6 +380,7 @@ describe('MyInfoGovClient', () => {
       const expectedQueryParamsObj = {
         client_id: client.clientId,
         attributes: MOCK_REQUESTED_ATTRIBUTES.join(),
+        sp_esvcId: client.singpassEserviceId,
       }
       const mockData = { sub: MOCK_UIN_FIN }
       MockAxios.get.mockResolvedValueOnce({
@@ -389,6 +390,7 @@ describe('MyInfoGovClient', () => {
       const result = await client._sendPersonRequest(
         MOCK_ACCESS_TOKEN,
         MOCK_REQUESTED_ATTRIBUTES,
+        clientParams.singpassEserviceId,
         MOCK_UIN_FIN,
       )
 
@@ -409,6 +411,7 @@ describe('MyInfoGovClient', () => {
       const expectedQueryParamsObj = {
         client_id: client.clientId,
         attributes: MOCK_REQUESTED_ATTRIBUTES.join(),
+        sp_esvcId: client.singpassEserviceId,
       }
       const mockData = { sub: MOCK_UIN_FIN }
       MockAxios.get.mockResolvedValueOnce({
@@ -419,6 +422,7 @@ describe('MyInfoGovClient', () => {
       const result = await client._sendPersonRequest(
         MOCK_ACCESS_TOKEN,
         MOCK_REQUESTED_ATTRIBUTES,
+        clientParams.singpassEserviceId,
       )
 
       expect(MockAxios.get).toHaveBeenCalledWith(expectedUrl, {
@@ -438,7 +442,11 @@ describe('MyInfoGovClient', () => {
       MockAxios.get.mockRejectedValueOnce(mockError)
 
       const functionCall = () =>
-        client._sendPersonRequest(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
+        client._sendPersonRequest(
+          MOCK_ACCESS_TOKEN,
+          MOCK_REQUESTED_ATTRIBUTES,
+          clientParams.singpassEserviceId,
+        )
 
       expect(functionCall()).rejects.toThrowError(
         new MyInfoResponseError(mockError),
@@ -508,7 +516,7 @@ describe('MyInfoGovClient', () => {
   })
 
   describe('getPerson', () => {
-    it('should return the Person data when retrieval succeeds', async () => {
+    it('should return the Person data when retrieval succeeds and e-service ID is not given', async () => {
       const client = new MyInfoGovClient(clientParams)
       MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
       MockAxios.get.mockResolvedValueOnce({
@@ -518,6 +526,25 @@ describe('MyInfoGovClient', () => {
       const result = await client.getPerson(
         MOCK_ACCESS_TOKEN,
         MOCK_REQUESTED_ATTRIBUTES,
+      )
+
+      expect(result).toEqual({
+        uinFin: MOCK_UIN_FIN,
+        data: EXPECTED_PERSON_DATA,
+      })
+    })
+
+    it('should return the Person data when retrieval succeeds and e-service ID is given', async () => {
+      const client = new MyInfoGovClient(clientParams)
+      MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
+      MockAxios.get.mockResolvedValueOnce({
+        data: EXPECTED_PERSON_DATA,
+      })
+
+      const result = await client.getPerson(
+        MOCK_ACCESS_TOKEN,
+        MOCK_REQUESTED_ATTRIBUTES,
+        client.singpassEserviceId,
       )
 
       expect(result).toEqual({
