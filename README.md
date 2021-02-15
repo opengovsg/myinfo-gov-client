@@ -207,6 +207,24 @@ Type: `Promise<IPersonResponse>`
 
 An object containing the NRIC/FIN of the user and the attributes retrieved from MyInfo.
 
+## extractUinFin
+
+```
+.extractUinFin(accessToken)
+```
+
+**accessToken**
+
+Type: `string`
+
+The access token retrieved from the Token endpoint using `.getAccessToken`.
+
+### Returns
+
+Type: `string`
+
+The decoded UIN/FIN contained in the access token JWT. The access token signature is verified before the JWT is decoded.
+
 # Available Test accounts
 
 See a list of available MyInfo test accounts [here](docs/TESTACCOUNTS.md).

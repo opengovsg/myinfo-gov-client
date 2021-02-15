@@ -184,7 +184,7 @@ export class MyInfoGovClient {
     requestedAttributes: MyInfoAttributeString[],
   ): Promise<IPersonResponse> {
     // Extract NRIC
-    const uinFin = this._extractUinFin(accessToken)
+    const uinFin = this.extractUinFin(accessToken)
     // Get Person data
     const data = await this._sendPersonRequest(
       accessToken,
@@ -209,7 +209,7 @@ export class MyInfoGovClient {
     requestedAttributes: MyInfoAttributeString[],
     uinFin?: string,
   ): Promise<IPerson> {
-    const definedUinFin = uinFin ?? this._extractUinFin(accessToken)
+    const definedUinFin = uinFin ?? this.extractUinFin(accessToken)
     const url = `${this.baseAPIUrl}${Endpoint.Person}/${definedUinFin}/`
     const params = {
       client_id: this.clientId,
@@ -235,17 +235,17 @@ export class MyInfoGovClient {
 
   /**
    * Extracts the UIN or FIN from the access token.
-   * @param jwt JSON web token, which is the access token provided
+   * @param accessToken JSON web token, which is the access token provided
    * by the Token endpoint
    * @returns The UIN or FIN decoded from the JWT
    * @throws {InvalidJWTError} Throws if the JWT signature is invalid
    * @throws {WrongJWTShapeError} Throws if decoded JWT has an unexpected
    * type or shape
    */
-  _extractUinFin(jwt: string): string {
+  extractUinFin(accessToken: string): string {
     let decoded: string | object
     try {
-      decoded = verifyJwt(jwt, this.myInfoPublicKey, {
+      decoded = verifyJwt(accessToken, this.myInfoPublicKey, {
         algorithms: ['RS256'],
       })
     } catch (err: unknown) {

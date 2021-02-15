@@ -446,13 +446,13 @@ describe('MyInfoGovClient', () => {
     })
   })
 
-  describe('_extractUinFin', () => {
+  describe('extractUinFin', () => {
     it('should return the decoded NRIC when JWT has correct payload', () => {
       const client = new MyInfoGovClient(clientParams)
       const mockData = { sub: MOCK_UIN_FIN }
       MockJwtModule.verify.mockImplementationOnce(() => mockData)
 
-      const result = client._extractUinFin(MOCK_JWT)
+      const result = client.extractUinFin(MOCK_JWT)
 
       expect(MockJwtModule.verify).toHaveBeenCalledWith(
         MOCK_JWT,
@@ -471,7 +471,7 @@ describe('MyInfoGovClient', () => {
         throw mockError
       })
 
-      const functionCall = () => client._extractUinFin(MOCK_JWT)
+      const functionCall = () => client.extractUinFin(MOCK_JWT)
 
       expect(functionCall).toThrowError(new InvalidJWTError(mockError))
     })
@@ -481,7 +481,7 @@ describe('MyInfoGovClient', () => {
       const mockData = 'someString'
       MockJwtModule.verify.mockImplementationOnce(() => mockData)
 
-      const functionCall = () => client._extractUinFin(MOCK_JWT)
+      const functionCall = () => client.extractUinFin(MOCK_JWT)
 
       expect(functionCall).toThrowError(new WrongJWTShapeError())
     })
@@ -491,7 +491,7 @@ describe('MyInfoGovClient', () => {
       const mockData = { invalidKey: 'value' }
       MockJwtModule.verify.mockImplementationOnce(() => mockData)
 
-      const functionCall = () => client._extractUinFin(MOCK_JWT)
+      const functionCall = () => client.extractUinFin(MOCK_JWT)
 
       expect(functionCall).toThrowError(new WrongJWTShapeError())
     })
@@ -501,7 +501,7 @@ describe('MyInfoGovClient', () => {
       const mockData = { sub: 123 }
       MockJwtModule.verify.mockImplementationOnce(() => mockData)
 
-      const functionCall = () => client._extractUinFin(MOCK_JWT)
+      const functionCall = () => client.extractUinFin(MOCK_JWT)
 
       expect(functionCall).toThrowError(new WrongJWTShapeError())
     })
