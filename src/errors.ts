@@ -67,3 +67,15 @@ export class MyInfoResponseError extends MyInfoGovClientError {
     super(message, error)
   }
 }
+
+/**
+ * Error while decrypting Person data from MyInfo
+ */
+export class DecryptDataError extends MyInfoGovClientError {
+  constructor(
+    error: unknown,
+    message = 'Error while decrypting data from MyInfo Person API',
+  ) {
+    super(message, error)
+  }
+}

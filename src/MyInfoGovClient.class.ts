@@ -1,10 +1,12 @@
 import qs from 'qs'
 import crypto from 'crypto'
 import axios, { AxiosResponse } from 'axios'
-import { hasProp, objToSearchParams, sortObjKeys } from './util'
+import jose from 'node-jose'
 import { verify as verifyJwt } from 'jsonwebtoken'
+import { hasProp, objToSearchParams, sortObjKeys } from './util'
 import { IPerson, MyInfoAttributeString } from './myinfo-types'
 import {
+  DecryptDataError,
   InvalidJWTError,
   MissingAccessTokenError,
   MissingParamsError,
@@ -227,15 +229,20 @@ export class MyInfoGovClient {
       'Cache-Control': 'no-cache',
       Authorization: `${paramsAuthHeader},Bearer ${accessToken}`,
     }
-    let response: AxiosResponse<IPerson>
+    let response: AxiosResponse<IPerson | string>
     try {
-      response = await axios.get<IPerson>(url, {
+      response = await axios.get(url, {
         headers,
         params,
         paramsSerializer: qs.stringify,
       })
     } catch (err: unknown) {
       throw new MyInfoResponseError(err)
+    }
+    // In dev mode, the response is automatically parsed to an object by Axios.
+    // Otherwise, the response is a JWE and must be decrypted.
+    if (typeof response.data === 'string') {
+      return this._decryptJWE(response.data)
     }
     return response.data
   }
@@ -337,5 +344,24 @@ export class MyInfoGovClient {
       .update(baseString)
       .sign(this.clientPrivateKey, 'base64')
     return `PKI_SIGN timestamp="${timestamp}",nonce="${nonce}",app_id="${this.clientId}",signature_method="RS256",signature="${signature}"`
+  }
+
+  /**
+   * Decrypts a JWE response string
+   * @param jweResponse Fullstop-delimited jweResponse string
+   * @return Promise which resolves to a parsed response
+   * @throws {DecryptDataError} Throws if an error occurs while decrypting
+   */
+  async _decryptJWE(jwe: string): Promise<IPerson> {
+    try {
+      const keystore = await jose.JWK.createKeyStore().add(
+        this.clientPrivateKey,
+        'pem',
+      )
+      const { payload } = await jose.JWE.createDecrypt(keystore).decrypt(jwe)
+      return JSON.parse(payload.toString())
+    } catch (err: unknown) {
+      throw new DecryptDataError(err)
+    }
   }
 }
