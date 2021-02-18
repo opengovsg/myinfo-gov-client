@@ -5,39 +5,39 @@ export enum MyInfoSource {
   SingPassVerified = '4',
 }
 
-interface IMetadata {
+type Metadata = {
   lastupdated: string
   source: MyInfoSource
   classification: 'C'
 }
 
-interface IUnavailableField extends IMetadata {
+type UnavailableField = Metadata & {
   unavailable: true
 }
 
-interface IPossiblyAvailableMetadata extends IMetadata {
+type PossiblyAvailableMetadata = Metadata & {
   unavailable?: false
 }
 
 type MyInfoField<CustomFields> =
-  | IUnavailableField
-  | (CustomFields & IPossiblyAvailableMetadata)
+  | UnavailableField
+  | (CustomFields & PossiblyAvailableMetadata)
 
-interface StringValue {
+type StringValue = {
   value: string
 }
 
-interface NumberValue {
+type NumberValue = {
   value: number
 }
 
-interface BooleanValue {
+type BooleanValue = {
   value: boolean
 }
 
 export type BasicField = MyInfoField<StringValue>
 
-interface CodeAndDesc {
+type CodeAndDesc = {
   code: string
   desc: string
 }
@@ -49,7 +49,7 @@ export enum AddressType {
   Unformatted = 'Unformatted',
 }
 
-interface ISGAddress {
+type SGAddress = {
   type: AddressType.Singapore
   block: StringValue
   building: StringValue
@@ -60,19 +60,19 @@ interface ISGAddress {
   country: CodeAndDesc
 }
 
-interface IUnformattedAddress {
+type UnformattedAddress = {
   type: AddressType.Unformatted
   line1: StringValue
   line2: StringValue
 }
 
 export type MyInfoAddress =
-  | MyInfoField<ISGAddress>
-  | MyInfoField<IUnformattedAddress>
+  | MyInfoField<SGAddress>
+  | MyInfoField<UnformattedAddress>
 
-export type HDBOwnership = MyInfoField<{
+type HDBOwnershipCustomFields = {
   noofowners: NumberValue
-  address: ISGAddress | IUnformattedAddress
+  address: SGAddress | UnformattedAddress
   hdbtype: CodeAndDesc
   leasecommencementdate: StringValue
   termoflease: NumberValue
@@ -86,17 +86,21 @@ export type HDBOwnership = MyInfoField<{
   }
   outstandingloanbalance: NumberValue
   monthlyloaninstalment: NumberValue
-}>
+}
+
+export type HDBOwnership = MyInfoField<HDBOwnershipCustomFields>
 
 export type OwnerPrivate = MyInfoField<BooleanValue>
 
-export type MyInfoPhoneNumber = MyInfoField<{
+type MyInfoPhoneNumberCustomFields = {
   prefix: StringValue
   areacode: StringValue
   nbr: StringValue
-}>
+}
 
-export type ChildBelow21 = MyInfoField<{
+export type MyInfoPhoneNumber = MyInfoField<MyInfoPhoneNumberCustomFields>
+
+type ChildCustomFields = {
   birthcertno: StringValue
   name: StringValue
   hanyupinyinname: StringValue
@@ -110,15 +114,15 @@ export type ChildBelow21 = MyInfoField<{
   lifestatus: CodeAndDesc
   dob: StringValue
   tob: StringValue
-}>
+}
 
-export type ChildAbove21 = MyInfoField<{
-  birthcertno: StringValue
-}>
+export type ChildBelow21 = MyInfoField<ChildCustomFields>
+
+export type ChildAbove21 = MyInfoField<Pick<ChildCustomFields, 'birthcertno'>>
 
 export type ChildRecord = ChildBelow21 | ChildAbove21
 
-export type SponsoredChildBelow21 = MyInfoField<{
+type SponsoredChildCustomFields = {
   nric: StringValue
   name: StringValue
   hanyupinyinname: StringValue
@@ -135,11 +139,13 @@ export type SponsoredChildBelow21 = MyInfoField<{
   residentialstatus: CodeAndDesc
   nationality: CodeAndDesc
   scprgrantdate: StringValue
-}>
+}
 
-export type SponsoredChildAbove21 = MyInfoField<{
-  nric: StringValue
-}>
+export type SponsoredChildBelow21 = MyInfoField<SponsoredChildCustomFields>
+
+export type SponsoredChildAbove21 = MyInfoField<
+  Pick<SponsoredChildCustomFields, 'nric'>
+>
 
 export type SponsoredChildRecord = SponsoredChildBelow21 | SponsoredChildAbove21
 
@@ -152,7 +158,7 @@ export type HouseholdIncome = MyInfoField<{
   low: NumberValue
 }>
 
-export type MyInfoVehicle = MyInfoField<{
+type MyInfoVehicleCustomFields = {
   vehicleno: StringValue
   type: StringValue
   iulabelno: StringValue
@@ -190,31 +196,39 @@ export type MyInfoVehicle = MyInfoField<{
   minimumparfbenefit: NumberValue
   nooftransfers: NumberValue
   vpc: StringValue
-}>
+}
 
-interface StartEndDate {
+export type MyInfoVehicle = MyInfoField<MyInfoVehicleCustomFields>
+
+type StartEndDate = {
   startdate: StringValue
   enddate: StringValue
 }
 
-export type DrivingLicence = MyInfoField<{
+type PDL = {
+  validity: CodeAndDesc
+  expirydate: StringValue
+  classes: { class: StringValue }[]
+}
+
+type QDL = {
+  validity: CodeAndDesc
+  expirydate: StringValue
+  classes: { class: StringValue; issuedate: StringValue }[]
+}
+
+type DrivingLicenceCustomFields = {
   comstatus: CodeAndDesc
   totaldemeritpoints: NumberValue
   suspension: StartEndDate
   disqualification: StartEndDate
   revocation: StartEndDate
-  pdl: {
-    validity: CodeAndDesc
-    expirydate: StringValue
-    classes: { class: StringValue }[]
-  }
-  qdl: {
-    validity: CodeAndDesc
-    expirydate: StringValue
-    classes: { class: StringValue; issuedate: StringValue }[]
-  }
+  pdl: PDL
+  qdl: QDL
   photocardserialno: StringValue
-}>
+}
+
+export type DrivingLicence = MyInfoField<DrivingLicenceCustomFields>
 
 export type MerdekaGen = MyInfoField<{
   eligibility: BooleanValue
@@ -237,14 +251,14 @@ export type GSTVoucher = MyInfoField<{
   year: StringValue
 }>
 
-interface INOABasicFields {
+type NOABasicFields = {
   amount: NumberValue
   yearofassessment: StringValue
 }
 
-export type NOABasic = MyInfoField<INOABasicFields>
+export type NOABasic = MyInfoField<NOABasicFields>
 
-interface INOAFullFields {
+type NOAFullFields = {
   amount: NumberValue
   yearofassessment: StringValue
   employment: NumberValue
@@ -255,14 +269,14 @@ interface INOAFullFields {
   category: StringValue
 }
 
-export type NOAFull = MyInfoField<INOAFullFields>
+export type NOAFull = MyInfoField<NOAFullFields>
 
 export type NOAHistoryBasic = MyInfoField<{
-  noas: INOABasicFields[]
+  noas: NOABasicFields[]
 }>
 
 export type NOAHistoryFull = MyInfoField<{
-  noas: INOAFullFields[]
+  noas: NOAFullFields[]
 }>
 
 export type CPFContributions = MyInfoField<{
@@ -340,7 +354,7 @@ export enum MyInfoAttribute {
   CPFBalances = 'cpfbalances',
 }
 
-interface IPersonFull {
+type IPersonFull = {
   uinfin: BasicField
   name: BasicField
   hanyupinyinname: BasicField
@@ -394,7 +408,36 @@ interface IPersonFull {
 
 export type IPerson = Partial<IPersonFull>
 
-export type MyInfoScope = keyof IPerson
+export type HDBOwnershipScope = `${MyInfoAttribute.HDBOwnership}.${keyof HDBOwnershipCustomFields}`
+export type ChildrenBirthRecordsScope = `${MyInfoAttribute.ChildrenBirthRecords}.${keyof ChildCustomFields}`
+export type SponsoredChildrenRecordsScope = `${MyInfoAttribute.SponsoredChildrenRecords}.${keyof SponsoredChildCustomFields}`
+export type VehiclesScope = `${MyInfoAttribute.Vehicles}.${keyof MyInfoVehicleCustomFields}`
+export type DrivingLicenceScope =
+  | `${MyInfoAttribute.DrivingLicence}.${Exclude<
+      keyof DrivingLicenceCustomFields,
+      'suspension' | 'disqualification' | 'revocation' | 'pdl' | 'qdl'
+    >}`
+  | `${MyInfoAttribute.DrivingLicence}.${
+      | 'suspension'
+      | 'disqualification'
+      | 'revocation'}.${keyof StartEndDate}`
+  | `${MyInfoAttribute.DrivingLicence}.pdl.${keyof PDL}`
+  | `${MyInfoAttribute.DrivingLicence}.qdl.${keyof QDL}`
+
+export type MyInfoScope =
+  | Exclude<
+      keyof IPerson,
+      | 'hdbownership'
+      | 'childrenbirthrecords'
+      | 'sponsoredchildrenrecords'
+      | 'vehicles'
+      | 'drivinglicence'
+    >
+  | HDBOwnershipScope
+  | ChildrenBirthRecordsScope
+  | SponsoredChildrenRecordsScope
+  | VehiclesScope
+  | DrivingLicenceScope
 
 // Check that IPerson includes all keys from MyInfoAttribute
 type IPersonCheck = Exclude<MyInfoAttribute, keyof IPerson>
