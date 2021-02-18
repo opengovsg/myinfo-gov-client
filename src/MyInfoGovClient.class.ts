@@ -250,11 +250,17 @@ export class MyInfoGovClient {
       throw new MyInfoResponseError(err)
     }
     // In dev mode, the response is automatically parsed to an object by Axios.
-    // Otherwise, the response is a JWE and must be decrypted.
-    if (typeof response.data === 'string') {
-      return this._decryptJWE(response.data)
+    if (this.mode === MyInfoMode.Dev) {
+      if (typeof response.data !== 'object') {
+        throw new WrongDataShapeError()
+      }
+      return response.data
     }
-    return response.data
+    // In non-dev mode, the response is a JWE and must be decrypted
+    if (typeof response.data !== 'string') {
+      throw new WrongDataShapeError()
+    }
+    return this._decryptJWE(response.data)
   }
 
   /**
