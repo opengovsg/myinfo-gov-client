@@ -394,7 +394,7 @@ interface IPersonFull {
 
 export type IPerson = Partial<IPersonFull>
 
-export type MyInfoAttributeString = keyof IPerson
+export type MyInfoScope = keyof IPerson
 
 // Check that IPerson includes all keys from MyInfoAttribute
 type IPersonCheck = Exclude<MyInfoAttribute, keyof IPerson>

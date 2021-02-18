@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from 'axios'
 import jose from 'node-jose'
 import { verify as verifyJwt } from 'jsonwebtoken'
 import { hasProp, objToSearchParams, sortObjKeys } from './util'
-import { IPerson, MyInfoAttributeString } from './myinfo-types'
+import { IPerson, MyInfoScope } from './myinfo-types'
 import {
   DecryptDataError,
   InvalidJWTError,
@@ -49,7 +49,7 @@ export interface IMyInfoConfig {
  */
 export interface IAuthRequest {
   purpose: string
-  requestedAttributes: MyInfoAttributeString[]
+  requestedAttributes: MyInfoScope[]
   relayState: string
   singpassEserviceId?: string
   redirectEndpoint?: string
@@ -186,7 +186,7 @@ export class MyInfoGovClient {
    */
   async getPerson(
     accessToken: string,
-    requestedAttributes: MyInfoAttributeString[],
+    requestedAttributes: MyInfoScope[],
     singpassEserviceId?: string,
   ): Promise<IPersonResponse> {
     // Extract NRIC
@@ -214,7 +214,7 @@ export class MyInfoGovClient {
    */
   async _sendPersonRequest(
     accessToken: string,
-    requestedAttributes: MyInfoAttributeString[],
+    requestedAttributes: MyInfoScope[],
     singpassEserviceId: string,
     uinFin?: string,
   ): Promise<IPerson> {

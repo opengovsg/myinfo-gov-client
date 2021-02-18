@@ -137,9 +137,9 @@ Purpose of requesting the data, which will be shown to user.
 
 **requestedAttributes**
 
-Type: `MyInfoAttributeString[]`
+Type: `MyInfoScope[]`
 
-MyInfo attributes which the user must consent to provide.
+MyInfo scopes which the user must consent to provide.
 
 **relayState**
 
@@ -197,9 +197,9 @@ The access token retrieved from the Token endpoint using `.getAccessToken`.
 
 **requestedAttributes**
 
-Type: `MyInfoAttributeString[]`
+Type: `MyInfoScopes[]`
 
-Attributes to request from Myinfo. Should correspond to the attributes provided when initiating SingPass login.
+Scopes to request from Myinfo. Should correspond to the scopes provided when initiating SingPass login.
 
 **singpassEserviceId**
 
