@@ -1,11 +1,5 @@
 import * as fs from 'fs'
-import {
-  AddressType,
-  IPerson,
-  MyInfoAttribute,
-  MyInfoScope,
-  MyInfoSource,
-} from '../src/myinfo-types'
+import { MyInfoAttribute, MyInfoScope } from '../src/myinfo-types'
 
 export const MOCK_BASE_URL = 'https://myinfo.gov.client'
 export const MOCK_REDIRECT_PATH = '/target'
@@ -21,6 +15,8 @@ export const MOCK_REQUESTED_ATTRIBUTES = [
   'mobileno' as const,
   'occupation' as const,
   'marital' as const,
+  'vehicles.vehicleno' as const,
+  'hdbownership.noofowners' as const,
 ]
 export const MOCK_AUTH_CODE = 'mockAuthCode'
 export const MOCK_ACCESS_TOKEN = 'mockAccessToken'
