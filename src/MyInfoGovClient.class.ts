@@ -13,6 +13,7 @@ import {
   MyInfoResponseError,
   WrongDataShapeError,
   WrongAccessTokenShapeError,
+  InvalidDataSignatureError,
 } from './errors'
 
 /**
@@ -183,6 +184,10 @@ export class MyInfoGovClient {
    * @throws {WrongAccessTokenShapeError} Throws if decoded JWT has an unexpected
    * type or shape
    * @throws {MyInfoResponseError} Throws if MyInfo returns a non-200 response
+   * @throws {DecryptDataError} Throws if an error occurs while decrypting data
+   * @throws {InvalidDataSignatureError} Throws if signature on data is invalid
+   * @throws {WrongDataShapeError} Throws if decrypted data from MyInfo is
+   * of the wrong type
    */
   async getPerson(
     accessToken: string,
@@ -211,6 +216,10 @@ export class MyInfoGovClient {
    * given, it is extracted from the access token.
    * @returns Data retrieved from the Person endpoint
    * @throws {MyInfoResponseError} Throws if MyInfo returns a non-200 response
+   * @throws {DecryptDataError} Throws if an error occurs while decrypting data
+   * @throws {InvalidDataSignatureError} Throws if signature on data is invalid
+   * @throws {WrongDataShapeError} Throws if decrypted data from MyInfo is
+   * of the wrong type
    */
   async _sendPersonRequest(
     accessToken: string,
@@ -348,14 +357,16 @@ export class MyInfoGovClient {
   }
 
   /**
-   * Decrypts a JWE response string
-   * @param jweResponse Fullstop-delimited jweResponse string
-   * @return Promise which resolves to a parsed response
-   * @throws {DecryptDataError} Throws if an error occurs while decrypting
+   * Decrypts a JWE response string.
+   * @param jwe Fullstop-delimited JWE
+   * @returns The decrypted data, with signature already verified
+   * @throws {DecryptDataError} Throws if an error occurs while decrypting data
+   * @throws {InvalidDataSignatureError} Throws if signature on data is invalid
    * @throws {WrongDataShapeError} Throws if decrypted data from MyInfo is
    * of the wrong type
    */
   async _decryptJWE(jwe: string): Promise<IPerson> {
+    let jwt: string
     let decoded: string | IPerson
     try {
       const keystore = await jose.JWK.createKeyStore().add(
@@ -363,12 +374,16 @@ export class MyInfoGovClient {
         'pem',
       )
       const { payload } = await jose.JWE.createDecrypt(keystore).decrypt(jwe)
-      const jwt = JSON.parse(payload.toString())
+      jwt = JSON.parse(payload.toString())
+    } catch (err: unknown) {
+      throw new DecryptDataError(err)
+    }
+    try {
       decoded = verifyJwt(jwt, this.myInfoPublicKey, {
         algorithms: ['RS256'],
       })
     } catch (err: unknown) {
-      throw new DecryptDataError(err)
+      throw new InvalidDataSignatureError(err)
     }
     if (typeof decoded !== 'object') {
       throw new WrongDataShapeError()

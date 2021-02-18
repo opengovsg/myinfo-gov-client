@@ -33,7 +33,7 @@ export class MissingParamsError extends MyInfoGovClientError {
 export class InvalidTokenSignatureError extends MyInfoGovClientError {
   constructor(
     verifyError: unknown,
-    message = 'Signature on JWT from MyInfo could not be verified',
+    message = 'Signature on access token from MyInfo could not be verified',
   ) {
     super(message, verifyError)
   }
@@ -75,6 +75,18 @@ export class DecryptDataError extends MyInfoGovClientError {
   constructor(
     error: unknown,
     message = 'Error while decrypting data from MyInfo Person API',
+  ) {
+    super(message, error)
+  }
+}
+
+/**
+ * Invalid signature on data from Person API
+ */
+export class InvalidDataSignatureError extends MyInfoGovClientError {
+  constructor(
+    error: unknown,
+    message = 'Signature on Person API data from MyInfo could not be verified',
   ) {
     super(message, error)
   }
