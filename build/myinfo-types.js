@@ -1,0 +1,70 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MyInfoAttribute = exports.AddressType = exports.MyInfoSource = void 0;
+var MyInfoSource;
+(function (MyInfoSource) {
+    MyInfoSource["GovtVerified"] = "1";
+    MyInfoSource["UserProvided"] = "2";
+    MyInfoSource["NotApplicable"] = "3";
+    MyInfoSource["SingPassVerified"] = "4";
+})(MyInfoSource = exports.MyInfoSource || (exports.MyInfoSource = {}));
+var AddressType;
+(function (AddressType) {
+    AddressType["Singapore"] = "SG";
+    AddressType["Unformatted"] = "Unformatted";
+})(AddressType = exports.AddressType || (exports.AddressType = {}));
+/**
+ * Keys of data returned by Person API.
+ */
+var MyInfoAttribute;
+(function (MyInfoAttribute) {
+    MyInfoAttribute["UinFin"] = "uinfin";
+    MyInfoAttribute["Name"] = "name";
+    MyInfoAttribute["HanYuPinYinName"] = "hanyupinyinname";
+    MyInfoAttribute["AliasName"] = "aliasname";
+    MyInfoAttribute["HanYuPinYinAliasName"] = "hanyupinyinaliasname";
+    MyInfoAttribute["MarriedName"] = "marriedname";
+    MyInfoAttribute["Sex"] = "sex";
+    MyInfoAttribute["Race"] = "race";
+    MyInfoAttribute["SecondaryRace"] = "secondaryrace";
+    MyInfoAttribute["Dialect"] = "dialect";
+    MyInfoAttribute["Nationality"] = "nationality";
+    MyInfoAttribute["DateOfBirth"] = "dob";
+    MyInfoAttribute["BirthCountry"] = "birthcountry";
+    MyInfoAttribute["ResidentialStatus"] = "residentialstatus";
+    MyInfoAttribute["PassportNumber"] = "passportnumber";
+    MyInfoAttribute["PassportExpiryDate"] = "passportexpirydate";
+    MyInfoAttribute["RegisteredAddress"] = "regadd";
+    MyInfoAttribute["HousingType"] = "housingtype";
+    MyInfoAttribute["HDBType"] = "hdbtype";
+    MyInfoAttribute["HDBOwnership"] = "hdbownership";
+    MyInfoAttribute["OwnerPrivate"] = "ownerprivate";
+    MyInfoAttribute["Email"] = "email";
+    MyInfoAttribute["MobileNo"] = "mobileno";
+    MyInfoAttribute["MaritalStatus"] = "marital";
+    MyInfoAttribute["MarriageCertNumber"] = "marriagecertno";
+    MyInfoAttribute["CountryOfMarriage"] = "countryofmarriage";
+    MyInfoAttribute["MarriageDate"] = "marriagedate";
+    MyInfoAttribute["DivorceDate"] = "divorcedate";
+    MyInfoAttribute["ChildrenBirthRecords"] = "childrenbirthrecords";
+    MyInfoAttribute["SponsoredChildrenRecords"] = "sponsoredchildrenrecords";
+    MyInfoAttribute["Occupation"] = "occupation";
+    MyInfoAttribute["Employment"] = "employment";
+    MyInfoAttribute["PassType"] = "passtype";
+    MyInfoAttribute["PassStatus"] = "passstatus";
+    MyInfoAttribute["PassExpiryDate"] = "passexpirydate";
+    MyInfoAttribute["EmploymentSector"] = "employmentsector";
+    MyInfoAttribute["HouseholdIncome"] = "householdincome";
+    MyInfoAttribute["Vehicles"] = "vehicles";
+    MyInfoAttribute["DrivingLicence"] = "drivinglicence";
+    MyInfoAttribute["MerdekaGen"] = "merdekagen";
+    MyInfoAttribute["SilverSupport"] = "silversupport";
+    MyInfoAttribute["GSTVoucher"] = "gstvoucher";
+    MyInfoAttribute["NOABasic"] = "noa-basic";
+    MyInfoAttribute["NOA"] = "noa";
+    MyInfoAttribute["NOAHistoryBasic"] = "noahistory-basic";
+    MyInfoAttribute["NOAHistory"] = "noahistory";
+    MyInfoAttribute["CPFContributions"] = "cpfcontributions";
+    MyInfoAttribute["CPFEmployers"] = "cpfemployers";
+    MyInfoAttribute["CPFBalances"] = "cpfbalances";
+})(MyInfoAttribute = exports.MyInfoAttribute || (exports.MyInfoAttribute = {}));
