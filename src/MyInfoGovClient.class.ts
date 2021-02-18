@@ -380,6 +380,7 @@ export class MyInfoGovClient {
         'pem',
       )
       const { payload } = await jose.JWE.createDecrypt(keystore).decrypt(jwe)
+      // The JSON.parse here is important, as the payload is wrapped in quotes
       jwt = JSON.parse(payload.toString())
     } catch (err: unknown) {
       throw new DecryptDataError(err)
