@@ -7,7 +7,7 @@ import {
   MyInfoMode,
 } from '../../src/MyInfoGovClient.class'
 import {
-  EXPECTED_PERSON_DATA,
+  EXPECTED_NESTED_DATA,
   MOCK_ACCESS_TOKEN,
   MOCK_AUTH_CODE,
   MOCK_CLIENT_ID,
@@ -520,7 +520,7 @@ describe('MyInfoGovClient', () => {
       const client = new MyInfoGovClient(clientParams)
       MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
       MockAxios.get.mockResolvedValueOnce({
-        data: EXPECTED_PERSON_DATA,
+        data: EXPECTED_NESTED_DATA,
       })
 
       const result = await client.getPerson(
@@ -530,7 +530,7 @@ describe('MyInfoGovClient', () => {
 
       expect(result).toEqual({
         uinFin: MOCK_UIN_FIN,
-        data: EXPECTED_PERSON_DATA,
+        data: EXPECTED_NESTED_DATA,
       })
     })
 
@@ -538,7 +538,7 @@ describe('MyInfoGovClient', () => {
       const client = new MyInfoGovClient(clientParams)
       MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
       MockAxios.get.mockResolvedValueOnce({
-        data: EXPECTED_PERSON_DATA,
+        data: EXPECTED_NESTED_DATA,
       })
 
       const result = await client.getPerson(
@@ -549,7 +549,7 @@ describe('MyInfoGovClient', () => {
 
       expect(result).toEqual({
         uinFin: MOCK_UIN_FIN,
-        data: EXPECTED_PERSON_DATA,
+        data: EXPECTED_NESTED_DATA,
       })
     })
 

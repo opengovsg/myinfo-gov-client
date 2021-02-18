@@ -1,5 +1,4 @@
 import Express, { RequestHandler } from 'express'
-import { MyInfoAttribute } from '../../src/myinfo-types'
 import { MyInfoGovClient, MyInfoMode } from '../../src/MyInfoGovClient.class'
 import {
   MOCK_CLIENT_ID,
@@ -7,11 +6,21 @@ import {
   MOCK_ESRVC_ID,
   MOCK_PURPOSE,
   MOCK_REDIRECT_PATH,
-  MOCK_RELAY_STATE,
+  NESTED_SCOPES,
+  NESTED_RELAY_STATE,
+  NON_NESTED_RELAY_STATE,
+  NON_NESTED_SCOPES,
   TEST_PRIVATE_KEY,
   TEST_PUBLIC_KEY,
   TEST_SERVER_PORT,
 } from '../constants'
+
+/**
+ * This is a toy app which has two login links, one for
+ * non-nested scopes (e.g. 'name') and one for nested scopes
+ * (e.g. 'vehicles.vehicleno'). The scopes were separated into
+ * two sets to prevent 431 errors (request header fields too large).
+ */
 
 const app = Express()
 
@@ -27,13 +36,19 @@ const client = new MyInfoGovClient({
 client.baseAPIUrl = 'http://localhost:5156/myinfo/v3'
 
 const handleGetHome: RequestHandler = (_req, res) => {
-  const redirectUrl = client.createRedirectURL({
+  const nonNestedRedirectUrl = client.createRedirectURL({
     purpose: MOCK_PURPOSE,
-    relayState: MOCK_RELAY_STATE,
-    requestedAttributes: Object.values(MyInfoAttribute),
+    relayState: NON_NESTED_RELAY_STATE,
+    requestedAttributes: NON_NESTED_SCOPES,
+  })
+  const nestedRedirectUrl = client.createRedirectURL({
+    purpose: MOCK_PURPOSE,
+    relayState: NESTED_RELAY_STATE,
+    requestedAttributes: NESTED_SCOPES,
   })
   return res.send(`
-    <a class="login" href=${redirectUrl}>Log in</a>
+    <a class="${NON_NESTED_RELAY_STATE}" href=${nonNestedRedirectUrl}>Log in 1</a>
+    <a class="${NESTED_RELAY_STATE}" href=${nestedRedirectUrl}>Log in 2</a>
   `)
 }
 
@@ -44,18 +59,13 @@ const handleReceiveRedirect: RequestHandler<
   { code: string; state: string }
 > = async (req, res) => {
   const { code, state } = req.query
+  const scopes =
+    state === NESTED_RELAY_STATE ? NESTED_SCOPES : NON_NESTED_SCOPES
   const accessToken = await client.getAccessToken(code)
-  const result = await client.getPerson(
-    accessToken,
-    Object.values(MyInfoAttribute),
-  )
-  const toStringify = {
-    ...result,
-    state,
-  }
+  const result = await client.getPerson(accessToken, scopes)
   return res.send(`
     <div class="content">
-      ${JSON.stringify(toStringify)}
+      ${JSON.stringify(result)}
     </div>
   `)
 }
