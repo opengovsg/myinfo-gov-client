@@ -42,9 +42,9 @@ export class InvalidJWTError extends MyInfoGovClientError {
 /**
  * JWT had wrong shape
  */
-export class WrongJWTShapeError extends MyInfoGovClientError {
+export class WrongAccessTokenShapeError extends MyInfoGovClientError {
   constructor(
-    message = 'Decoded JWT from MyInfo had unexpected shape, so NRIC could not be extracted',
+    message = 'Decoded access token from MyInfo had unexpected shape, so NRIC could not be extracted',
   ) {
     super(message)
   }
@@ -77,5 +77,14 @@ export class DecryptDataError extends MyInfoGovClientError {
     message = 'Error while decrypting data from MyInfo Person API',
   ) {
     super(message, error)
+  }
+}
+
+/**
+ * Person data from MyInfo had unexpected shape
+ */
+export class WrongDataShapeError extends MyInfoGovClientError {
+  constructor(message = 'Data from MyInfo Person API had unexpected shape') {
+    super(message)
   }
 }

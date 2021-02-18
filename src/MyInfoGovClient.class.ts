@@ -11,7 +11,8 @@ import {
   MissingAccessTokenError,
   MissingParamsError,
   MyInfoResponseError,
-  WrongJWTShapeError,
+  WrongDataShapeError,
+  WrongAccessTokenShapeError,
 } from './errors'
 
 /**
@@ -179,7 +180,7 @@ export class MyInfoGovClient {
    * Defaults to the e-serviceId provided in the constructor.
    * @returns Object containing the user's NRIC/FIN and the data
    * @throws {InvalidJWTError} Throws if the JWT signature is invalid
-   * @throws {WrongJWTShapeError} Throws if decoded JWT has an unexpected
+   * @throws {WrongAccessTokenShapeError} Throws if decoded JWT has an unexpected
    * type or shape
    * @throws {MyInfoResponseError} Throws if MyInfo returns a non-200 response
    */
@@ -253,7 +254,7 @@ export class MyInfoGovClient {
    * by the Token endpoint
    * @returns The UIN or FIN decoded from the JWT
    * @throws {InvalidJWTError} Throws if the JWT signature is invalid
-   * @throws {WrongJWTShapeError} Throws if decoded JWT has an unexpected
+   * @throws {WrongAccessTokenShapeError} Throws if decoded JWT has an unexpected
    * type or shape
    */
   extractUinFin(accessToken: string): string {
@@ -272,7 +273,7 @@ export class MyInfoGovClient {
     ) {
       return decoded.sub
     }
-    throw new WrongJWTShapeError()
+    throw new WrongAccessTokenShapeError()
   }
 
   /**
@@ -351,17 +352,27 @@ export class MyInfoGovClient {
    * @param jweResponse Fullstop-delimited jweResponse string
    * @return Promise which resolves to a parsed response
    * @throws {DecryptDataError} Throws if an error occurs while decrypting
+   * @throws {WrongDataShapeError} Throws if decrypted data from MyInfo is
+   * of the wrong type
    */
   async _decryptJWE(jwe: string): Promise<IPerson> {
+    let decoded: string | IPerson
     try {
       const keystore = await jose.JWK.createKeyStore().add(
         this.clientPrivateKey,
         'pem',
       )
       const { payload } = await jose.JWE.createDecrypt(keystore).decrypt(jwe)
-      return JSON.parse(payload.toString())
+      const jwt = JSON.parse(payload.toString())
+      decoded = verifyJwt(jwt, this.myInfoPublicKey, {
+        algorithms: ['RS256'],
+      })
     } catch (err: unknown) {
       throw new DecryptDataError(err)
     }
+    if (typeof decoded !== 'object') {
+      throw new WrongDataShapeError()
+    }
+    return decoded
   }
 }

@@ -28,7 +28,7 @@ import {
   InvalidJWTError,
   MissingAccessTokenError,
   MyInfoResponseError,
-  WrongJWTShapeError,
+  WrongAccessTokenShapeError,
 } from '../../src/errors'
 
 jest.mock('axios')
@@ -491,7 +491,7 @@ describe('MyInfoGovClient', () => {
 
       const functionCall = () => client.extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrowError(new WrongJWTShapeError())
+      expect(functionCall).toThrowError(new WrongAccessTokenShapeError())
     })
 
     it('should throw error when decoded JWT is object with invalid shape', () => {
@@ -501,7 +501,7 @@ describe('MyInfoGovClient', () => {
 
       const functionCall = () => client.extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrowError(new WrongJWTShapeError())
+      expect(functionCall).toThrowError(new WrongAccessTokenShapeError())
     })
 
     it('should throw error when NRIC has invalid type', () => {
@@ -511,7 +511,7 @@ describe('MyInfoGovClient', () => {
 
       const functionCall = () => client.extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrowError(new WrongJWTShapeError())
+      expect(functionCall).toThrowError(new WrongAccessTokenShapeError())
     })
   })
 
@@ -576,7 +576,7 @@ describe('MyInfoGovClient', () => {
         client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
       await expect(functionCall()).rejects.toThrowError(
-        new WrongJWTShapeError(),
+        new WrongAccessTokenShapeError(),
       )
     })
 
