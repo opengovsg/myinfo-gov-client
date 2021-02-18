@@ -1,6 +1,7 @@
 import crypto from 'crypto'
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
+import jose from 'node-jose'
 import {
   IMyInfoConfig,
   MyInfoGovClient,
@@ -25,10 +26,13 @@ import {
 import { mocked } from 'ts-jest/utils'
 import qs from 'qs'
 import {
+  DecryptDataError,
+  InvalidDataSignatureError,
   InvalidTokenSignatureError,
   MissingAccessTokenError,
   MyInfoResponseError,
   WrongAccessTokenShapeError,
+  WrongDataShapeError,
 } from '../../src/errors'
 
 jest.mock('axios')
@@ -382,7 +386,7 @@ describe('MyInfoGovClient', () => {
         attributes: MOCK_REQUESTED_ATTRIBUTES.join(),
         sp_esvcId: client.singpassEserviceId,
       }
-      const mockData = { sub: MOCK_UIN_FIN }
+      const mockData = EXPECTED_NESTED_DATA
       MockAxios.get.mockResolvedValueOnce({
         data: mockData,
       })
@@ -450,6 +454,203 @@ describe('MyInfoGovClient', () => {
 
       expect(functionCall()).rejects.toThrowError(
         new MyInfoResponseError(mockError),
+      )
+    })
+
+    it('should reject in Dev mode if response data is not an object', async () => {
+      const client = new MyInfoGovClient(clientParams)
+      MockAxios.get.mockResolvedValueOnce({
+        data: 'string',
+      })
+      MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
+
+      const functionCall = () =>
+        client._sendPersonRequest(
+          MOCK_ACCESS_TOKEN,
+          MOCK_REQUESTED_ATTRIBUTES,
+          clientParams.singpassEserviceId,
+        )
+
+      expect(functionCall()).rejects.toThrowError(new WrongDataShapeError())
+    })
+
+    it('should reject in Staging mode if response data is not a string', async () => {
+      const client = new MyInfoGovClient({
+        ...clientParams,
+        mode: MyInfoMode.Staging,
+      })
+      MockAxios.get.mockResolvedValueOnce({
+        data: { key: 'value' },
+      })
+      MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
+
+      const functionCall = () =>
+        client._sendPersonRequest(
+          MOCK_ACCESS_TOKEN,
+          MOCK_REQUESTED_ATTRIBUTES,
+          clientParams.singpassEserviceId,
+        )
+
+      expect(functionCall()).rejects.toThrowError(new WrongDataShapeError())
+    })
+
+    it('should reject in Prod mode if response data is not a string', async () => {
+      const client = new MyInfoGovClient({
+        ...clientParams,
+        mode: MyInfoMode.Production,
+      })
+      MockAxios.get.mockResolvedValueOnce({
+        data: { key: 'value' },
+      })
+      MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
+
+      const functionCall = () =>
+        client._sendPersonRequest(
+          MOCK_ACCESS_TOKEN,
+          MOCK_REQUESTED_ATTRIBUTES,
+          clientParams.singpassEserviceId,
+        )
+
+      expect(functionCall()).rejects.toThrowError(new WrongDataShapeError())
+    })
+
+    it('should decrypt the JWE response in non-Dev mode', async () => {
+      const client = new MyInfoGovClient({
+        ...clientParams,
+        mode: MyInfoMode.Production,
+      })
+      const expectedUrl = `${client.baseAPIUrl}/person/${MOCK_UIN_FIN}/`
+      const expectedQueryParamsObj = {
+        client_id: client.clientId,
+        attributes: MOCK_REQUESTED_ATTRIBUTES.join(),
+        sp_esvcId: client.singpassEserviceId,
+      }
+      const mockJwe = 'jwe'
+      MockAxios.get.mockResolvedValueOnce({
+        data: mockJwe,
+      })
+      const mockJWKAdd = jest.fn()
+      const mockPayload = '"payload"'
+      const mockJWEDecrypt = jest.fn().mockResolvedValueOnce({
+        payload: mockPayload,
+      })
+      jest.spyOn(jose.JWK, 'createKeyStore').mockReturnValueOnce(({
+        add: mockJWKAdd,
+      } as unknown) as jose.JWK.KeyStore)
+      jest.spyOn(jose.JWE, 'createDecrypt').mockReturnValueOnce(({
+        decrypt: mockJWEDecrypt,
+      } as unknown) as jose.JWE.Decryptor)
+      MockJwtModule.verify.mockImplementationOnce(() => EXPECTED_NESTED_DATA)
+
+      const result = await client._sendPersonRequest(
+        MOCK_ACCESS_TOKEN,
+        MOCK_REQUESTED_ATTRIBUTES,
+        clientParams.singpassEserviceId,
+        MOCK_UIN_FIN,
+      )
+
+      expect(MockAxios.get).toHaveBeenCalledWith(expectedUrl, {
+        params: expectedQueryParamsObj,
+        paramsSerializer: expect.any(Function),
+        headers: {
+          'Cache-Control': 'no-cache',
+          Authorization: expect.any(String),
+        },
+      })
+      expect(result).toEqual(EXPECTED_NESTED_DATA)
+      expect(mockJWKAdd).toHaveBeenCalledWith(client.clientPrivateKey, 'pem')
+      expect(mockJWEDecrypt).toHaveBeenCalledWith(mockJwe)
+      expect(MockJwtModule.verify).toHaveBeenCalledWith(
+        JSON.parse(mockPayload),
+        client.myInfoPublicKey,
+        {
+          algorithms: ['RS256'],
+        },
+      )
+    })
+  })
+
+  describe('_decryptJWE', () => {
+    const mockJwe = 'jwe'
+    const mockJWKAdd = jest.fn()
+    const mockPayload = '"payload"'
+    const mockJWEDecrypt = jest.fn()
+
+    beforeEach(() => {
+      mockJWEDecrypt.mockResolvedValueOnce({
+        payload: mockPayload,
+      })
+      jest.spyOn(jose.JWK, 'createKeyStore').mockReturnValueOnce(({
+        add: mockJWKAdd,
+      } as unknown) as jose.JWK.KeyStore)
+      jest.spyOn(jose.JWE, 'createDecrypt').mockReturnValueOnce(({
+        decrypt: mockJWEDecrypt,
+      } as unknown) as jose.JWE.Decryptor)
+      MockJwtModule.verify.mockImplementationOnce(() => EXPECTED_NESTED_DATA)
+    })
+
+    it('should decrypt, verify and return the data when data is valid', async () => {
+      const client = new MyInfoGovClient(clientParams)
+
+      const result = await client._decryptJWE(mockJwe)
+
+      expect(result).toEqual(EXPECTED_NESTED_DATA)
+      expect(mockJWKAdd).toHaveBeenCalledWith(client.clientPrivateKey, 'pem')
+      expect(mockJWEDecrypt).toHaveBeenCalledWith(mockJwe)
+      expect(MockJwtModule.verify).toHaveBeenCalledWith(
+        JSON.parse(mockPayload),
+        client.myInfoPublicKey,
+        {
+          algorithms: ['RS256'],
+        },
+      )
+    })
+
+    it('should throw DecryptDataError when decryption error occurs', async () => {
+      const client = new MyInfoGovClient(clientParams)
+      const mockError = new Error('mockError')
+      mockJWEDecrypt.mockReset()
+      mockJWEDecrypt.mockRejectedValueOnce(mockError)
+
+      await expect(client._decryptJWE(mockJwe)).rejects.toThrowError(
+        new DecryptDataError(mockError),
+      )
+    })
+
+    it('should throw InvalidDataSignatureError when signature is invalid', async () => {
+      const client = new MyInfoGovClient(clientParams)
+      const mockError = new Error('mockError')
+      MockJwtModule.verify.mockReset()
+      MockJwtModule.verify.mockImplementationOnce(() => {
+        throw mockError
+      })
+
+      await expect(client._decryptJWE(mockJwe)).rejects.toThrowError(
+        new InvalidDataSignatureError(mockError),
+      )
+    })
+
+    it('should throw InvalidDataSignatureError when signature is invalid', async () => {
+      const client = new MyInfoGovClient(clientParams)
+      const mockError = new Error('mockError')
+      MockJwtModule.verify.mockReset()
+      MockJwtModule.verify.mockImplementationOnce(() => {
+        throw mockError
+      })
+
+      await expect(client._decryptJWE(mockJwe)).rejects.toThrowError(
+        new InvalidDataSignatureError(mockError),
+      )
+    })
+
+    it('should throw WrongDataShapeError when decoded value is not object', async () => {
+      const client = new MyInfoGovClient(clientParams)
+      const mockError = new Error('mockError')
+      MockJwtModule.verify.mockReset()
+      MockJwtModule.verify.mockImplementationOnce(() => 'someString')
+
+      await expect(client._decryptJWE(mockJwe)).rejects.toThrowError(
+        new WrongDataShapeError(),
       )
     })
   })
