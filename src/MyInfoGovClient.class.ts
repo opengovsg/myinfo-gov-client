@@ -7,7 +7,7 @@ import { hasProp, objToSearchParams, sortObjKeys } from './util'
 import { IPerson, MyInfoScope } from './myinfo-types'
 import {
   DecryptDataError,
-  InvalidJWTError,
+  InvalidTokenSignatureError,
   MissingAccessTokenError,
   MissingParamsError,
   MyInfoResponseError,
@@ -179,7 +179,7 @@ export class MyInfoGovClient {
    * @param singpassEserviceId Optional alternative e-service ID.
    * Defaults to the e-serviceId provided in the constructor.
    * @returns Object containing the user's NRIC/FIN and the data
-   * @throws {InvalidJWTError} Throws if the JWT signature is invalid
+   * @throws {InvalidTokenSignatureError} Throws if the JWT signature is invalid
    * @throws {WrongAccessTokenShapeError} Throws if decoded JWT has an unexpected
    * type or shape
    * @throws {MyInfoResponseError} Throws if MyInfo returns a non-200 response
@@ -253,7 +253,7 @@ export class MyInfoGovClient {
    * @param accessToken JSON web token, which is the access token provided
    * by the Token endpoint
    * @returns The UIN or FIN decoded from the JWT
-   * @throws {InvalidJWTError} Throws if the JWT signature is invalid
+   * @throws {InvalidTokenSignatureError} Throws if the JWT signature is invalid
    * @throws {WrongAccessTokenShapeError} Throws if decoded JWT has an unexpected
    * type or shape
    */
@@ -264,7 +264,7 @@ export class MyInfoGovClient {
         algorithms: ['RS256'],
       })
     } catch (err: unknown) {
-      throw new InvalidJWTError(err)
+      throw new InvalidTokenSignatureError(err)
     }
     if (
       typeof decoded === 'object' &&

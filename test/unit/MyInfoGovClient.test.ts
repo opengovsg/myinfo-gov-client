@@ -25,7 +25,7 @@ import {
 import { mocked } from 'ts-jest/utils'
 import qs from 'qs'
 import {
-  InvalidJWTError,
+  InvalidTokenSignatureError,
   MissingAccessTokenError,
   MyInfoResponseError,
   WrongAccessTokenShapeError,
@@ -481,7 +481,9 @@ describe('MyInfoGovClient', () => {
 
       const functionCall = () => client.extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrowError(new InvalidJWTError(mockError))
+      expect(functionCall).toThrowError(
+        new InvalidTokenSignatureError(mockError),
+      )
     })
 
     it('should throw error when decoded JWT has invalid type', () => {
@@ -564,7 +566,7 @@ describe('MyInfoGovClient', () => {
         client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
       await expect(functionCall()).rejects.toThrowError(
-        new InvalidJWTError(mockError),
+        new InvalidTokenSignatureError(mockError),
       )
     })
 

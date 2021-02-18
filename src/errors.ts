@@ -30,7 +30,7 @@ export class MissingParamsError extends MyInfoGovClientError {
 /**
  * JWT signature could not be verified
  */
-export class InvalidJWTError extends MyInfoGovClientError {
+export class InvalidTokenSignatureError extends MyInfoGovClientError {
   constructor(
     verifyError: unknown,
     message = 'Signature on JWT from MyInfo could not be verified',
