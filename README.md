@@ -41,6 +41,7 @@ app.get('/', (_req, res) => {
   const redirectUrl = client.createRedirectURL({
     purpose: 'Information for my application',
     requestedAttributes: REQUESTED_ATTRIBUTES,
+    relayState: 'State to be returned in redirect query parameters',
   })
   return res.send(`
     <a href=${redirectUrl}>Log in</a>
