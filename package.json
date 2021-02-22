@@ -4,6 +4,9 @@
   "description": "A lightweight client to easily call the MyInfo Person v3.2 endpoint for the Singapore government. Tested with NodeJS version >=12.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "test-unit": "jest",
     "test-e2e": "env-cmd -f test/.test-env concurrently --success first --kill-others \"mockpass\" \"testcafe\"",
