@@ -197,42 +197,11 @@ export class MyInfoGovClient {
     // Extract NRIC
     const uinFin = this.extractUinFin(accessToken)
     // Get Person data
-    const data = await this._sendPersonRequest(
-      accessToken,
-      requestedAttributes,
-      singpassEserviceId ?? this.singpassEserviceId,
-      uinFin,
-    )
-    return { uinFin, data }
-  }
-
-  /**
-   * Requests MyInfo attribute data from the Person endpoint.
-   * @param accessToken Access token provided by Token endpoint
-   * @param requestedAttributes Attributes to request from MyInfo, which
-   * user has consented to provide
-   * @param singpassEserviceId ID registered with SingPass
-   * @param uinFin Optional uinFin if it has already been decoded. If not
-   * given, it is extracted from the access token.
-   * @returns Data retrieved from the Person endpoint
-   * @throws {MyInfoResponseError} Throws if MyInfo returns a non-200 response
-   * @throws {DecryptDataError} Throws if an error occurs while decrypting data
-   * @throws {InvalidDataSignatureError} Throws if signature on data is invalid
-   * @throws {WrongDataShapeError} Throws if decrypted data from MyInfo is
-   * of the wrong type
-   */
-  async _sendPersonRequest(
-    accessToken: string,
-    requestedAttributes: MyInfoScope[],
-    singpassEserviceId: string,
-    uinFin?: string,
-  ): Promise<IPerson> {
-    const definedUinFin = uinFin ?? this.extractUinFin(accessToken)
-    const url = `${this.baseAPIUrl}${Endpoint.Person}/${definedUinFin}/`
+    const url = `${this.baseAPIUrl}${Endpoint.Person}/${uinFin}/`
     const params = {
       client_id: this.clientId,
       attributes: requestedAttributes.join(),
-      sp_esvcId: singpassEserviceId,
+      sp_esvcId: singpassEserviceId ?? this.singpassEserviceId,
     }
     const paramsAuthHeader = this._generateAuthHeader('GET', url, params)
     const headers = {
@@ -254,13 +223,14 @@ export class MyInfoGovClient {
       if (typeof response.data !== 'object') {
         throw new WrongDataShapeError()
       }
-      return response.data
+      return { uinFin, data: response.data }
     }
     // In non-dev mode, the response is a JWE and must be decrypted
     if (typeof response.data !== 'string') {
       throw new WrongDataShapeError()
     }
-    return this._decryptJWE(response.data)
+    const data = await this._decryptJWE(response.data)
+    return { uinFin, data }
   }
 
   /**

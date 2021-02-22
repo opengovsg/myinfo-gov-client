@@ -377,8 +377,8 @@ describe('MyInfoGovClient', () => {
     })
   })
 
-  describe('_sendPersonRequest', () => {
-    it('should call the Person endpoint with the correct parameters when uinFin is given', async () => {
+  describe('getPerson', () => {
+    it('should return the Person data when retrieval succeeds and e-service ID is not given', async () => {
       const client = new MyInfoGovClient(clientParams)
       const expectedUrl = `${client.baseAPIUrl}/person/${MOCK_UIN_FIN}/`
       const expectedQueryParamsObj = {
@@ -386,16 +386,14 @@ describe('MyInfoGovClient', () => {
         attributes: MOCK_REQUESTED_ATTRIBUTES.join(),
         sp_esvcId: client.singpassEserviceId,
       }
-      const mockData = EXPECTED_NESTED_DATA
+      MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
       MockAxios.get.mockResolvedValueOnce({
-        data: mockData,
+        data: EXPECTED_NESTED_DATA,
       })
 
-      const result = await client._sendPersonRequest(
+      const result = await client.getPerson(
         MOCK_ACCESS_TOKEN,
         MOCK_REQUESTED_ATTRIBUTES,
-        clientParams.singpassEserviceId,
-        MOCK_UIN_FIN,
       )
 
       expect(MockAxios.get).toHaveBeenCalledWith(expectedUrl, {
@@ -406,27 +404,30 @@ describe('MyInfoGovClient', () => {
           Authorization: expect.any(String),
         },
       })
-      expect(result).toEqual(mockData)
+      expect(result).toEqual({
+        uinFin: MOCK_UIN_FIN,
+        data: EXPECTED_NESTED_DATA,
+      })
     })
 
-    it('should call the Person endpoint with the correct parameters when uinFin is not given', async () => {
+    it('should return the Person data when retrieval succeeds and e-service ID is given', async () => {
       const client = new MyInfoGovClient(clientParams)
       const expectedUrl = `${client.baseAPIUrl}/person/${MOCK_UIN_FIN}/`
+      const otherEsrvcId = 'otherEsrvcId'
       const expectedQueryParamsObj = {
         client_id: client.clientId,
         attributes: MOCK_REQUESTED_ATTRIBUTES.join(),
-        sp_esvcId: client.singpassEserviceId,
+        sp_esvcId: otherEsrvcId,
       }
-      const mockData = { sub: MOCK_UIN_FIN }
+      MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
       MockAxios.get.mockResolvedValueOnce({
-        data: mockData,
+        data: EXPECTED_NESTED_DATA,
       })
-      MockJwtModule.verify.mockImplementationOnce(() => mockData)
 
-      const result = await client._sendPersonRequest(
+      const result = await client.getPerson(
         MOCK_ACCESS_TOKEN,
         MOCK_REQUESTED_ATTRIBUTES,
-        clientParams.singpassEserviceId,
+        otherEsrvcId,
       )
 
       expect(MockAxios.get).toHaveBeenCalledWith(expectedUrl, {
@@ -437,22 +438,49 @@ describe('MyInfoGovClient', () => {
           Authorization: expect.any(String),
         },
       })
-      expect(result).toEqual(mockData)
+      expect(result).toEqual({
+        uinFin: MOCK_UIN_FIN,
+        data: EXPECTED_NESTED_DATA,
+      })
     })
 
-    it('should reject if MyInfo returns error', async () => {
+    it('should reject when access token cannot be verified', async () => {
       const client = new MyInfoGovClient(clientParams)
-      const mockError = new Error('mockError')
+      const mockError = new Error('someErrorMessage')
+      MockJwtModule.verify.mockImplementationOnce(() => {
+        throw mockError
+      })
+
+      const functionCall = () =>
+        client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
+
+      await expect(functionCall()).rejects.toThrowError(
+        new InvalidTokenSignatureError(mockError),
+      )
+    })
+
+    it('should reject when access token has wrong type', async () => {
+      const client = new MyInfoGovClient(clientParams)
+      MockJwtModule.verify.mockImplementationOnce(() => 'invalid')
+
+      const functionCall = () =>
+        client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
+
+      await expect(functionCall()).rejects.toThrowError(
+        new WrongAccessTokenShapeError(),
+      )
+    })
+
+    it('should reject when Person API call fails', async () => {
+      const client = new MyInfoGovClient(clientParams)
+      const mockError = new Error('someErrorMessage')
+      MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
       MockAxios.get.mockRejectedValueOnce(mockError)
 
       const functionCall = () =>
-        client._sendPersonRequest(
-          MOCK_ACCESS_TOKEN,
-          MOCK_REQUESTED_ATTRIBUTES,
-          clientParams.singpassEserviceId,
-        )
+        client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
-      expect(functionCall()).rejects.toThrowError(
+      await expect(functionCall()).rejects.toThrowError(
         new MyInfoResponseError(mockError),
       )
     })
@@ -465,11 +493,7 @@ describe('MyInfoGovClient', () => {
       MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
 
       const functionCall = () =>
-        client._sendPersonRequest(
-          MOCK_ACCESS_TOKEN,
-          MOCK_REQUESTED_ATTRIBUTES,
-          clientParams.singpassEserviceId,
-        )
+        client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
       expect(functionCall()).rejects.toThrowError(new WrongDataShapeError())
     })
@@ -485,11 +509,7 @@ describe('MyInfoGovClient', () => {
       MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
 
       const functionCall = () =>
-        client._sendPersonRequest(
-          MOCK_ACCESS_TOKEN,
-          MOCK_REQUESTED_ATTRIBUTES,
-          clientParams.singpassEserviceId,
-        )
+        client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
       expect(functionCall()).rejects.toThrowError(new WrongDataShapeError())
     })
@@ -505,11 +525,7 @@ describe('MyInfoGovClient', () => {
       MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
 
       const functionCall = () =>
-        client._sendPersonRequest(
-          MOCK_ACCESS_TOKEN,
-          MOCK_REQUESTED_ATTRIBUTES,
-          clientParams.singpassEserviceId,
-        )
+        client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
       expect(functionCall()).rejects.toThrowError(new WrongDataShapeError())
     })
@@ -540,13 +556,14 @@ describe('MyInfoGovClient', () => {
       jest.spyOn(jose.JWE, 'createDecrypt').mockReturnValueOnce(({
         decrypt: mockJWEDecrypt,
       } as unknown) as jose.JWE.Decryptor)
-      MockJwtModule.verify.mockImplementationOnce(() => EXPECTED_NESTED_DATA)
+      // First mock to verify access token, second to verify data
+      MockJwtModule.verify
+        .mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
+        .mockImplementationOnce(() => EXPECTED_NESTED_DATA)
 
-      const result = await client._sendPersonRequest(
+      const result = await client.getPerson(
         MOCK_ACCESS_TOKEN,
         MOCK_REQUESTED_ATTRIBUTES,
-        clientParams.singpassEserviceId,
-        MOCK_UIN_FIN,
       )
 
       expect(MockAxios.get).toHaveBeenCalledWith(expectedUrl, {
@@ -557,7 +574,10 @@ describe('MyInfoGovClient', () => {
           Authorization: expect.any(String),
         },
       })
-      expect(result).toEqual(EXPECTED_NESTED_DATA)
+      expect(result).toEqual({
+        uinFin: MOCK_UIN_FIN,
+        data: EXPECTED_NESTED_DATA,
+      })
       expect(mockJWKAdd).toHaveBeenCalledWith(client.clientPrivateKey, 'pem')
       expect(mockJWEDecrypt).toHaveBeenCalledWith(mockJwe)
       expect(MockJwtModule.verify).toHaveBeenCalledWith(
@@ -715,86 +735,6 @@ describe('MyInfoGovClient', () => {
       const functionCall = () => client.extractUinFin(MOCK_JWT)
 
       expect(functionCall).toThrowError(new WrongAccessTokenShapeError())
-    })
-  })
-
-  describe('getPerson', () => {
-    it('should return the Person data when retrieval succeeds and e-service ID is not given', async () => {
-      const client = new MyInfoGovClient(clientParams)
-      MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
-      MockAxios.get.mockResolvedValueOnce({
-        data: EXPECTED_NESTED_DATA,
-      })
-
-      const result = await client.getPerson(
-        MOCK_ACCESS_TOKEN,
-        MOCK_REQUESTED_ATTRIBUTES,
-      )
-
-      expect(result).toEqual({
-        uinFin: MOCK_UIN_FIN,
-        data: EXPECTED_NESTED_DATA,
-      })
-    })
-
-    it('should return the Person data when retrieval succeeds and e-service ID is given', async () => {
-      const client = new MyInfoGovClient(clientParams)
-      MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
-      MockAxios.get.mockResolvedValueOnce({
-        data: EXPECTED_NESTED_DATA,
-      })
-
-      const result = await client.getPerson(
-        MOCK_ACCESS_TOKEN,
-        MOCK_REQUESTED_ATTRIBUTES,
-        client.singpassEserviceId,
-      )
-
-      expect(result).toEqual({
-        uinFin: MOCK_UIN_FIN,
-        data: EXPECTED_NESTED_DATA,
-      })
-    })
-
-    it('should reject when access token cannot be verified', async () => {
-      const client = new MyInfoGovClient(clientParams)
-      const mockError = new Error('someErrorMessage')
-      MockJwtModule.verify.mockImplementationOnce(() => {
-        throw mockError
-      })
-
-      const functionCall = () =>
-        client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
-
-      await expect(functionCall()).rejects.toThrowError(
-        new InvalidTokenSignatureError(mockError),
-      )
-    })
-
-    it('should reject when access token has wrong type', async () => {
-      const client = new MyInfoGovClient(clientParams)
-      MockJwtModule.verify.mockImplementationOnce(() => 'invalid')
-
-      const functionCall = () =>
-        client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
-
-      await expect(functionCall()).rejects.toThrowError(
-        new WrongAccessTokenShapeError(),
-      )
-    })
-
-    it('should reject when Person API call fails', async () => {
-      const client = new MyInfoGovClient(clientParams)
-      const mockError = new Error('someErrorMessage')
-      MockJwtModule.verify.mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
-      MockAxios.get.mockRejectedValueOnce(mockError)
-
-      const functionCall = () =>
-        client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
-
-      await expect(functionCall()).rejects.toThrowError(
-        new MyInfoResponseError(mockError),
-      )
     })
   })
 })
