@@ -1,6 +1,6 @@
 # myinfo-gov-client
 
-A lightweight client to easily call the MyInfo Person endpoint for the Singapore government. Compatible with NodeJS version >=10.
+A lightweight client to easily call the MyInfo Person v3.2 endpoint for the Singapore government. Tested with NodeJS version >=12.
 
 # Quick Start
 
