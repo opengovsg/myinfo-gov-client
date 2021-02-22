@@ -88,7 +88,7 @@ Client secret provided by MyInfo.
 
 Type: `string`
 
-ID registered with SingPass.
+The default e-service ID registered with SingPass to use. Can be overridden if necessary in `createRedirectURL` and `getPerson` functions.
 
 **redirectEndpoint**
 

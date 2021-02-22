@@ -90,7 +90,9 @@ export class MyInfoGovClient {
    * @param config Configuration object
    * @param config.clientId Client ID (also known as App ID)
    * @param config.clientSecret Client secret provided by MyInfo
-   * @param config.singpassEserviceId ID registered with SingPass
+   * @param config.singpassEserviceId The default e-service ID registered
+   * with SingPass to use. Can be overridden if necessary in
+   * `createRedirectURL` and `getPerson` functions.
    * @param config.redirectEndpoint Endpoint to which user should be redirected
    *  after login
    * @param config.clientPrivateKey RSA-SHA256 private key,
