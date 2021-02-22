@@ -1,0 +1,14 @@
+{
+  "browsers": "chrome:headless",
+  "src": "test/e2e/test-e2e.ts",
+  "appCommand": "env-cmd -f test/.test-env ts-node -P test/tsconfig.test.json test/e2e/server.ts",
+  "compilerOptions": {
+    "typescript": {
+      "configPath": "test/tsconfig.test.json",
+      // TestCafe does not natively support the latest TypeScript version,
+      // so specify that it should use the TypeScript compiler in this
+      // project. Path is relative to node_modules/testcafe.
+      "customCompilerModulePath": "../typescript"
+    }
+  }
+}
