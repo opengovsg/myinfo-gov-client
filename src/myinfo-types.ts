@@ -302,6 +302,9 @@ export type CPFBalances = MyInfoField<{
   ra?: NumberValue
 }>
 
+/**
+ * Keys of data returned by Person API.
+ */
 export enum MyInfoAttribute {
   UinFin = 'uinfin',
   Name = 'name',
@@ -406,6 +409,9 @@ type IPersonFull = {
   cpfbalances: CPFBalances
 }
 
+/**
+ * Shape of data returned by the Person API.
+ */
 export type IPerson = Partial<IPersonFull>
 
 export type HDBOwnershipScope = `${MyInfoAttribute.HDBOwnership}.${keyof HDBOwnershipCustomFields}`
@@ -424,6 +430,9 @@ export type DrivingLicenceScope =
   | `${MyInfoAttribute.DrivingLicence}.pdl.${keyof PDL}`
   | `${MyInfoAttribute.DrivingLicence}.qdl.${keyof QDL}`
 
+/**
+ * Valid scopes (requested attributes) to get from MyInfo.
+ */
 export type MyInfoScope =
   | Exclude<
       keyof IPerson,
