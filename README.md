@@ -197,7 +197,7 @@ The access token retrieved from the Token endpoint using `.getAccessToken`.
 
 **requestedAttributes**
 
-Type: `MyInfoScopes[]`
+Type: `MyInfoScope[]`
 
 Scopes to request from Myinfo. Should correspond to the scopes provided when initiating SingPass login.
 
