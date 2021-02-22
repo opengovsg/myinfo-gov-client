@@ -530,7 +530,66 @@ describe('MyInfoGovClient', () => {
       expect(functionCall()).rejects.toThrowError(new WrongDataShapeError())
     })
 
-    it('should decrypt the JWE response in non-Dev mode', async () => {
+    it('should decrypt the JWE response in Staging mode', async () => {
+      const client = new MyInfoGovClient({
+        ...clientParams,
+        mode: MyInfoMode.Staging,
+      })
+      const expectedUrl = `${client.baseAPIUrl}/person/${MOCK_UIN_FIN}/`
+      const expectedQueryParamsObj = {
+        client_id: client.clientId,
+        attributes: MOCK_REQUESTED_ATTRIBUTES.join(),
+        sp_esvcId: client.singpassEserviceId,
+      }
+      const mockJwe = 'jwe'
+      MockAxios.get.mockResolvedValueOnce({
+        data: mockJwe,
+      })
+      const mockJWKAdd = jest.fn()
+      const mockPayload = '"payload"'
+      const mockJWEDecrypt = jest.fn().mockResolvedValueOnce({
+        payload: mockPayload,
+      })
+      jest.spyOn(jose.JWK, 'createKeyStore').mockReturnValueOnce(({
+        add: mockJWKAdd,
+      } as unknown) as jose.JWK.KeyStore)
+      jest.spyOn(jose.JWE, 'createDecrypt').mockReturnValueOnce(({
+        decrypt: mockJWEDecrypt,
+      } as unknown) as jose.JWE.Decryptor)
+      // First mock to verify access token, second to verify data
+      MockJwtModule.verify
+        .mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
+        .mockImplementationOnce(() => EXPECTED_NESTED_DATA)
+
+      const result = await client.getPerson(
+        MOCK_ACCESS_TOKEN,
+        MOCK_REQUESTED_ATTRIBUTES,
+      )
+
+      expect(MockAxios.get).toHaveBeenCalledWith(expectedUrl, {
+        params: expectedQueryParamsObj,
+        paramsSerializer: expect.any(Function),
+        headers: {
+          'Cache-Control': 'no-cache',
+          Authorization: expect.any(String),
+        },
+      })
+      expect(result).toEqual({
+        uinFin: MOCK_UIN_FIN,
+        data: EXPECTED_NESTED_DATA,
+      })
+      expect(mockJWKAdd).toHaveBeenCalledWith(client.clientPrivateKey, 'pem')
+      expect(mockJWEDecrypt).toHaveBeenCalledWith(mockJwe)
+      expect(MockJwtModule.verify).toHaveBeenCalledWith(
+        JSON.parse(mockPayload),
+        client.myInfoPublicKey,
+        {
+          algorithms: ['RS256'],
+        },
+      )
+    })
+
+    it('should decrypt the JWE response in Production mode', async () => {
       const client = new MyInfoGovClient({
         ...clientParams,
         mode: MyInfoMode.Production,
