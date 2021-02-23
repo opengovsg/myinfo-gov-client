@@ -2,15 +2,11 @@ import { MyInfoAddress } from "./address"
 import { MyInfoField, StringValue, NumberValue, BooleanValue, CodeAndDesc, BasicField, FieldWithCodeAndDesc } from "./base"
 import { MyInfoChildrenBirthRecord, ChildCustomFields } from "./childrenbirthrecords"
 import { MyInfoHdbOwnership } from "./hdbownership"
+import { MyInfoHouseholdIncome } from "./householdincome"
 import { MyInfoPhoneNumber } from "./mobileno"
 import { MyInfoOccupation } from "./occupation"
 import { MyInfoOwnerPrivate } from "./ownerprivate"
 import { MyInfoSponsoredChildrenRecord, SponsoredChildCustomFields } from "./sponsoredchildrenrecords"
-
-export type HouseholdIncome = MyInfoField<{
-  high: NumberValue
-  low: NumberValue
-}>
 
 type MyInfoVehicleCustomFields = {
   vehicleno: StringValue
@@ -248,7 +244,7 @@ type IPersonFull = {
   passstatus: BasicField
   passexpirydate: BasicField
   employmentsector: BasicField
-  householdincome: HouseholdIncome
+  householdincome: MyInfoHouseholdIncome
   vehicles: MyInfoVehicle[]
   drivinglicence: DrivingLicence
   merdekagen: MerdekaGen
