@@ -16,15 +16,7 @@ import { MyInfoNoaBasic } from "./noa-basic"
 import { MyInfoNoa } from "./noa"
 import { MyInfoNoaHistoryBasic } from "./noahistory-basic"
 import { MyInfoNoaHistory } from "./noahistory"
-
-export type CPFContributions = MyInfoField<{
-  history: {
-    employer: StringValue
-    date: StringValue
-    month: StringValue
-    amount: NumberValue
-  }[]
-}>
+import { MyInfoCpfContributions } from "./cpfcontributions"
 
 export type CPFEmployers = MyInfoField<{
   history: {
@@ -142,7 +134,7 @@ type IPersonFull = {
   noa: MyInfoNoa
   'noahistory-basic': MyInfoNoaHistoryBasic
   noahistory: MyInfoNoaHistory
-  cpfcontributions: CPFContributions
+  cpfcontributions: MyInfoCpfContributions
   cpfemployers: CPFEmployers
   cpfbalances: CPFBalances
 }
