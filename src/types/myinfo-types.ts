@@ -1,5 +1,5 @@
 import { MyInfoAddress } from "./address"
-import { BasicField, FieldWithCodeAndDesc, MyInfoAttribute } from "./base"
+import { MyInfoAttribute } from "./base"
 import { MyInfoChildrenBirthRecord, ChildCustomFields } from "./childrenbirthrecords"
 import { MyInfoHdbOwnership } from "./hdbownership"
 import { MyInfoHouseholdIncome } from "./householdincome"
@@ -19,36 +19,35 @@ import { MyInfoNoaHistory } from "./noahistory"
 import { MyInfoCpfContributions } from "./cpfcontributions"
 import { MyInfoCpfEmployers } from "./cpfemployers"
 import { MyInfoCpfBalances } from "./cpfbalances"
-
-type MyInfoUinFin = BasicField
-type MyInfoName = BasicField
-type MyInfoHanyuPinyinName = BasicField
-type MyInfoAliasName = BasicField
-type MyInfoHanyuPinyinAliasName = BasicField
-type MyInfoMarriedName = BasicField
-type MyInfoSex = FieldWithCodeAndDesc
-type MyInfoRace = FieldWithCodeAndDesc
-type MyInfoSecondaryRace = FieldWithCodeAndDesc
-type MyInfoDialect = FieldWithCodeAndDesc
-type MyInfoNationality = FieldWithCodeAndDesc
-type MyInfoDob = BasicField
-type MyInfoBirthCountry = FieldWithCodeAndDesc
-type MyInfoResidentialStatus = FieldWithCodeAndDesc
-type MyInfoPassportNumber = BasicField
-type MyInfoPassportExpiryDate = BasicField
-type MyInfoHousingType = FieldWithCodeAndDesc
-type MyInfoHdbType = FieldWithCodeAndDesc
-type MyInfoEmail = BasicField
-type MyInfoMarital = FieldWithCodeAndDesc
-type MyInfoMarriageCertNo = BasicField
-type MyInfoCountryOfMarriage = FieldWithCodeAndDesc
-type MyInfoMarriageDate = BasicField
-type MyInfoDivorceDate = BasicField
-type MyInfoEmployment = BasicField
-type MyInfoPassType = FieldWithCodeAndDesc
-type MyInfoPassStatus = BasicField
-type MyInfoPassExpiryDate = BasicField
-type MyInfoEmploymentSector = BasicField
+import { MyInfoUinFin } from "./uinfin"
+import { MyInfoName } from "./name"
+import { MyInfoHanyuPinyinName } from "./hanyupinyinname"
+import { MyInfoAliasName } from "./aliasname"
+import { MyInfoHanyuPinyinAliasName } from "./hanyupinyinaliasname"
+import { MyInfoMarriedName } from "./marriedname"
+import { MyInfoSex } from "./sex"
+import { MyInfoRace } from "./race"
+import { MyInfoSecondaryRace } from "./secondaryrace"
+import { MyInfoDialect } from "./dialect"
+import { MyInfoNationality } from "./nationality"
+import { MyInfoDob } from "./dob"
+import { MyInfoBirthCountry } from "./birthcountry"
+import { MyInfoResidentialStatus } from "./residentialstatus"
+import { MyInfoPassportNumber } from "./passportnumber"
+import { MyInfoPassportExpiryDate } from "./passportexpirydate"
+import { MyInfoHousingType } from "./housingtype"
+import { MyInfoHdbType } from "./hdbtype"
+import { MyInfoEmail } from "./email"
+import { MyInfoMarital } from "./marital"
+import { MyInfoMarriageCertNo } from "./marriagecertno"
+import { MyInfoCountryOfMarriage } from "./countryofmarriage"
+import { MyInfoMarriageDate } from "./marriagedate"
+import { MyInfoDivorceDate } from "./divorcedate"
+import { MyInfoEmployment } from "./employment"
+import { MyInfoPassType } from "./passtype"
+import { MyInfoPassStatus } from "./passstatus"
+import { MyInfoPassExpiryDate } from "./passexpirydate"
+import { MyInfoEmploymentSector } from "./employmentsector"
 
 type IPersonFull = {
   uinfin: MyInfoUinFin
