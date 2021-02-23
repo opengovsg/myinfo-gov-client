@@ -12,13 +12,7 @@ import { MyInfoDrivingLicence, DrivingLicenceCustomFields, StartEndDate, PDL, QD
 import { MerdekaGen } from "./merdekagen"
 import { MyInfoSilverSupport } from "./silversupport"
 import { MyInfoGstVoucher } from "./gstvoucher"
-
-type NOABasicFields = {
-  amount: NumberValue
-  yearofassessment: StringValue
-}
-
-export type NOABasic = MyInfoField<NOABasicFields>
+import { NoaBasic, MyInfoNoaBasic } from "./noa-basic"
 
 type NOAFullFields = {
   amount: NumberValue
@@ -34,7 +28,7 @@ type NOAFullFields = {
 export type NOAFull = MyInfoField<NOAFullFields>
 
 export type NOAHistoryBasic = MyInfoField<{
-  noas: NOABasicFields[]
+  noas: NoaBasic[]
 }>
 
 export type NOAHistoryFull = MyInfoField<{
@@ -162,7 +156,7 @@ type IPersonFull = {
   merdekagen: MerdekaGen
   silversupport: MyInfoSilverSupport
   gstvoucher: MyInfoGstVoucher
-  'noa-basic': NOABasic
+  'noa-basic': MyInfoNoaBasic
   noa: NOAFull
   'noahistory-basic': NOAHistoryBasic
   noahistory: NOAHistoryFull
