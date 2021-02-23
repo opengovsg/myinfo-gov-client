@@ -1,5 +1,5 @@
 import { MyInfoAddress } from "./address"
-import { MyInfoField, NumberValue, BasicField, FieldWithCodeAndDesc } from "./base"
+import { BasicField, FieldWithCodeAndDesc } from "./base"
 import { MyInfoChildrenBirthRecord, ChildCustomFields } from "./childrenbirthrecords"
 import { MyInfoHdbOwnership } from "./hdbownership"
 import { MyInfoHouseholdIncome } from "./householdincome"
@@ -18,13 +18,7 @@ import { MyInfoNoaHistoryBasic } from "./noahistory-basic"
 import { MyInfoNoaHistory } from "./noahistory"
 import { MyInfoCpfContributions } from "./cpfcontributions"
 import { MyInfoCpfEmployers } from "./cpfemployers"
-
-export type CPFBalances = MyInfoField<{
-  ma: NumberValue
-  oa: NumberValue
-  sa: NumberValue
-  ra?: NumberValue
-}>
+import { MyInfoCpfBalances } from "./cpfbalances"
 
 /**
  * Keys of data returned by Person API.
@@ -130,7 +124,7 @@ type IPersonFull = {
   noahistory: MyInfoNoaHistory
   cpfcontributions: MyInfoCpfContributions
   cpfemployers: MyInfoCpfEmployers
-  cpfbalances: CPFBalances
+  cpfbalances: MyInfoCpfBalances
 }
 
 /**
