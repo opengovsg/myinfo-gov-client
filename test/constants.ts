@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import { MyInfoAttribute, MyInfoScope } from '../src/myinfo-types'
+import { MyInfoAttribute, MyInfoScope } from '../src/types/myinfo-types'
 
 export const MOCK_BASE_URL = 'https://myinfo.gov.client'
 export const MOCK_REDIRECT_PATH = '/target'
