@@ -1,5 +1,5 @@
 import { MyInfoAddress } from "./address"
-import { MyInfoField, StringValue, NumberValue, BooleanValue, CodeAndDesc, BasicField, FieldWithCodeAndDesc } from "./base"
+import { MyInfoField, StringValue, NumberValue, BooleanValue, BasicField, FieldWithCodeAndDesc } from "./base"
 import { MyInfoChildrenBirthRecord, ChildCustomFields } from "./childrenbirthrecords"
 import { MyInfoHdbOwnership } from "./hdbownership"
 import { MyInfoHouseholdIncome } from "./householdincome"
@@ -9,12 +9,7 @@ import { MyInfoOccupation } from "./occupation"
 import { MyInfoOwnerPrivate } from "./ownerprivate"
 import { MyInfoSponsoredChildrenRecord, SponsoredChildCustomFields } from "./sponsoredchildrenrecords"
 import { MyInfoDrivingLicence, DrivingLicenceCustomFields, StartEndDate, PDL, QDL } from "./drivinglicence"
-
-export type MerdekaGen = MyInfoField<{
-  eligibility: BooleanValue
-  quantum: NumberValue
-  message: CodeAndDesc
-}>
+import { MerdekaGen } from "./merdekagen"
 
 export type SilverSupport = MyInfoField<{
   eligibility: BooleanValue
