@@ -1,6 +1,6 @@
 import { MyInfoField, StringValue, NumberValue } from "./base"
 
-export type NOAFullFields = {
+export type NoaFull = {
   amount: NumberValue
   yearofassessment: StringValue
   employment: NumberValue
@@ -11,4 +11,4 @@ export type NOAFullFields = {
   category: StringValue
 }
 
-export type MyInfoNoa = MyInfoField<NOAFullFields>
+export type MyInfoNoa = MyInfoField<NoaFull>
