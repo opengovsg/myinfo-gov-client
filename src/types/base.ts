@@ -38,3 +38,8 @@ export type CodeAndDesc = {
   code: string
   desc: string
 }
+
+
+export type BasicField = MyInfoField<StringValue>
+
+export type FieldWithCodeAndDesc = MyInfoField<CodeAndDesc>
