@@ -19,9 +19,9 @@ type PossiblyAvailableMetadata = Metadata & {
   unavailable?: false
 }
 
-type MyInfoField<CustomFields> =
+type MyInfoField<T> =
   | UnavailableField
-  | (CustomFields & PossiblyAvailableMetadata)
+  | (T & PossiblyAvailableMetadata)
 
 type StringValue = {
   value: string
