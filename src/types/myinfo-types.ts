@@ -4,30 +4,7 @@ import { MyInfoChildrenBirthRecord, ChildCustomFields } from "./childrenbirthrec
 import { MyInfoHdbOwnership } from "./hdbownership"
 import { MyInfoPhoneNumber } from "./mobileno"
 import { MyInfoOwnerPrivate } from "./ownerprivate"
-
-type SponsoredChildCustomFields = {
-  nric: StringValue
-  name: StringValue
-  hanyupinyinname: StringValue
-  aliasname: StringValue
-  hanyupinyinaliasname: StringValue
-  marriedname: StringValue
-  sex: CodeAndDesc
-  race: CodeAndDesc
-  secondaryrace: CodeAndDesc
-  dialect: CodeAndDesc
-  dob: StringValue
-  birthcountry: CodeAndDesc
-  lifestatus: CodeAndDesc
-  residentialstatus: CodeAndDesc
-  nationality: CodeAndDesc
-  scprgrantdate: StringValue
-}
-
-export type SponsoredChildBelow21 = SponsoredChildCustomFields
-export type SponsoredChildAbove21 = Pick<SponsoredChildCustomFields, 'nric'>
-
-export type SponsoredChildRecord = MyInfoField<SponsoredChildBelow21 | SponsoredChildAbove21>
+import { MyInfoSponsoredChildrenRecord, SponsoredChildCustomFields } from "./sponsoredchildrenrecords"
 
 export type MyInfoOccupation = MyInfoField<StringValue | CodeAndDesc>
 
@@ -265,7 +242,7 @@ type IPersonFull = {
   marriagedate: BasicField
   divorcedate: BasicField
   childrenbirthrecords: MyInfoChildrenBirthRecord[]
-  sponsoredchildrenrecords: SponsoredChildRecord[]
+  sponsoredchildrenrecords: MyInfoSponsoredChildrenRecord[]
   occupation: MyInfoOccupation
   employment: BasicField
   passtype: FieldWithCodeAndDesc
