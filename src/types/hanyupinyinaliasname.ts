@@ -1,3 +1,3 @@
-import { BasicField } from "./base";
+import { BasicField } from "./base"
 
-export type MyInfoHanyuPinyinAliasName = BasicField;
+export type MyInfoHanyuPinyinAliasName = BasicField

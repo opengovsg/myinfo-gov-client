@@ -1,4 +1,4 @@
-import { MyInfoField, StringValue, CodeAndDesc } from "./base";
+import { MyInfoField, StringValue, CodeAndDesc } from "./base"
 
 
-export type MyInfoOccupation = MyInfoField<StringValue | CodeAndDesc>;
+export type MyInfoOccupation = MyInfoField<StringValue | CodeAndDesc>

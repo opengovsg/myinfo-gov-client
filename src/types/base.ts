@@ -6,32 +6,32 @@ export enum MyInfoSource {
 }
 
 type Metadata = {
-  lastupdated: string;
-  source: MyInfoSource;
-  classification: 'C';
+  lastupdated: string
+  source: MyInfoSource
+  classification: 'C'
 }
 
 type UnavailableField = Metadata & {
-  unavailable: true;
+  unavailable: true
 }
 
 type PossiblyAvailableMetadata = Metadata & {
-  unavailable?: false;
+  unavailable?: false
 }
 
 export type MyInfoField<T> = UnavailableField |
   (T & PossiblyAvailableMetadata)
 
 export type StringValue = {
-  value: string;
+  value: string
 }
 
 export type NumberValue = {
-  value: number;
+  value: number
 }
 
 export type BooleanValue = {
-  value: boolean;
+  value: boolean
 }
 
 export type CodeAndDesc = {

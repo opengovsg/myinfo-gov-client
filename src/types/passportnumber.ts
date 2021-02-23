@@ -1,3 +1,3 @@
-import { BasicField } from "./base";
+import { BasicField } from "./base"
 
-export type MyInfoPassportNumber = BasicField;
+export type MyInfoPassportNumber = BasicField

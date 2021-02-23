@@ -1,9 +1,9 @@
-import { MyInfoField, StringValue } from "./base";
+import { MyInfoField, StringValue } from "./base"
 
 type MyInfoPhoneNumberCustomFields = {
-  prefix: StringValue;
-  areacode: StringValue;
-  nbr: StringValue;
-};
+  prefix: StringValue
+  areacode: StringValue
+  nbr: StringValue
+}
 
-export type MyInfoPhoneNumber = MyInfoField<MyInfoPhoneNumberCustomFields>;
+export type MyInfoPhoneNumber = MyInfoField<MyInfoPhoneNumberCustomFields>

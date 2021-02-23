@@ -1,3 +1,3 @@
-import { FieldWithCodeAndDesc } from "./base";
+import { FieldWithCodeAndDesc } from "./base"
 
-export type MyInfoHousingType = FieldWithCodeAndDesc;
+export type MyInfoHousingType = FieldWithCodeAndDesc
