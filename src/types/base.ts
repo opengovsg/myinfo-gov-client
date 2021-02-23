@@ -40,9 +40,9 @@ export type CodeAndDesc = {
 }
 
 
-export type BasicField = MyInfoField<StringValue>
+export type MyInfoBasicField = MyInfoField<StringValue>
 
-export type FieldWithCodeAndDesc = MyInfoField<CodeAndDesc>
+export type MyInfoFieldWithCodeAndDesc = MyInfoField<CodeAndDesc>
 
 /**
  * Keys of data returned by Person API.
