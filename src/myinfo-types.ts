@@ -145,9 +145,7 @@ export type SponsoredChildAbove21 = Pick<SponsoredChildCustomFields, 'nric'>
 
 export type SponsoredChildRecord = MyInfoField<SponsoredChildBelow21 | SponsoredChildAbove21>
 
-export type MyInfoOccupation =
-  | MyInfoField<StringValue>
-  | MyInfoField<CodeAndDesc>
+export type MyInfoOccupation = MyInfoField<StringValue | CodeAndDesc>
 
 export type HouseholdIncome = MyInfoField<{
   high: NumberValue
