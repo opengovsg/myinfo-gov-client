@@ -1,5 +1,6 @@
 import { SingaporeAddress, UnformattedAddress, MyInfoAddress } from "./address"
 import { MyInfoField, StringValue, NumberValue, BooleanValue, CodeAndDesc } from "./base"
+import { MyInfoOwnerPrivate } from "./ownerprivate"
 
 export type BasicField = MyInfoField<StringValue>
 
@@ -24,8 +25,6 @@ type HDBOwnershipCustomFields = {
 }
 
 export type HDBOwnership = MyInfoField<HDBOwnershipCustomFields>
-
-export type OwnerPrivate = MyInfoField<BooleanValue>
 
 type MyInfoPhoneNumberCustomFields = {
   prefix: StringValue
@@ -307,7 +306,7 @@ type IPersonFull = {
   housingtype: FieldWithCodeAndDesc
   hdbtype: FieldWithCodeAndDesc
   hdbownership: HDBOwnership[]
-  ownerprivate: OwnerPrivate
+  ownerprivate: MyInfoOwnerPrivate
   email: BasicField
   mobileno: MyInfoPhoneNumber
   marital: FieldWithCodeAndDesc
