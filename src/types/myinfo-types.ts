@@ -8,36 +8,7 @@ import { MyInfoVehicle, MyInfoVehicleCustomFields } from "./vehicles"
 import { MyInfoOccupation } from "./occupation"
 import { MyInfoOwnerPrivate } from "./ownerprivate"
 import { MyInfoSponsoredChildrenRecord, SponsoredChildCustomFields } from "./sponsoredchildrenrecords"
-
-type StartEndDate = {
-  startdate: StringValue
-  enddate: StringValue
-}
-
-type PDL = {
-  validity: CodeAndDesc
-  expirydate: StringValue
-  classes: { class: StringValue }[]
-}
-
-type QDL = {
-  validity: CodeAndDesc
-  expirydate: StringValue
-  classes: { class: StringValue; issuedate: StringValue }[]
-}
-
-type DrivingLicenceCustomFields = {
-  comstatus: CodeAndDesc
-  totaldemeritpoints: NumberValue
-  suspension: StartEndDate
-  disqualification: StartEndDate
-  revocation: StartEndDate
-  pdl: PDL
-  qdl: QDL
-  photocardserialno: StringValue
-}
-
-export type DrivingLicence = MyInfoField<DrivingLicenceCustomFields>
+import { MyInfoDrivingLicence, DrivingLicenceCustomFields, StartEndDate, PDL, QDL } from "./drivinglicence"
 
 export type MerdekaGen = MyInfoField<{
   eligibility: BooleanValue
@@ -205,7 +176,7 @@ type IPersonFull = {
   employmentsector: BasicField
   householdincome: MyInfoHouseholdIncome
   vehicles: MyInfoVehicle[]
-  drivinglicence: DrivingLicence
+  drivinglicence: MyInfoDrivingLicence
   merdekagen: MerdekaGen
   silversupport: SilverSupport
   gstvoucher: GSTVoucher
