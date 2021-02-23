@@ -1,30 +1,7 @@
-import { SingaporeAddress, UnformattedAddress, MyInfoAddress } from "./address"
-import { MyInfoField, StringValue, NumberValue, BooleanValue, CodeAndDesc } from "./base"
+import { MyInfoAddress } from "./address"
+import { MyInfoField, StringValue, NumberValue, BooleanValue, CodeAndDesc, BasicField, FieldWithCodeAndDesc } from "./base"
+import { MyInfoHdbOwnership } from "./hdbownership"
 import { MyInfoOwnerPrivate } from "./ownerprivate"
-
-export type BasicField = MyInfoField<StringValue>
-
-export type FieldWithCodeAndDesc = MyInfoField<CodeAndDesc>
-
-type HDBOwnershipCustomFields = {
-  noofowners: NumberValue
-  address: SingaporeAddress | UnformattedAddress
-  hdbtype: CodeAndDesc
-  leasecommencementdate: StringValue
-  termoflease: NumberValue
-  dateofpurchase: StringValue
-  dateofownershiptransfer: StringValue
-  loangranted: NumberValue
-  originalloanrepayment: NumberValue
-  balanceloanrepayment: {
-    years: NumberValue
-    months: NumberValue
-  }
-  outstandingloanbalance: NumberValue
-  monthlyloaninstalment: NumberValue
-}
-
-export type HDBOwnership = MyInfoField<HDBOwnershipCustomFields>
 
 type MyInfoPhoneNumberCustomFields = {
   prefix: StringValue
@@ -305,7 +282,7 @@ type IPersonFull = {
   regadd: MyInfoAddress
   housingtype: FieldWithCodeAndDesc
   hdbtype: FieldWithCodeAndDesc
-  hdbownership: HDBOwnership[]
+  hdbownership: MyInfoHdbOwnership[]
   ownerprivate: MyInfoOwnerPrivate
   email: BasicField
   mobileno: MyInfoPhoneNumber
@@ -342,7 +319,7 @@ type IPersonFull = {
  */
 export type IPerson = Partial<IPersonFull>
 
-export type HDBOwnershipScope = `${MyInfoAttribute.HDBOwnership}.${keyof HDBOwnershipCustomFields}`
+export type HdbOwnershipScope = `${MyInfoAttribute.HDBOwnership}.${keyof MyInfoHdbOwnership}`
 export type ChildrenBirthRecordsScope = `${MyInfoAttribute.ChildrenBirthRecords}.${keyof ChildCustomFields}`
 export type SponsoredChildrenRecordsScope = `${MyInfoAttribute.SponsoredChildrenRecords}.${keyof SponsoredChildCustomFields}`
 export type VehiclesScope = `${MyInfoAttribute.Vehicles}.${keyof MyInfoVehicleCustomFields}`
@@ -370,7 +347,7 @@ export type MyInfoScope =
       | 'vehicles'
       | 'drivinglicence'
     >
-  | HDBOwnershipScope
+  | HdbOwnershipScope
   | ChildrenBirthRecordsScope
   | SponsoredChildrenRecordsScope
   | VehiclesScope
