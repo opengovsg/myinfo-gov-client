@@ -1,36 +1,13 @@
+import { SingaporeAddress, UnformattedAddress, MyInfoAddress } from "./address"
 import { MyInfoField, StringValue, NumberValue, BooleanValue, CodeAndDesc } from "./base"
 
 export type BasicField = MyInfoField<StringValue>
 
 export type FieldWithCodeAndDesc = MyInfoField<CodeAndDesc>
 
-export enum AddressType {
-  Singapore = 'SG',
-  Unformatted = 'Unformatted',
-}
-
-type SGAddress = {
-  type: AddressType.Singapore
-  block: StringValue
-  building: StringValue
-  floor: StringValue
-  unit: StringValue
-  street: StringValue
-  postal: StringValue
-  country: CodeAndDesc
-}
-
-type UnformattedAddress = {
-  type: AddressType.Unformatted
-  line1: StringValue
-  line2: StringValue
-}
-
-export type MyInfoAddress = MyInfoField<SGAddress | UnformattedAddress>
-
 type HDBOwnershipCustomFields = {
   noofowners: NumberValue
-  address: SGAddress | UnformattedAddress
+  address: SingaporeAddress | UnformattedAddress
   hdbtype: CodeAndDesc
   leasecommencementdate: StringValue
   termoflease: NumberValue
