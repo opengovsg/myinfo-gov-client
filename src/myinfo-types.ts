@@ -140,13 +140,10 @@ type SponsoredChildCustomFields = {
   scprgrantdate: StringValue
 }
 
-export type SponsoredChildBelow21 = MyInfoField<SponsoredChildCustomFields>
+export type SponsoredChildBelow21 = SponsoredChildCustomFields
+export type SponsoredChildAbove21 = Pick<SponsoredChildCustomFields, 'nric'>
 
-export type SponsoredChildAbove21 = MyInfoField<
-  Pick<SponsoredChildCustomFields, 'nric'>
->
-
-export type SponsoredChildRecord = SponsoredChildBelow21 | SponsoredChildAbove21
+export type SponsoredChildRecord = MyInfoField<SponsoredChildBelow21 | SponsoredChildAbove21>
 
 export type MyInfoOccupation =
   | MyInfoField<StringValue>
