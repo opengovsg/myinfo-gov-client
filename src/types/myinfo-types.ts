@@ -10,12 +10,7 @@ import { MyInfoOwnerPrivate } from "./ownerprivate"
 import { MyInfoSponsoredChildrenRecord, SponsoredChildCustomFields } from "./sponsoredchildrenrecords"
 import { MyInfoDrivingLicence, DrivingLicenceCustomFields, StartEndDate, PDL, QDL } from "./drivinglicence"
 import { MerdekaGen } from "./merdekagen"
-
-export type SilverSupport = MyInfoField<{
-  eligibility: BooleanValue
-  amount: StringValue
-  year: StringValue
-}>
+import { MyInfoSilverSupport } from "./silversupport"
 
 export type GSTVoucher = MyInfoField<{
   exclusion: BooleanValue
@@ -173,7 +168,7 @@ type IPersonFull = {
   vehicles: MyInfoVehicle[]
   drivinglicence: MyInfoDrivingLicence
   merdekagen: MerdekaGen
-  silversupport: SilverSupport
+  silversupport: MyInfoSilverSupport
   gstvoucher: GSTVoucher
   'noa-basic': NOABasic
   noa: NOAFull
