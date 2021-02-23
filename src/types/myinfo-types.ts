@@ -1,5 +1,5 @@
 import { MyInfoAddress } from "./address"
-import { BasicField, FieldWithCodeAndDesc } from "./base"
+import { BasicField, FieldWithCodeAndDesc, MyInfoAttribute } from "./base"
 import { MyInfoChildrenBirthRecord, ChildCustomFields } from "./childrenbirthrecords"
 import { MyInfoHdbOwnership } from "./hdbownership"
 import { MyInfoHouseholdIncome } from "./householdincome"
@@ -9,7 +9,7 @@ import { MyInfoOccupation } from "./occupation"
 import { MyInfoOwnerPrivate } from "./ownerprivate"
 import { MyInfoSponsoredChildrenRecord, SponsoredChildCustomFields } from "./sponsoredchildrenrecords"
 import { MyInfoDrivingLicence, DrivingLicenceCustomFields, StartEndDate, PDL, QDL } from "./drivinglicence"
-import { MerdekaGen } from "./merdekagen"
+import { MyInfoMerdekaGen } from "./merdekagen"
 import { MyInfoSilverSupport } from "./silversupport"
 import { MyInfoGstVoucher } from "./gstvoucher"
 import { MyInfoNoaBasic } from "./noa-basic"
@@ -20,102 +20,77 @@ import { MyInfoCpfContributions } from "./cpfcontributions"
 import { MyInfoCpfEmployers } from "./cpfemployers"
 import { MyInfoCpfBalances } from "./cpfbalances"
 
-/**
- * Keys of data returned by Person API.
- */
-export enum MyInfoAttribute {
-  UinFin = 'uinfin',
-  Name = 'name',
-  HanYuPinYinName = 'hanyupinyinname',
-  AliasName = 'aliasname',
-  HanYuPinYinAliasName = 'hanyupinyinaliasname',
-  MarriedName = 'marriedname',
-  Sex = 'sex',
-  Race = 'race',
-  SecondaryRace = 'secondaryrace',
-  Dialect = 'dialect',
-  Nationality = 'nationality',
-  DateOfBirth = 'dob',
-  BirthCountry = 'birthcountry',
-  ResidentialStatus = 'residentialstatus',
-  PassportNumber = 'passportnumber',
-  PassportExpiryDate = 'passportexpirydate',
-  RegisteredAddress = 'regadd',
-  HousingType = 'housingtype',
-  HDBType = 'hdbtype',
-  HDBOwnership = 'hdbownership',
-  OwnerPrivate = 'ownerprivate',
-  Email = 'email',
-  MobileNo = 'mobileno',
-  MaritalStatus = 'marital',
-  MarriageCertNumber = 'marriagecertno',
-  CountryOfMarriage = 'countryofmarriage',
-  MarriageDate = 'marriagedate',
-  DivorceDate = 'divorcedate',
-  ChildrenBirthRecords = 'childrenbirthrecords',
-  SponsoredChildrenRecords = 'sponsoredchildrenrecords',
-  Occupation = 'occupation',
-  Employment = 'employment',
-  PassType = 'passtype',
-  PassStatus = 'passstatus',
-  PassExpiryDate = 'passexpirydate',
-  EmploymentSector = 'employmentsector',
-  HouseholdIncome = 'householdincome',
-  Vehicles = 'vehicles',
-  DrivingLicence = 'drivinglicence',
-  MerdekaGen = 'merdekagen',
-  SilverSupport = 'silversupport',
-  GSTVoucher = 'gstvoucher',
-  NOABasic = 'noa-basic',
-  NOA = 'noa',
-  NOAHistoryBasic = 'noahistory-basic',
-  NOAHistory = 'noahistory',
-  CPFContributions = 'cpfcontributions',
-  CPFEmployers = 'cpfemployers',
-  CPFBalances = 'cpfbalances',
-}
+type MyInfoUinFin = BasicField
+type MyInfoName = BasicField
+type MyInfoHanyuPinyinName = BasicField
+type MyInfoAliasName = BasicField
+type MyInfoHanyuPinyinAliasName = BasicField
+type MyInfoMarriedName = BasicField
+type MyInfoSex = FieldWithCodeAndDesc
+type MyInfoRace = FieldWithCodeAndDesc
+type MyInfoSecondaryRace = FieldWithCodeAndDesc
+type MyInfoDialect = FieldWithCodeAndDesc
+type MyInfoNationality = FieldWithCodeAndDesc
+type MyInfoDob = BasicField
+type MyInfoBirthCountry = FieldWithCodeAndDesc
+type MyInfoResidentialStatus = FieldWithCodeAndDesc
+type MyInfoPassportNumber = BasicField
+type MyInfoPassportExpiryDate = BasicField
+type MyInfoHousingType = FieldWithCodeAndDesc
+type MyInfoHdbType = FieldWithCodeAndDesc
+type MyInfoEmail = BasicField
+type MyInfoMarital = FieldWithCodeAndDesc
+type MyInfoMarriageCertNo = BasicField
+type MyInfoCountryOfMarriage = FieldWithCodeAndDesc
+type MyInfoMarriageDate = BasicField
+type MyInfoDivorceDate = BasicField
+type MyInfoEmployment = BasicField
+type MyInfoPassType = FieldWithCodeAndDesc
+type MyInfoPassStatus = BasicField
+type MyInfoPassExpiryDate = BasicField
+type MyInfoEmploymentSector = BasicField
 
 type IPersonFull = {
-  uinfin: BasicField
-  name: BasicField
-  hanyupinyinname: BasicField
-  aliasname: BasicField
-  hanyupinyinaliasname: BasicField
-  marriedname: BasicField
-  sex: FieldWithCodeAndDesc
-  race: FieldWithCodeAndDesc
-  secondaryrace: FieldWithCodeAndDesc
-  dialect: FieldWithCodeAndDesc
-  nationality: FieldWithCodeAndDesc
-  dob: BasicField
-  birthcountry: FieldWithCodeAndDesc
-  residentialstatus: FieldWithCodeAndDesc
-  passportnumber: BasicField
-  passportexpirydate: BasicField
+  uinfin: MyInfoUinFin
+  name: MyInfoName
+  hanyupinyinname: MyInfoHanyuPinyinName
+  aliasname: MyInfoAliasName
+  hanyupinyinaliasname: MyInfoHanyuPinyinAliasName
+  marriedname: MyInfoMarriedName
+  sex: MyInfoSex
+  race: MyInfoRace
+  secondaryrace: MyInfoSecondaryRace
+  dialect: MyInfoDialect
+  nationality: MyInfoNationality
+  dob: MyInfoDob
+  birthcountry: MyInfoBirthCountry
+  residentialstatus: MyInfoResidentialStatus
+  passportnumber: MyInfoPassportNumber
+  passportexpirydate: MyInfoPassportExpiryDate
   regadd: MyInfoAddress
-  housingtype: FieldWithCodeAndDesc
-  hdbtype: FieldWithCodeAndDesc
+  housingtype: MyInfoHousingType
+  hdbtype: MyInfoHdbType
   hdbownership: MyInfoHdbOwnership[]
   ownerprivate: MyInfoOwnerPrivate
-  email: BasicField
+  email: MyInfoEmail
   mobileno: MyInfoPhoneNumber
-  marital: FieldWithCodeAndDesc
-  marriagecertno: BasicField
-  countryofmarriage: FieldWithCodeAndDesc
-  marriagedate: BasicField
-  divorcedate: BasicField
+  marital: MyInfoMarital
+  marriagecertno: MyInfoMarriageCertNo
+  countryofmarriage: MyInfoCountryOfMarriage
+  marriagedate: MyInfoMarriageDate
+  divorcedate: MyInfoDivorceDate
   childrenbirthrecords: MyInfoChildrenBirthRecord[]
   sponsoredchildrenrecords: MyInfoSponsoredChildrenRecord[]
   occupation: MyInfoOccupation
-  employment: BasicField
-  passtype: FieldWithCodeAndDesc
-  passstatus: BasicField
-  passexpirydate: BasicField
-  employmentsector: BasicField
+  employment: MyInfoEmployment
+  passtype: MyInfoPassType
+  passstatus: MyInfoPassStatus
+  passexpirydate: MyInfoPassExpiryDate
+  employmentsector: MyInfoEmploymentSector
   householdincome: MyInfoHouseholdIncome
   vehicles: MyInfoVehicle[]
   drivinglicence: MyInfoDrivingLicence
-  merdekagen: MerdekaGen
+  merdekagen: MyInfoMerdekaGen
   silversupport: MyInfoSilverSupport
   gstvoucher: MyInfoGstVoucher
   'noa-basic': MyInfoNoaBasic
