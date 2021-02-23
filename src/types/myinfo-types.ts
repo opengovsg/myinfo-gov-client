@@ -1,15 +1,8 @@
 import { MyInfoAddress } from "./address"
 import { MyInfoField, StringValue, NumberValue, BooleanValue, CodeAndDesc, BasicField, FieldWithCodeAndDesc } from "./base"
 import { MyInfoHdbOwnership } from "./hdbownership"
+import { MyInfoPhoneNumber } from "./mobileno"
 import { MyInfoOwnerPrivate } from "./ownerprivate"
-
-type MyInfoPhoneNumberCustomFields = {
-  prefix: StringValue
-  areacode: StringValue
-  nbr: StringValue
-}
-
-export type MyInfoPhoneNumber = MyInfoField<MyInfoPhoneNumberCustomFields>
 
 type ChildCustomFields = {
   birthcertno: StringValue
