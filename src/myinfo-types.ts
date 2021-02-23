@@ -116,11 +116,10 @@ type ChildCustomFields = {
   tob: StringValue
 }
 
-export type ChildBelow21 = MyInfoField<ChildCustomFields>
+export type ChildBelow21 = ChildCustomFields
+export type ChildAbove21 = Pick<ChildCustomFields, 'birthcertno'>
 
-export type ChildAbove21 = MyInfoField<Pick<ChildCustomFields, 'birthcertno'>>
-
-export type ChildRecord = ChildBelow21 | ChildAbove21
+export type ChildRecord = MyInfoField<ChildBelow21 | ChildAbove21>
 
 type SponsoredChildCustomFields = {
   nric: StringValue
