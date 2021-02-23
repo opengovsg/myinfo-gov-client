@@ -112,11 +112,11 @@ export type IPerson = Partial<IPersonFull>
 export type MyInfoScope =
   | Exclude<
       keyof IPerson,
-      | 'hdbownership'
-      | 'childrenbirthrecords'
-      | 'sponsoredchildrenrecords'
-      | 'vehicles'
-      | 'drivinglicence'
+      | MyInfoAttribute.HDBOwnership
+      | MyInfoAttribute.ChildrenBirthRecords
+      | MyInfoAttribute.SponsoredChildrenRecords
+      | MyInfoAttribute.Vehicles
+      | MyInfoAttribute.DrivingLicence
     >
   | HdbOwnershipScope
   | ChildrenBirthRecordsScope
