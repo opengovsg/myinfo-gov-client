@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from 'axios'
 import jose from 'node-jose'
 import { verify as verifyJwt } from 'jsonwebtoken'
 import { hasProp, objToSearchParams, sortObjKeys } from './util'
-import { IPerson, MyInfoScope } from './types/myinfo-types'
+import { IPerson, MyInfoScope } from './types'
 import {
   DecryptDataError,
   InvalidTokenSignatureError,
