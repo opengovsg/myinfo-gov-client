@@ -13,19 +13,7 @@ import { MerdekaGen } from "./merdekagen"
 import { MyInfoSilverSupport } from "./silversupport"
 import { MyInfoGstVoucher } from "./gstvoucher"
 import { NoaBasic, MyInfoNoaBasic } from "./noa-basic"
-
-type NOAFullFields = {
-  amount: NumberValue
-  yearofassessment: StringValue
-  employment: NumberValue
-  trade: NumberValue
-  rent: NumberValue
-  interest: NumberValue
-  taxclearance: StringValue
-  category: StringValue
-}
-
-export type NOAFull = MyInfoField<NOAFullFields>
+import { NOAFullFields, MyInfoNoa } from "./noa"
 
 export type NOAHistoryBasic = MyInfoField<{
   noas: NoaBasic[]
@@ -157,7 +145,7 @@ type IPersonFull = {
   silversupport: MyInfoSilverSupport
   gstvoucher: MyInfoGstVoucher
   'noa-basic': MyInfoNoaBasic
-  noa: NOAFull
+  noa: MyInfoNoa
   'noahistory-basic': NOAHistoryBasic
   noahistory: NOAHistoryFull
   cpfcontributions: CPFContributions
