@@ -1,4 +1,4 @@
-import { MyInfoField, StringValue, NumberValue, CodeAndDesc } from "./base"
+import { MyInfoField, StringValue, NumberValue, CodeAndDesc, MyInfoAttribute } from "./base"
 
 export type MyInfoVehicleCustomFields = {
   vehicleno: StringValue
@@ -41,3 +41,4 @@ export type MyInfoVehicleCustomFields = {
 }
 
 export type MyInfoVehicle = MyInfoField<MyInfoVehicleCustomFields>
+export type VehiclesScope = `${MyInfoAttribute.Vehicles}.${keyof MyInfoVehicleCustomFields}`

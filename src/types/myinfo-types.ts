@@ -1,14 +1,14 @@
 import { MyInfoAddress } from "./address"
 import { MyInfoAttribute } from "./base"
-import { MyInfoChildrenBirthRecord, ChildCustomFields } from "./childrenbirthrecords"
-import { MyInfoHdbOwnership } from "./hdbownership"
+import { MyInfoChildrenBirthRecord, ChildrenBirthRecordsScope } from "./childrenbirthrecords"
+import { MyInfoHdbOwnership, HdbOwnershipScope } from "./hdbownership"
 import { MyInfoHouseholdIncome } from "./householdincome"
 import { MyInfoPhoneNumber } from "./mobileno"
-import { MyInfoVehicle, MyInfoVehicleCustomFields } from "./vehicles"
+import { MyInfoVehicle, VehiclesScope } from "./vehicles"
 import { MyInfoOccupation } from "./occupation"
 import { MyInfoOwnerPrivate } from "./ownerprivate"
-import { MyInfoSponsoredChildrenRecord, SponsoredChildCustomFields } from "./sponsoredchildrenrecords"
-import { MyInfoDrivingLicence, DrivingLicenceCustomFields, StartEndDate, PDL, QDL } from "./drivinglicence"
+import { MyInfoSponsoredChildrenRecord, SponsoredChildrenRecordsScope } from "./sponsoredchildrenrecords"
+import { MyInfoDrivingLicence, DrivingLicenceScope } from "./drivinglicence"
 import { MyInfoMerdekaGen } from "./merdekagen"
 import { MyInfoSilverSupport } from "./silversupport"
 import { MyInfoGstVoucher } from "./gstvoucher"
@@ -105,22 +105,6 @@ type IPersonFull = {
  * Shape of data returned by the Person API.
  */
 export type IPerson = Partial<IPersonFull>
-
-export type HdbOwnershipScope = `${MyInfoAttribute.HDBOwnership}.${keyof MyInfoHdbOwnership}`
-export type ChildrenBirthRecordsScope = `${MyInfoAttribute.ChildrenBirthRecords}.${keyof ChildCustomFields}`
-export type SponsoredChildrenRecordsScope = `${MyInfoAttribute.SponsoredChildrenRecords}.${keyof SponsoredChildCustomFields}`
-export type VehiclesScope = `${MyInfoAttribute.Vehicles}.${keyof MyInfoVehicleCustomFields}`
-export type DrivingLicenceScope =
-  | `${MyInfoAttribute.DrivingLicence}.${Exclude<
-      keyof DrivingLicenceCustomFields,
-      'suspension' | 'disqualification' | 'revocation' | 'pdl' | 'qdl'
-    >}`
-  | `${MyInfoAttribute.DrivingLicence}.${
-      | 'suspension'
-      | 'disqualification'
-      | 'revocation'}.${keyof StartEndDate}`
-  | `${MyInfoAttribute.DrivingLicence}.pdl.${keyof PDL}`
-  | `${MyInfoAttribute.DrivingLicence}.qdl.${keyof QDL}`
 
 /**
  * Valid scopes (requested attributes) to get from MyInfo.

@@ -1,4 +1,4 @@
-import { MyInfoField, StringValue, CodeAndDesc } from "./base"
+import { MyInfoField, StringValue, CodeAndDesc, MyInfoAttribute } from "./base"
 
 export type ChildCustomFields = {
   birthcertno: StringValue
@@ -20,3 +20,4 @@ type ChildBelow21 = ChildCustomFields
 type ChildAbove21 = Pick<ChildCustomFields, 'birthcertno'>
 
 export type MyInfoChildrenBirthRecord = MyInfoField<ChildBelow21 | ChildAbove21>
+export type ChildrenBirthRecordsScope = `${MyInfoAttribute.ChildrenBirthRecords}.${keyof ChildCustomFields}`
