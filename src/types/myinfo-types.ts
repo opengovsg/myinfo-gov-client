@@ -1,5 +1,5 @@
 import { MyInfoAddress } from "./address"
-import { MyInfoField, StringValue, NumberValue, BooleanValue, BasicField, FieldWithCodeAndDesc } from "./base"
+import { MyInfoField, StringValue, NumberValue, BasicField, FieldWithCodeAndDesc } from "./base"
 import { MyInfoChildrenBirthRecord, ChildCustomFields } from "./childrenbirthrecords"
 import { MyInfoHdbOwnership } from "./hdbownership"
 import { MyInfoHouseholdIncome } from "./householdincome"
@@ -11,15 +11,7 @@ import { MyInfoSponsoredChildrenRecord, SponsoredChildCustomFields } from "./spo
 import { MyInfoDrivingLicence, DrivingLicenceCustomFields, StartEndDate, PDL, QDL } from "./drivinglicence"
 import { MerdekaGen } from "./merdekagen"
 import { MyInfoSilverSupport } from "./silversupport"
-
-export type GSTVoucher = MyInfoField<{
-  exclusion: BooleanValue
-  signup: BooleanValue
-  gstmedisave: NumberValue
-  gstregular: NumberValue
-  gstspecial: NumberValue
-  year: StringValue
-}>
+import { MyInfoGstVoucher } from "./gstvoucher"
 
 type NOABasicFields = {
   amount: NumberValue
@@ -169,7 +161,7 @@ type IPersonFull = {
   drivinglicence: MyInfoDrivingLicence
   merdekagen: MerdekaGen
   silversupport: MyInfoSilverSupport
-  gstvoucher: GSTVoucher
+  gstvoucher: MyInfoGstVoucher
   'noa-basic': NOABasic
   noa: NOAFull
   'noahistory-basic': NOAHistoryBasic
