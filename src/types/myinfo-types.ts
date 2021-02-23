@@ -1,5 +1,5 @@
 import { MyInfoAddress } from "./address"
-import { MyInfoField, StringValue, NumberValue, BasicField, FieldWithCodeAndDesc } from "./base"
+import { MyInfoField, NumberValue, BasicField, FieldWithCodeAndDesc } from "./base"
 import { MyInfoChildrenBirthRecord, ChildCustomFields } from "./childrenbirthrecords"
 import { MyInfoHdbOwnership } from "./hdbownership"
 import { MyInfoHouseholdIncome } from "./householdincome"
@@ -17,13 +17,7 @@ import { MyInfoNoa } from "./noa"
 import { MyInfoNoaHistoryBasic } from "./noahistory-basic"
 import { MyInfoNoaHistory } from "./noahistory"
 import { MyInfoCpfContributions } from "./cpfcontributions"
-
-export type CPFEmployers = MyInfoField<{
-  history: {
-    employer: StringValue
-    month: StringValue
-  }[]
-}>
+import { MyInfoCpfEmployers } from "./cpfemployers"
 
 export type CPFBalances = MyInfoField<{
   ma: NumberValue
@@ -135,7 +129,7 @@ type IPersonFull = {
   'noahistory-basic': MyInfoNoaHistoryBasic
   noahistory: MyInfoNoaHistory
   cpfcontributions: MyInfoCpfContributions
-  cpfemployers: CPFEmployers
+  cpfemployers: MyInfoCpfEmployers
   cpfbalances: CPFBalances
 }
 
