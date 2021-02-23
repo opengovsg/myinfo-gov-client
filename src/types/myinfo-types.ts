@@ -3,10 +3,9 @@ import { MyInfoField, StringValue, NumberValue, BooleanValue, CodeAndDesc, Basic
 import { MyInfoChildrenBirthRecord, ChildCustomFields } from "./childrenbirthrecords"
 import { MyInfoHdbOwnership } from "./hdbownership"
 import { MyInfoPhoneNumber } from "./mobileno"
+import { MyInfoOccupation } from "./occupation"
 import { MyInfoOwnerPrivate } from "./ownerprivate"
 import { MyInfoSponsoredChildrenRecord, SponsoredChildCustomFields } from "./sponsoredchildrenrecords"
-
-export type MyInfoOccupation = MyInfoField<StringValue | CodeAndDesc>
 
 export type HouseholdIncome = MyInfoField<{
   high: NumberValue
