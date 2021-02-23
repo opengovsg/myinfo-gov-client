@@ -56,7 +56,7 @@ const handleReceiveRedirect: RequestHandler<
   unknown,
   unknown,
   unknown,
-  { code: string state: string }
+  { code: string; state: string }
 > = async (req, res) => {
   const { code, state } = req.query
   const scopes =
