@@ -1,46 +1,6 @@
-export enum MyInfoSource {
-  GovtVerified = '1',
-  UserProvided = '2',
-  NotApplicable = '3',
-  SingPassVerified = '4',
-}
-
-type Metadata = {
-  lastupdated: string
-  source: MyInfoSource
-  classification: 'C'
-}
-
-type UnavailableField = Metadata & {
-  unavailable: true
-}
-
-type PossiblyAvailableMetadata = Metadata & {
-  unavailable?: false
-}
-
-type MyInfoField<T> =
-  | UnavailableField
-  | (T & PossiblyAvailableMetadata)
-
-type StringValue = {
-  value: string
-}
-
-type NumberValue = {
-  value: number
-}
-
-type BooleanValue = {
-  value: boolean
-}
+import { MyInfoField, StringValue, NumberValue, BooleanValue, CodeAndDesc } from "./base"
 
 export type BasicField = MyInfoField<StringValue>
-
-type CodeAndDesc = {
-  code: string
-  desc: string
-}
 
 export type FieldWithCodeAndDesc = MyInfoField<CodeAndDesc>
 
