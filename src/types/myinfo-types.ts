@@ -26,9 +26,7 @@ type UnformattedAddress = {
   line2: StringValue
 }
 
-export type MyInfoAddress =
-  | MyInfoField<SGAddress>
-  | MyInfoField<UnformattedAddress>
+export type MyInfoAddress = MyInfoField<SGAddress | UnformattedAddress>
 
 type HDBOwnershipCustomFields = {
   noofowners: NumberValue
