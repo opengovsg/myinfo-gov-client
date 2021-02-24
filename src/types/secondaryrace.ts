@@ -1,3 +1,3 @@
-import { MyInfoFieldWithCodeAndDesc } from "./base"
+import { MyInfoCodeField } from "./base"
 
-export type MyInfoSecondaryRace = MyInfoFieldWithCodeAndDesc
+export type MyInfoSecondaryRace = MyInfoCodeField

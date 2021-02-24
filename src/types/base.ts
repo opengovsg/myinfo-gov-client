@@ -5,44 +5,41 @@ export enum MyInfoSource {
   SingPassVerified = '4'
 }
 
-type Metadata = {
+export type MyInfoMetadata = {
   lastupdated: string
   source: MyInfoSource
   classification: 'C'
 }
 
-type UnavailableField = Metadata & {
+export type MyInfoUnavailableField = MyInfoMetadata & {
   unavailable: true
 }
 
-type PossiblyAvailableMetadata = Metadata & {
+export type MyInfoAvailableMetadata = MyInfoMetadata & {
   unavailable?: false
 }
 
-export type MyInfoField<T> = UnavailableField |
-  (T & PossiblyAvailableMetadata)
+// TODO: determine which fields require MyInfoUnavailableField instead
+// of assigning it to all field types
+export type MyInfoField<T> = MyInfoUnavailableField |
+  (T & MyInfoAvailableMetadata)
 
-export type StringValue = {
-  value: string
+type ValueType<T> = {
+  value: T
 }
 
-export type NumberValue = {
-  value: number
-}
-
-export type BooleanValue = {
-  value: boolean
-}
+export type StringValue = ValueType<string>
+export type NumberValue = ValueType<number>
+export type BooleanValue = ValueType<boolean>
 
 export type CodeAndDesc = {
   code: string
   desc: string
 }
 
+export type MyInfoValueField = MyInfoField<StringValue>
 
-export type MyInfoBasicField = MyInfoField<StringValue>
-
-export type MyInfoFieldWithCodeAndDesc = MyInfoField<CodeAndDesc>
+export type MyInfoCodeField = MyInfoField<CodeAndDesc>
 
 /**
  * Keys of data returned by Person API.

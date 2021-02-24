@@ -1,3 +1,3 @@
-import { MyInfoBasicField } from "./base"
+import { MyInfoValueField } from "./base"
 
-export type MyInfoEmployment = MyInfoBasicField
+export type MyInfoEmployment = MyInfoValueField

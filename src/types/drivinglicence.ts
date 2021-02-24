@@ -40,3 +40,4 @@ export type DrivingLicenceScope =
       | 'revocation'}.${keyof StartEndDate}`
   | `${MyInfoAttribute.DrivingLicence}.pdl.${keyof PDL}`
   | `${MyInfoAttribute.DrivingLicence}.qdl.${keyof QDL}`
+  

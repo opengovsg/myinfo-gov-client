@@ -1,6 +1,6 @@
 import { MyInfoField, StringValue, CodeAndDesc, MyInfoAttribute } from "./base"
 
-export type SponsoredChildCustomFields = {
+export type SponsoredChildFull = {
   nric: StringValue
   name: StringValue
   hanyupinyinname: StringValue
@@ -19,8 +19,8 @@ export type SponsoredChildCustomFields = {
   scprgrantdate: StringValue
 }
 
-export type SponsoredChildBelow21 = SponsoredChildCustomFields
-export type SponsoredChildAbove21 = Pick<SponsoredChildCustomFields, 'nric'>
+export type SponsoredChildBelow21 = SponsoredChildFull
+export type SponsoredChildAbove21 = Pick<SponsoredChildFull, 'nric'>
 
 export type MyInfoSponsoredChildrenRecord = MyInfoField<SponsoredChildBelow21 | SponsoredChildAbove21>
-export type SponsoredChildrenRecordsScope = `${MyInfoAttribute.SponsoredChildrenRecords}.${keyof SponsoredChildCustomFields}`
+export type SponsoredChildrenRecordsScope = `${MyInfoAttribute.SponsoredChildrenRecords}.${keyof SponsoredChildFull}`
