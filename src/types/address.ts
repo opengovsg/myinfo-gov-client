@@ -19,8 +19,8 @@ export type SingaporeAddress = {
 
 export type UnformattedAddress = {
   type: AddressType.Unformatted
-  line1: StringValue
-  line2: StringValue
+  line1?: StringValue
+  line2?: StringValue
 }
 
 export type MyInfoAddress = MyInfoField<SingaporeAddress | UnformattedAddress>
