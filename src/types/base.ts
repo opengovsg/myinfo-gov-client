@@ -24,14 +24,13 @@ type UnavailableProp<T> = {
   unavailable: T
 }
 
-export type MyInfoUnavailableField = MyInfoNotApplicable | (MyInfoApplicable & UnavailableProp<true>)
+export type MyInfoUnavailableField = MyInfoApplicable & UnavailableProp<true>
 
-export type MyInfoAvailableMetadata = MyInfoNotApplicable
-  | (MyInfoApplicable & Partial<UnavailableProp<undefined>>) // For convenience
+export type MyInfoAvailableMetadata = MyInfoApplicable & Partial<UnavailableProp<undefined>> // For convenience
 
-// TODO: determine which fields require MyInfoUnavailableField instead
+// TODO: determine which fields are not applicable, not available instead
 // of assigning it to all field types
-export type MyInfoField<T> = MyInfoUnavailableField |
+export type MyInfoField<T> = MyInfoNotApplicable | MyInfoUnavailableField |
   (T & MyInfoAvailableMetadata)
 
 type ValueType<T> = {
