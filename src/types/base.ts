@@ -28,8 +28,8 @@ export type MyInfoUnavailableField = MyInfoApplicable & UnavailableProp<true>
 
 export type MyInfoAvailableMetadata = MyInfoApplicable & Partial<UnavailableProp<undefined>> // For convenience
 
-// TODO: determine which fields are not applicable, not available instead
-// of assigning it to all field types
+// TODO: determine which fields are not applicable, not available instead of assigning it to all field types
+// See https://www.ndi-api.gov.sg/library/myinfo/implementation-myinfo-data
 export type MyInfoField<T> = MyInfoNotApplicable | MyInfoUnavailableField |
   (T & MyInfoAvailableMetadata)
 
