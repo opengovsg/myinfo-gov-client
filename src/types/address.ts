@@ -9,7 +9,7 @@ export enum AddressType {
 export type SingaporeAddress = {
   type: AddressType.Singapore
   block: StringValue
-  building: StringValue
+  building?: StringValue
   floor: StringValue
   unit: StringValue
   street: StringValue
