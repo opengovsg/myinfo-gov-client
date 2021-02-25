@@ -20,13 +20,14 @@ export type MyInfoApplicable = {
   classification: MyInfoDataClassification.Confidential
 } & SourceProp<MyInfoSource.GovtVerified | MyInfoSource.UserProvided | MyInfoSource.SingPassVerified>
 
-export type MyInfoUnavailableField = MyInfoNotApplicable | (MyInfoApplicable & {
-  unavailable: true
-})
-
-export type MyInfoAvailableMetadata = MyInfoNotApplicable | MyInfoApplicable & {
-  unavailable?: false
+type UnavailableProp<T> = {
+  unavailable: T
 }
+
+export type MyInfoUnavailableField = MyInfoNotApplicable | (MyInfoApplicable & UnavailableProp<true>)
+
+export type MyInfoAvailableMetadata = MyInfoNotApplicable
+  | (MyInfoApplicable & Partial<UnavailableProp<undefined>>) // For convenience
 
 // TODO: determine which fields require MyInfoUnavailableField instead
 // of assigning it to all field types
