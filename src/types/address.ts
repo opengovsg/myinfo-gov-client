@@ -3,7 +3,7 @@ import { MyInfoField, StringValue, CodeAndDesc } from "./base"
 
 export enum AddressType {
   Singapore = 'SG',
-  Unformatted = 'Unformatted'
+  Unformatted = 'UNFORMATTED'
 }
 
 export type SingaporeAddress = {
