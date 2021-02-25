@@ -5,17 +5,26 @@ export enum MyInfoSource {
   SingPassVerified = '4'
 }
 
-export type MyInfoMetadata = {
+export enum MyInfoDataClassification {
+  Confidential = 'C'
+}
+
+type SourceProp<T> = {
+  source: T
+}
+
+export type MyInfoNotApplicable = SourceProp<MyInfoSource.NotApplicable>
+
+export type MyInfoApplicable = {
   lastupdated: string
-  source: MyInfoSource
-  classification: 'C'
-}
+  classification: MyInfoDataClassification.Confidential
+} & SourceProp<MyInfoSource.GovtVerified | MyInfoSource.UserProvided | MyInfoSource.SingPassVerified>
 
-export type MyInfoUnavailableField = MyInfoMetadata & {
+export type MyInfoUnavailableField = MyInfoNotApplicable | (MyInfoApplicable & {
   unavailable: true
-}
+})
 
-export type MyInfoAvailableMetadata = MyInfoMetadata & {
+export type MyInfoAvailableMetadata = MyInfoNotApplicable | MyInfoApplicable & {
   unavailable?: false
 }
 
