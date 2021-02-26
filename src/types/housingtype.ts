@@ -1,3 +1,3 @@
-import { MyInfoCodeField } from "./base"
+import { MyInfoCodeField, MyInfoNotApplicable } from "./base"
 
-export type MyInfoHousingType = MyInfoCodeField
+export type MyInfoHousingType = MyInfoCodeField | MyInfoNotApplicable

@@ -1,5 +1,5 @@
 import { SingaporeAddress, UnformattedAddress } from "./address"
-import { CodeAndDesc, MyInfoAttribute, MyInfoField, NumberValue, StringValue } from "./base"
+import { CodeAndDesc, MyInfoAttribute, MyInfoField, MyInfoNotApplicable, NumberValue, StringValue } from "./base"
 
 type HdbOwnershipCustomFields = {
     noofowners: NumberValue
@@ -19,5 +19,5 @@ type HdbOwnershipCustomFields = {
     monthlyloaninstalment: NumberValue
   }
 
-export type MyInfoHdbOwnership = MyInfoField<HdbOwnershipCustomFields>
+export type MyInfoHdbOwnership = MyInfoField<HdbOwnershipCustomFields> | MyInfoNotApplicable
 export type HdbOwnershipScope = `${MyInfoAttribute.HDBOwnership}.${keyof HdbOwnershipCustomFields}`

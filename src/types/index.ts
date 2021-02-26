@@ -1,13 +1,13 @@
 import { MyInfoAddress } from "./address"
 import { MyInfoAttribute } from "./base"
-import { MyInfoChildrenBirthRecord, ChildrenBirthRecordsScope } from "./childrenbirthrecords"
+import { MyInfoChildrenBirthRecords, ChildrenBirthRecordsScope } from "./childrenbirthrecords"
 import { MyInfoHdbOwnership, HdbOwnershipScope } from "./hdbownership"
 import { MyInfoHouseholdIncome } from "./householdincome"
 import { MyInfoPhoneNumber } from "./mobileno"
 import { MyInfoVehicle, VehiclesScope } from "./vehicles"
 import { MyInfoOccupation } from "./occupation"
 import { MyInfoOwnerPrivate } from "./ownerprivate"
-import { MyInfoSponsoredChildrenRecord, SponsoredChildrenRecordsScope } from "./sponsoredchildrenrecords"
+import { MyInfoSponsoredChildrenRecords, SponsoredChildrenRecordsScope } from "./sponsoredchildrenrecords"
 import { MyInfoDrivingLicence, DrivingLicenceScope } from "./drivinglicence"
 import { MyInfoMerdekaGen } from "./merdekagen"
 import { MyInfoSilverSupport } from "./silversupport"
@@ -78,8 +78,8 @@ type IPersonFull = {
   countryofmarriage: MyInfoCountryOfMarriage
   marriagedate: MyInfoMarriageDate
   divorcedate: MyInfoDivorceDate
-  childrenbirthrecords: MyInfoChildrenBirthRecord[]
-  sponsoredchildrenrecords: MyInfoSponsoredChildrenRecord[]
+  childrenbirthrecords: MyInfoChildrenBirthRecords
+  sponsoredchildrenrecords: MyInfoSponsoredChildrenRecords
   occupation: MyInfoOccupation
   employment: MyInfoEmployment
   passtype: MyInfoPassType

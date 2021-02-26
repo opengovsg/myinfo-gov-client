@@ -1,4 +1,4 @@
-import { MyInfoField, NumberValue } from "./base"
+import { MyInfoField, MyInfoNotApplicable, NumberValue } from "./base"
 
 type CpfBalances = {
     ma: NumberValue
@@ -7,4 +7,4 @@ type CpfBalances = {
     ra?: NumberValue
   }
 
-export type MyInfoCpfBalances = MyInfoField<CpfBalances>
+export type MyInfoCpfBalances = MyInfoField<CpfBalances> | MyInfoNotApplicable

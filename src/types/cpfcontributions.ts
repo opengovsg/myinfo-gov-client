@@ -1,4 +1,4 @@
-import { MyInfoField, StringValue, NumberValue } from "./base"
+import { MyInfoField, StringValue, NumberValue, MyInfoNotApplicable } from "./base"
 
 type CpfContributions = {
     history: {
@@ -9,4 +9,4 @@ type CpfContributions = {
     }[]
   }
 
-export type MyInfoCpfContributions = MyInfoField<CpfContributions>
+export type MyInfoCpfContributions = MyInfoField<CpfContributions> | MyInfoNotApplicable

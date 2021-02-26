@@ -1,3 +1,3 @@
-import { MyInfoValueField } from "./base"
+import { MyInfoNotApplicable, MyInfoValueField } from "./base"
 
-export type MyInfoHanyuPinyinName = MyInfoValueField
+export type MyInfoHanyuPinyinName = MyInfoValueField | MyInfoNotApplicable

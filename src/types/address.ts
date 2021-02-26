@@ -1,4 +1,4 @@
-import { MyInfoField, StringValue, CodeAndDesc } from "./base"
+import { MyInfoField, StringValue, CodeAndDesc, MyInfoNotApplicable } from "./base"
 
 
 export enum AddressType {
@@ -23,4 +23,4 @@ export type UnformattedAddress = {
   line2?: StringValue
 }
 
-export type MyInfoAddress = MyInfoField<SingaporeAddress | UnformattedAddress>
+export type MyInfoAddress = MyInfoField<SingaporeAddress | UnformattedAddress> | MyInfoNotApplicable
