@@ -34,7 +34,7 @@ export type MyInfoUnavailableField = MyInfoApplicable & UnavailableProp<true>
 
 export type MyInfoAvailableMetadata = MyInfoApplicable & Partial<UnavailableProp<undefined>> // For convenience
 
-export type MyInfoField<T> = MyInfoNotApplicable | MyInfoUnavailableField |
+export type MyInfoField<T> = MyInfoUnavailableField |
   (T & MyInfoAvailableMetadata)
 
 type ValueType<T> = {
