@@ -17,7 +17,7 @@ export type QDL = {
     issuedate: StringValue
   }[]
 }
-export type DrivingLicenceCustomFields = {
+type DrivingLicenceCustomFields = {
   comstatus: CodeAndDesc
   totaldemeritpoints: NumberValue
   suspension: StartEndDate

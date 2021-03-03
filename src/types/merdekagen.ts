@@ -1,6 +1,6 @@
 import { MyInfoField, NumberValue, BooleanValue, CodeAndDesc } from "./base"
 
-export type MerdekaGen = {
+type MerdekaGen = {
   eligibility: BooleanValue
   quantum: NumberValue
   message: CodeAndDesc
