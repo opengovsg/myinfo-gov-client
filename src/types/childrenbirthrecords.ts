@@ -1,6 +1,6 @@
 import { MyInfoField, StringValue, CodeAndDesc, MyInfoAttribute } from "./base"
 
-export type ChildCustomFields = {
+type MyInfoChildFull = {
   birthcertno: StringValue
   name: StringValue
   hanyupinyinname: StringValue
@@ -16,8 +16,8 @@ export type ChildCustomFields = {
   tob: StringValue
 }
 
-type ChildBelow21 = ChildCustomFields
-type ChildAbove21 = Pick<ChildCustomFields, 'birthcertno'>
+export type MyInfoChildBirthRecordBelow21 = MyInfoChildFull
+export type MyInfoChildBirthRecordAbove21 = Pick<MyInfoChildFull, 'birthcertno'>
 
-export type MyInfoChildrenBirthRecords = Array<MyInfoField<ChildBelow21 | ChildAbove21>>
-export type ChildrenBirthRecordsScope = `${MyInfoAttribute.ChildrenBirthRecords}.${keyof ChildCustomFields}`
+export type MyInfoChildrenBirthRecords = Array<MyInfoField<MyInfoChildBirthRecordBelow21 | MyInfoChildBirthRecordAbove21>>
+export type ChildrenBirthRecordsScope = `${MyInfoAttribute.ChildrenBirthRecords}.${keyof MyInfoChildFull}`
