@@ -24,7 +24,7 @@ export type MyInfoNotApplicable = SourceProp<MyInfoSource.NotApplicable>
 export type MyInfoApplicable = {
   lastupdated: string
   classification: MyInfoDataClassification.Confidential
-} & SourceProp<MyInfoSource.GovtVerified | MyInfoSource.UserProvided | MyInfoSource.SingPassVerified>
+} & SourceProp<Exclude<MyInfoSource, MyInfoSource.NotApplicable>>
 
 type UnavailableProp<T> = {
   unavailable: T
