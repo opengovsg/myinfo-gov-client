@@ -1,13 +1,13 @@
 import { MyInfoField, StringValue, CodeAndDesc, MyInfoNotApplicable } from "./base"
 
 
-export enum AddressType {
+export enum MyInfoAddressType {
   Singapore = 'SG',
   Unformatted = 'UNFORMATTED'
 }
 
-export type SingaporeAddress = {
-  type: AddressType.Singapore
+export type MyInfoSingaporeAddress = {
+  type: MyInfoAddressType.Singapore
   block: StringValue
   building: StringValue
   floor: StringValue
@@ -17,10 +17,10 @@ export type SingaporeAddress = {
   country: CodeAndDesc
 }
 
-export type UnformattedAddress = {
-  type: AddressType.Unformatted
+export type MyInfoUnformattedAddress = {
+  type: MyInfoAddressType.Unformatted
   line1?: StringValue
   line2?: StringValue
 }
 
-export type MyInfoAddress = MyInfoField<SingaporeAddress | UnformattedAddress> | MyInfoNotApplicable
+export type MyInfoAddress = MyInfoField<MyInfoSingaporeAddress | MyInfoUnformattedAddress> | MyInfoNotApplicable

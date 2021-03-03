@@ -1,9 +1,9 @@
-import { SingaporeAddress, UnformattedAddress } from "./address"
+import { MyInfoSingaporeAddress, MyInfoUnformattedAddress } from "./address"
 import { CodeAndDesc, MyInfoAttribute, MyInfoField, NumberValue, StringValue } from "./base"
 
 type HdbOwnershipCustomFields = {
     noofowners: NumberValue
-    address: SingaporeAddress | UnformattedAddress
+    address: MyInfoSingaporeAddress | MyInfoUnformattedAddress
     hdbtype: CodeAndDesc
     leasecommencementdate: StringValue
     termoflease: NumberValue
