@@ -1,6 +1,6 @@
 import { MyInfoField, StringValue, NumberValue, CodeAndDesc, MyInfoAttribute } from "./base"
 
-export type MyInfoVehicleCustomFields = {
+export type MyInfoVehicleFull = {
   vehicleno: StringValue
   type: StringValue
   iulabelno: StringValue
@@ -40,5 +40,5 @@ export type MyInfoVehicleCustomFields = {
   vpc: StringValue
 }
 
-export type MyInfoVehicle = MyInfoField<MyInfoVehicleCustomFields>
-export type VehiclesScope = `${MyInfoAttribute.Vehicles}.${keyof MyInfoVehicleCustomFields}`
+export type MyInfoVehicle = MyInfoField<MyInfoVehicleFull>
+export type VehiclesScope = `${MyInfoAttribute.Vehicles}.${keyof MyInfoVehicleFull}`
