@@ -1,15 +1,15 @@
 import { MyInfoField, StringValue, NumberValue, CodeAndDesc, MyInfoAttribute } from "./base"
 
-export type StartEndDate = {
+type StartEndDate = {
   startdate: StringValue
   enddate: StringValue
 }
-export type PDL = {
+type PDL = {
   validity: CodeAndDesc
   expirydate: StringValue
   classes: { class: StringValue }[]
 }
-export type QDL = {
+type QDL = {
   validity: CodeAndDesc
   expirydate: StringValue
   classes: {
