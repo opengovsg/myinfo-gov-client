@@ -13,6 +13,8 @@ type SourceProp<T> = {
   source: T
 }
 
+type MyInfoSourceDefault = Exclude<MyInfoSource, MyInfoSource.NotApplicable>
+
 // APPLICABILITY
 // Certain fields may not be applicable to specific groups of people. For example, CPF
 // or Residential Status is not applicable to foreigners, and Workpass is not applicable to Singapore
@@ -21,21 +23,21 @@ type SourceProp<T> = {
 // For a full reference, see https://www.ndi-api.gov.sg/library/myinfo/implementation-myinfo-data
 export type MyInfoNotApplicable = SourceProp<MyInfoSource.NotApplicable>
 
-export type MyInfoApplicable = {
+export type MyInfoApplicable<S> = {
   lastupdated: string
   classification: MyInfoDataClassification.Confidential
-} & SourceProp<Exclude<MyInfoSource, MyInfoSource.NotApplicable>>
+} & SourceProp<S>
 
 type UnavailableProp<T> = {
   unavailable: T
 }
 
-export type MyInfoUnavailableField = MyInfoApplicable & UnavailableProp<true>
+export type MyInfoUnavailableField<S> = MyInfoApplicable<S> & UnavailableProp<true>
 
-export type MyInfoAvailableMetadata = MyInfoApplicable & Partial<UnavailableProp<undefined>> // For convenience
+export type MyInfoAvailableMetadata<S> = MyInfoApplicable<S> & Partial<UnavailableProp<undefined>> // For convenience
 
-export type MyInfoField<T> = MyInfoUnavailableField |
-  (T & MyInfoAvailableMetadata)
+export type MyInfoField<T, S = MyInfoSourceDefault> = MyInfoUnavailableField<S> |
+  (T & MyInfoAvailableMetadata<S>)
 
 type ValueType<T> = {
   value: T
