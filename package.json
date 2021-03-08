@@ -12,6 +12,7 @@
     "test-e2e": "env-cmd -f test/.test-env concurrently --success first --kill-others \"mockpass\" \"testcafe\"",
     "test": "npm run test-unit && npm run test-e2e",
     "lint": "eslint . --quiet --fix",
+    "lint-ci": "eslint . --quiet",
     "build": "tsc -p tsconfig.build.json",
     "prepublishOnly": "npm run build"
   },
