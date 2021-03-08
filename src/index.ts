@@ -1,3 +1,3 @@
 export * from './MyInfoGovClient.class'
-export * from './myinfo-types'
+export * from './types'
 export * from './errors'
