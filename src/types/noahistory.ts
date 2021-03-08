@@ -1,5 +1,5 @@
-import { MyInfoField } from "./base"
-import { NoaFull } from "./noa"
+import { MyInfoField } from './base'
+import { NoaFull } from './noa'
 
 type NoaHistory = {
   noas: NoaFull[]

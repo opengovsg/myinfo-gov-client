@@ -2,11 +2,11 @@ export enum MyInfoSource {
   GovtVerified = '1',
   UserProvided = '2',
   NotApplicable = '3',
-  SingPassVerified = '4'
+  SingPassVerified = '4',
 }
 
 export enum MyInfoDataClassification {
-  Confidential = 'C'
+  Confidential = 'C',
 }
 
 type SourceProp<T> = {
@@ -32,12 +32,15 @@ type UnavailableProp<T> = {
   unavailable: T
 }
 
-export type MyInfoUnavailableField<S> = MyInfoApplicable<S> & UnavailableProp<true>
+export type MyInfoUnavailableField<S> = MyInfoApplicable<S> &
+  UnavailableProp<true>
 
-export type MyInfoAvailableMetadata<S> = MyInfoApplicable<S> & Partial<UnavailableProp<undefined>> // For convenience
+export type MyInfoAvailableMetadata<S> = MyInfoApplicable<S> &
+  Partial<UnavailableProp<undefined>> // For convenience
 
-export type MyInfoField<T, S = MyInfoSourceDefault> = MyInfoUnavailableField<S> |
-  (T & MyInfoAvailableMetadata<S>)
+export type MyInfoField<T, S = MyInfoSourceDefault> =
+  | MyInfoUnavailableField<S>
+  | (T & MyInfoAvailableMetadata<S>)
 
 type ValueType<T> = {
   value: T

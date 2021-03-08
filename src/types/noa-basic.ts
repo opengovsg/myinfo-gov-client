@@ -1,4 +1,4 @@
-import { MyInfoField, StringValue, NumberValue } from "./base"
+import { MyInfoField, StringValue, NumberValue } from './base'
 
 export type NoaBasic = {
   amount: NumberValue

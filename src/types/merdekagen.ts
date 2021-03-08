@@ -1,4 +1,4 @@
-import { MyInfoField, NumberValue, BooleanValue, CodeAndDesc } from "./base"
+import { MyInfoField, NumberValue, BooleanValue, CodeAndDesc } from './base'
 
 type MerdekaGen = {
   eligibility: BooleanValue

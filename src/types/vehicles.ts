@@ -1,4 +1,10 @@
-import { MyInfoField, StringValue, NumberValue, CodeAndDesc, MyInfoAttribute } from "./base"
+import {
+  MyInfoField,
+  StringValue,
+  NumberValue,
+  CodeAndDesc,
+  MyInfoAttribute,
+} from './base'
 
 export type MyInfoVehicleFull = {
   vehicleno: StringValue
