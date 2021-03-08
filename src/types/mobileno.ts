@@ -1,4 +1,4 @@
-import { MyInfoField, StringValue } from "./base"
+import { MyInfoField, StringValue } from './base'
 
 type MyInfoPhoneNumberCustomFields = {
   prefix: StringValue

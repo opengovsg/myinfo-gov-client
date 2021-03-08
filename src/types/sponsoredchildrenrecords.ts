@@ -1,4 +1,10 @@
-import { MyInfoField, StringValue, CodeAndDesc, MyInfoAttribute, MyInfoNotApplicable } from "./base"
+import {
+  MyInfoField,
+  StringValue,
+  CodeAndDesc,
+  MyInfoAttribute,
+  MyInfoNotApplicable,
+} from './base'
 
 export type MyInfoSponsoredChildFull = {
   nric: StringValue
@@ -22,5 +28,11 @@ export type MyInfoSponsoredChildFull = {
 export type MyInfoSponsoredChildBelow21 = MyInfoSponsoredChildFull
 export type MyInfoSponsoredChildAbove21 = Pick<MyInfoSponsoredChildFull, 'nric'>
 
-export type MyInfoSponsoredChildrenRecords = Array<MyInfoField<MyInfoSponsoredChildBelow21 | MyInfoSponsoredChildAbove21 | MyInfoNotApplicable>>
+export type MyInfoSponsoredChildrenRecords = Array<
+  MyInfoField<
+    | MyInfoSponsoredChildBelow21
+    | MyInfoSponsoredChildAbove21
+    | MyInfoNotApplicable
+  >
+>
 export type SponsoredChildrenRecordsScope = `${MyInfoAttribute.SponsoredChildrenRecords}.${keyof MyInfoSponsoredChildFull}`

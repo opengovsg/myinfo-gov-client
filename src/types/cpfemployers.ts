@@ -1,10 +1,10 @@
-import { MyInfoField, MyInfoNotApplicable, StringValue } from "./base"
+import { MyInfoField, MyInfoNotApplicable, StringValue } from './base'
 
 type CpfEmployer = {
-    history: {
-      employer: StringValue
-      month: StringValue
-    }[]
-  }
+  history: {
+    employer: StringValue
+    month: StringValue
+  }[]
+}
 
 export type MyInfoCpfEmployers = MyInfoField<CpfEmployer> | MyInfoNotApplicable

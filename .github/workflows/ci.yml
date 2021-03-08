@@ -22,6 +22,8 @@ jobs:
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
       - run: npm install
+      - name: Lint
+        run: npm run lint-ci
       - name: Compile
         run: npm run build
       - name: Unit tests

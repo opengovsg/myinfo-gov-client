@@ -1,3 +1,3 @@
-import { MyInfoValueField } from "./base"
+import { MyInfoValueField } from './base'
 
 export type MyInfoMarriageDate = MyInfoValueField

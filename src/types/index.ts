@@ -1,53 +1,59 @@
-import { MyInfoAddress } from "./address"
-import { MyInfoAttribute } from "./base"
-import { MyInfoChildrenBirthRecords, ChildrenBirthRecordsScope } from "./childrenbirthrecords"
-import { MyInfoHdbOwnership, HdbOwnershipScope } from "./hdbownership"
-import { MyInfoHouseholdIncome } from "./householdincome"
-import { MyInfoPhoneNumber } from "./mobileno"
-import { MyInfoVehicle, VehiclesScope } from "./vehicles"
-import { MyInfoOccupation } from "./occupation"
-import { MyInfoOwnerPrivate } from "./ownerprivate"
-import { MyInfoSponsoredChildrenRecords, SponsoredChildrenRecordsScope } from "./sponsoredchildrenrecords"
-import { MyInfoDrivingLicence, DrivingLicenceScope } from "./drivinglicence"
-import { MyInfoMerdekaGen } from "./merdekagen"
-import { MyInfoSilverSupport } from "./silversupport"
-import { MyInfoGstVoucher } from "./gstvoucher"
-import { MyInfoNoaBasic } from "./noa-basic"
-import { MyInfoNoa } from "./noa"
-import { MyInfoNoaHistoryBasic } from "./noahistory-basic"
-import { MyInfoNoaHistory } from "./noahistory"
-import { MyInfoCpfContributions } from "./cpfcontributions"
-import { MyInfoCpfEmployers } from "./cpfemployers"
-import { MyInfoCpfBalances } from "./cpfbalances"
-import { MyInfoUinFin } from "./uinfin"
-import { MyInfoName } from "./name"
-import { MyInfoHanyuPinyinName } from "./hanyupinyinname"
-import { MyInfoAliasName } from "./aliasname"
-import { MyInfoHanyuPinyinAliasName } from "./hanyupinyinaliasname"
-import { MyInfoMarriedName } from "./marriedname"
-import { MyInfoSex } from "./sex"
-import { MyInfoRace } from "./race"
-import { MyInfoSecondaryRace } from "./secondaryrace"
-import { MyInfoDialect } from "./dialect"
-import { MyInfoNationality } from "./nationality"
-import { MyInfoDob } from "./dob"
-import { MyInfoBirthCountry } from "./birthcountry"
-import { MyInfoResidentialStatus } from "./residentialstatus"
-import { MyInfoPassportNumber } from "./passportnumber"
-import { MyInfoPassportExpiryDate } from "./passportexpirydate"
-import { MyInfoHousingType } from "./housingtype"
-import { MyInfoHdbType } from "./hdbtype"
-import { MyInfoEmail } from "./email"
-import { MyInfoMarital } from "./marital"
-import { MyInfoMarriageCertNo } from "./marriagecertno"
-import { MyInfoCountryOfMarriage } from "./countryofmarriage"
-import { MyInfoMarriageDate } from "./marriagedate"
-import { MyInfoDivorceDate } from "./divorcedate"
-import { MyInfoEmployment } from "./employment"
-import { MyInfoPassType } from "./passtype"
-import { MyInfoPassStatus } from "./passstatus"
-import { MyInfoPassExpiryDate } from "./passexpirydate"
-import { MyInfoEmploymentSector } from "./employmentsector"
+import { MyInfoAddress } from './address'
+import { MyInfoAttribute } from './base'
+import {
+  MyInfoChildrenBirthRecords,
+  ChildrenBirthRecordsScope,
+} from './childrenbirthrecords'
+import { MyInfoHdbOwnership, HdbOwnershipScope } from './hdbownership'
+import { MyInfoHouseholdIncome } from './householdincome'
+import { MyInfoPhoneNumber } from './mobileno'
+import { MyInfoVehicle, VehiclesScope } from './vehicles'
+import { MyInfoOccupation } from './occupation'
+import { MyInfoOwnerPrivate } from './ownerprivate'
+import {
+  MyInfoSponsoredChildrenRecords,
+  SponsoredChildrenRecordsScope,
+} from './sponsoredchildrenrecords'
+import { MyInfoDrivingLicence, DrivingLicenceScope } from './drivinglicence'
+import { MyInfoMerdekaGen } from './merdekagen'
+import { MyInfoSilverSupport } from './silversupport'
+import { MyInfoGstVoucher } from './gstvoucher'
+import { MyInfoNoaBasic } from './noa-basic'
+import { MyInfoNoa } from './noa'
+import { MyInfoNoaHistoryBasic } from './noahistory-basic'
+import { MyInfoNoaHistory } from './noahistory'
+import { MyInfoCpfContributions } from './cpfcontributions'
+import { MyInfoCpfEmployers } from './cpfemployers'
+import { MyInfoCpfBalances } from './cpfbalances'
+import { MyInfoUinFin } from './uinfin'
+import { MyInfoName } from './name'
+import { MyInfoHanyuPinyinName } from './hanyupinyinname'
+import { MyInfoAliasName } from './aliasname'
+import { MyInfoHanyuPinyinAliasName } from './hanyupinyinaliasname'
+import { MyInfoMarriedName } from './marriedname'
+import { MyInfoSex } from './sex'
+import { MyInfoRace } from './race'
+import { MyInfoSecondaryRace } from './secondaryrace'
+import { MyInfoDialect } from './dialect'
+import { MyInfoNationality } from './nationality'
+import { MyInfoDob } from './dob'
+import { MyInfoBirthCountry } from './birthcountry'
+import { MyInfoResidentialStatus } from './residentialstatus'
+import { MyInfoPassportNumber } from './passportnumber'
+import { MyInfoPassportExpiryDate } from './passportexpirydate'
+import { MyInfoHousingType } from './housingtype'
+import { MyInfoHdbType } from './hdbtype'
+import { MyInfoEmail } from './email'
+import { MyInfoMarital } from './marital'
+import { MyInfoMarriageCertNo } from './marriagecertno'
+import { MyInfoCountryOfMarriage } from './countryofmarriage'
+import { MyInfoMarriageDate } from './marriagedate'
+import { MyInfoDivorceDate } from './divorcedate'
+import { MyInfoEmployment } from './employment'
+import { MyInfoPassType } from './passtype'
+import { MyInfoPassStatus } from './passstatus'
+import { MyInfoPassExpiryDate } from './passexpirydate'
+import { MyInfoEmploymentSector } from './employmentsector'
 
 type IPersonFull = {
   uinfin: MyInfoUinFin

@@ -1,4 +1,10 @@
-import { MyInfoField, StringValue, NumberValue, CodeAndDesc, MyInfoAttribute } from "./base"
+import {
+  MyInfoField,
+  StringValue,
+  NumberValue,
+  CodeAndDesc,
+  MyInfoAttribute,
+} from './base'
 
 type StartEndDate = {
   startdate: StringValue
@@ -13,7 +19,7 @@ type QDL = {
   validity: CodeAndDesc
   expirydate: StringValue
   classes: {
-    class: StringValue;
+    class: StringValue
     issuedate: StringValue
   }[]
 }
@@ -40,4 +46,3 @@ export type DrivingLicenceScope =
       | 'revocation'}.${keyof StartEndDate}`
   | `${MyInfoAttribute.DrivingLicence}.pdl.${keyof PDL}`
   | `${MyInfoAttribute.DrivingLicence}.qdl.${keyof QDL}`
-  
