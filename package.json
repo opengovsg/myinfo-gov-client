@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@opengovsg/eslint-config-opengovsg": "^1.0.5",
-    "@opengovsg/mockpass": "^2.6.1",
+    "@opengovsg/mockpass": "^2.6.10",
     "@types/express": "^4.17.11",
     "@types/jest": "^26.0.20",
     "@types/jsonwebtoken": "^8.5.0",
