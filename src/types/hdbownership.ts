@@ -7,7 +7,7 @@ import {
   StringValue,
 } from './base'
 
-type HdbOwnershipCustomFields = {
+type HdbOwnershipCustomFields = Partial<{
   noofowners: NumberValue
   address: MyInfoSingaporeAddress | MyInfoUnformattedAddress
   hdbtype: CodeAndDesc
@@ -23,7 +23,7 @@ type HdbOwnershipCustomFields = {
   }
   outstandingloanbalance: NumberValue
   monthlyloaninstalment: NumberValue
-}
+}>
 
 export type MyInfoHdbOwnership = MyInfoField<HdbOwnershipCustomFields>
 export type HdbOwnershipScope = `${MyInfoAttribute.HDBOwnership}.${keyof HdbOwnershipCustomFields}`

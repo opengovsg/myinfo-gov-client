@@ -6,7 +6,7 @@ import {
   MyInfoAttribute,
 } from './base'
 
-export type MyInfoVehicleFull = {
+export type MyInfoVehicleFull = Partial<{
   vehicleno: StringValue
   type: StringValue
   iulabelno: StringValue
@@ -44,7 +44,7 @@ export type MyInfoVehicleFull = {
   minimumparfbenefit: NumberValue
   nooftransfers: NumberValue
   vpc: StringValue
-}
+}>
 
 export type MyInfoVehicle = MyInfoField<MyInfoVehicleFull>
 export type VehiclesScope = `${MyInfoAttribute.Vehicles}.${keyof MyInfoVehicleFull}`

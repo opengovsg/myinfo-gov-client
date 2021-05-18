@@ -6,24 +6,27 @@ import {
   MyInfoAttribute,
 } from './base'
 
-type StartEndDate = {
+type StartEndDate = Partial<{
   startdate: StringValue
   enddate: StringValue
-}
-type PDL = {
+}>
+
+type PDL = Partial<{
   validity: CodeAndDesc
   expirydate: StringValue
   classes: { class: StringValue }[]
-}
-type QDL = {
+}>
+
+type QDL = Partial<{
   validity: CodeAndDesc
   expirydate: StringValue
   classes: {
     class: StringValue
     issuedate: StringValue
   }[]
-}
-type DrivingLicenceCustomFields = {
+}>
+
+type DrivingLicenceCustomFields = Partial<{
   comstatus: CodeAndDesc
   totaldemeritpoints: NumberValue
   suspension: StartEndDate
@@ -32,7 +35,7 @@ type DrivingLicenceCustomFields = {
   pdl: PDL
   qdl: QDL
   photocardserialno: StringValue
-}
+}>
 
 export type MyInfoDrivingLicence = MyInfoField<DrivingLicenceCustomFields>
 export type DrivingLicenceScope =

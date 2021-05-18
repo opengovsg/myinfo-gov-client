@@ -6,7 +6,7 @@ import {
   MyInfoNotApplicable,
 } from './base'
 
-export type MyInfoSponsoredChildFull = {
+export type MyInfoSponsoredChildFull = Partial<{
   nric: StringValue
   name: StringValue
   hanyupinyinname: StringValue
@@ -23,7 +23,7 @@ export type MyInfoSponsoredChildFull = {
   residentialstatus: CodeAndDesc
   nationality: CodeAndDesc
   scprgrantdate: StringValue
-}
+}>
 
 export type MyInfoSponsoredChildBelow21 = MyInfoSponsoredChildFull
 export type MyInfoSponsoredChildAbove21 = Pick<MyInfoSponsoredChildFull, 'nric'>

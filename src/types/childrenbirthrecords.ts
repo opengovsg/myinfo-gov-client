@@ -1,6 +1,6 @@
 import { MyInfoField, StringValue, CodeAndDesc, MyInfoAttribute } from './base'
 
-type MyInfoChildFull = {
+type MyInfoChildFull = Partial<{
   birthcertno: StringValue
   name: StringValue
   hanyupinyinname: StringValue
@@ -14,7 +14,7 @@ type MyInfoChildFull = {
   lifestatus: CodeAndDesc
   dob: StringValue
   tob: StringValue
-}
+}>
 
 export type MyInfoChildBirthRecordBelow21 = MyInfoChildFull
 export type MyInfoChildBirthRecordAbove21 = Pick<MyInfoChildFull, 'birthcertno'>
