@@ -9,7 +9,7 @@ export enum MyInfoDataClassification {
   Confidential = 'C',
 }
 
-type SourceProp<T> = {
+type SourceProp<T extends MyInfoSource> = {
   source: T
 }
 
@@ -23,7 +23,7 @@ type MyInfoSourceDefault = Exclude<MyInfoSource, MyInfoSource.NotApplicable>
 // For a full reference, see https://www.ndi-api.gov.sg/library/myinfo/implementation-myinfo-data
 export type MyInfoNotApplicable = SourceProp<MyInfoSource.NotApplicable>
 
-export type MyInfoApplicable<S> = {
+export type MyInfoApplicable<S extends MyInfoSource> = {
   lastupdated: string
   classification: MyInfoDataClassification.Confidential
 } & SourceProp<S>
@@ -32,13 +32,15 @@ type UnavailableProp<T> = {
   unavailable: T
 }
 
-export type MyInfoUnavailableField<S> = MyInfoApplicable<S> &
-  UnavailableProp<true>
+export type MyInfoUnavailableField<
+  S extends MyInfoSource
+> = MyInfoApplicable<S> & UnavailableProp<true>
 
-export type MyInfoAvailableMetadata<S> = MyInfoApplicable<S> &
-  Partial<UnavailableProp<undefined>> // For convenience
+export type MyInfoAvailableMetadata<
+  S extends MyInfoSource
+> = MyInfoApplicable<S> & Partial<UnavailableProp<undefined>> // For convenience
 
-export type MyInfoField<T, S = MyInfoSourceDefault> =
+export type MyInfoField<T, S extends MyInfoSource = MyInfoSourceDefault> =
   | MyInfoUnavailableField<S>
   | (T & MyInfoAvailableMetadata<S>)
 
