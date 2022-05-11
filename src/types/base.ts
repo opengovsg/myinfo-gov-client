@@ -38,13 +38,21 @@ export type MyInfoUnavailableField<
 
 export type MyInfoAvailableMetadata<
   S extends MyInfoSource
-> = MyInfoApplicable<S> & Partial<UnavailableProp<undefined>> // For convenience
+> = MyInfoApplicable<S> & Partial<UnavailableProp<undefined>>
+// Note on Partial<UnavailableProp<undefined>>:
+//
+// This is included for syntactic convenience so that code such as the below can be compiled in TypeScript:
+//
+//   if (!data.unavailable) {...}
+//
+// In reality, if it exists, the value of "unavailable" property is always false.
+// This is a design quirk of the MyInfo API.
 
 export type MyInfoField<T, S extends MyInfoSource = MyInfoSourceDefault> =
   | MyInfoUnavailableField<S>
   | (T & MyInfoAvailableMetadata<S>)
 
-type ValueType<T> = {
+type ValueType<T extends string | number | boolean> = {
   value: T
 }
 
