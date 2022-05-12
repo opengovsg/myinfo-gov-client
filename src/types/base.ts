@@ -24,7 +24,8 @@ type MyInfoSourceDefault = Exclude<MyInfoSource, MyInfoSource.NotApplicable>
 export type MyInfoNotApplicable = SourceProp<MyInfoSource.NotApplicable>
 
 export type MyInfoApplicable<S extends MyInfoSource> = {
-  lastupdated: string
+  // The “lastupdated” field is not always non-empty currently, but under what circumstances this occurs is unknown
+  lastupdated?: string
   classification: MyInfoDataClassification.Confidential
 } & SourceProp<S>
 
