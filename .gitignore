@@ -64,3 +64,6 @@ typings/
 main.js
 secrets/*
 build
+
+# macOS
+.DS_Store
