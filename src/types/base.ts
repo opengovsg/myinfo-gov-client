@@ -46,7 +46,7 @@ export type MyInfoAvailableMetadata<
 //
 //   if (!data.unavailable) {...}
 //
-// In reality, if it exists, the value of "unavailable" property is always false.
+// In reality, if it exists, the value of "unavailable" property is always true.
 // This is a design quirk of the MyInfo API.
 
 export type MyInfoField<T, S extends MyInfoSource = MyInfoSourceDefault> =
