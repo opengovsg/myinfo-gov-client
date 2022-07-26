@@ -32,10 +32,10 @@
   },
   "homepage": "https://github.com/datagovsg/myinfo-gov-client#readme",
   "dependencies": {
-    "axios": "^0.21.4",
+    "axios": "^0.24.0",
     "jsonwebtoken": "^8.5.1",
     "node-jose": "^2.1.0",
-    "qs": "^6.10.1"
+    "qs": "^6.10.3"
   },
   "devDependencies": {
     "@opengovsg/eslint-config-opengovsg": "^1.0.5",
