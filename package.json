@@ -34,7 +34,7 @@
   "dependencies": {
     "axios": "^0.24.0",
     "jsonwebtoken": "^8.5.1",
-    "node-jose": "^2.1.0",
+    "node-jose": "^2.1.1",
     "qs": "^6.10.3"
   },
   "devDependencies": {
