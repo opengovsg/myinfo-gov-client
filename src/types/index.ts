@@ -135,7 +135,7 @@ type IPersonCheck = Exclude<MyInfoAttribute, keyof IPerson>
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type VerifyIPersonCheck<
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Missing extends never = IPersonCheck
+  Missing extends never = IPersonCheck,
 > = never
 
 export * from './address'

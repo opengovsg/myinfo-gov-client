@@ -65,7 +65,7 @@ describe('MyInfoGovClient', () => {
         ...clientParams,
         mode: undefined,
       }
-      const client = new MyInfoGovClient((params as unknown) as IMyInfoConfig)
+      const client = new MyInfoGovClient(params as unknown as IMyInfoConfig)
       expect(client.mode).toBe(MyInfoMode.Production)
     })
 
@@ -84,7 +84,7 @@ describe('MyInfoGovClient', () => {
         ...clientParams,
         clientPrivateKey: Buffer.from(`${mockPrivateKey}\n`),
       }
-      const client = new MyInfoGovClient((params as unknown) as IMyInfoConfig)
+      const client = new MyInfoGovClient(params as unknown as IMyInfoConfig)
       expect(client.clientPrivateKey).toBe(mockPrivateKey)
     })
 
@@ -94,7 +94,7 @@ describe('MyInfoGovClient', () => {
         ...clientParams,
         myInfoPublicKey: Buffer.from(`${mockPublicKey}\n`),
       }
-      const client = new MyInfoGovClient((params as unknown) as IMyInfoConfig)
+      const client = new MyInfoGovClient(params as unknown as IMyInfoConfig)
       expect(client.myInfoPublicKey).toBe(mockPublicKey)
     })
 
@@ -104,7 +104,7 @@ describe('MyInfoGovClient', () => {
         clientId: undefined,
       }
       const construct = () =>
-        new MyInfoGovClient((params as unknown) as IMyInfoConfig)
+        new MyInfoGovClient(params as unknown as IMyInfoConfig)
       expect(construct).toThrowError(missingParamsErrorMsg)
     })
 
@@ -114,7 +114,7 @@ describe('MyInfoGovClient', () => {
         clientSecret: undefined,
       }
       const construct = () =>
-        new MyInfoGovClient((params as unknown) as IMyInfoConfig)
+        new MyInfoGovClient(params as unknown as IMyInfoConfig)
       expect(construct).toThrowError(missingParamsErrorMsg)
     })
 
@@ -124,7 +124,7 @@ describe('MyInfoGovClient', () => {
         singpassEserviceId: undefined,
       }
       const construct = () =>
-        new MyInfoGovClient((params as unknown) as IMyInfoConfig)
+        new MyInfoGovClient(params as unknown as IMyInfoConfig)
       expect(construct).toThrowError(missingParamsErrorMsg)
     })
 
@@ -134,7 +134,7 @@ describe('MyInfoGovClient', () => {
         redirectEndpoint: undefined,
       }
       const construct = () =>
-        new MyInfoGovClient((params as unknown) as IMyInfoConfig)
+        new MyInfoGovClient(params as unknown as IMyInfoConfig)
       expect(construct).toThrowError(missingParamsErrorMsg)
     })
 
@@ -144,7 +144,7 @@ describe('MyInfoGovClient', () => {
         clientPrivateKey: undefined,
       }
       const construct = () =>
-        new MyInfoGovClient((params as unknown) as IMyInfoConfig)
+        new MyInfoGovClient(params as unknown as IMyInfoConfig)
       expect(construct).toThrowError(missingParamsErrorMsg)
     })
 
@@ -154,7 +154,7 @@ describe('MyInfoGovClient', () => {
         myInfoPublicKey: undefined,
       }
       const construct = () =>
-        new MyInfoGovClient((params as unknown) as IMyInfoConfig)
+        new MyInfoGovClient(params as unknown as IMyInfoConfig)
       expect(construct).toThrowError(missingParamsErrorMsg)
     })
   })
@@ -265,9 +265,9 @@ describe('MyInfoGovClient', () => {
         .mockImplementation(() => MOCK_RANDOM_BYTES)
       const createSignSpy = jest.spyOn(crypto, 'createSign').mockImplementation(
         () =>
-          (({
+          ({
             update: mockCryptoUpdate,
-          } as unknown) as crypto.Signer),
+          } as unknown as crypto.Signer),
       )
 
       const client = new MyInfoGovClient(clientParams)
@@ -550,12 +550,12 @@ describe('MyInfoGovClient', () => {
       const mockJWEDecrypt = jest.fn().mockResolvedValueOnce({
         payload: mockPayload,
       })
-      jest.spyOn(jose.JWK, 'createKeyStore').mockReturnValueOnce(({
+      jest.spyOn(jose.JWK, 'createKeyStore').mockReturnValueOnce({
         add: mockJWKAdd,
-      } as unknown) as jose.JWK.KeyStore)
-      jest.spyOn(jose.JWE, 'createDecrypt').mockReturnValueOnce(({
+      } as unknown as jose.JWK.KeyStore)
+      jest.spyOn(jose.JWE, 'createDecrypt').mockReturnValueOnce({
         decrypt: mockJWEDecrypt,
-      } as unknown) as jose.JWE.Decryptor)
+      } as unknown as jose.JWE.Decryptor)
       // First mock to verify access token, second to verify data
       MockJwtModule.verify
         .mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
@@ -609,12 +609,12 @@ describe('MyInfoGovClient', () => {
       const mockJWEDecrypt = jest.fn().mockResolvedValueOnce({
         payload: mockPayload,
       })
-      jest.spyOn(jose.JWK, 'createKeyStore').mockReturnValueOnce(({
+      jest.spyOn(jose.JWK, 'createKeyStore').mockReturnValueOnce({
         add: mockJWKAdd,
-      } as unknown) as jose.JWK.KeyStore)
-      jest.spyOn(jose.JWE, 'createDecrypt').mockReturnValueOnce(({
+      } as unknown as jose.JWK.KeyStore)
+      jest.spyOn(jose.JWE, 'createDecrypt').mockReturnValueOnce({
         decrypt: mockJWEDecrypt,
-      } as unknown) as jose.JWE.Decryptor)
+      } as unknown as jose.JWE.Decryptor)
       // First mock to verify access token, second to verify data
       MockJwtModule.verify
         .mockImplementationOnce(() => ({ sub: MOCK_UIN_FIN }))
@@ -659,12 +659,12 @@ describe('MyInfoGovClient', () => {
       mockJWEDecrypt.mockResolvedValueOnce({
         payload: mockPayload,
       })
-      jest.spyOn(jose.JWK, 'createKeyStore').mockReturnValueOnce(({
+      jest.spyOn(jose.JWK, 'createKeyStore').mockReturnValueOnce({
         add: mockJWKAdd,
-      } as unknown) as jose.JWK.KeyStore)
-      jest.spyOn(jose.JWE, 'createDecrypt').mockReturnValueOnce(({
+      } as unknown as jose.JWK.KeyStore)
+      jest.spyOn(jose.JWE, 'createDecrypt').mockReturnValueOnce({
         decrypt: mockJWEDecrypt,
-      } as unknown) as jose.JWE.Decryptor)
+      } as unknown as jose.JWE.Decryptor)
       MockJwtModule.verify.mockImplementationOnce(() => EXPECTED_NESTED_DATA)
     })
 

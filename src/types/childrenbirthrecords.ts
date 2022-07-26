@@ -22,4 +22,5 @@ export type MyInfoChildBirthRecordAbove21 = Pick<MyInfoChildFull, 'birthcertno'>
 export type MyInfoChildrenBirthRecords = Array<
   MyInfoField<MyInfoChildBirthRecordBelow21 | MyInfoChildBirthRecordAbove21>
 >
-export type ChildrenBirthRecordsScope = `${MyInfoAttribute.ChildrenBirthRecords}.${keyof MyInfoChildFull}`
+export type ChildrenBirthRecordsScope =
+  `${MyInfoAttribute.ChildrenBirthRecords}.${keyof MyInfoChildFull}`

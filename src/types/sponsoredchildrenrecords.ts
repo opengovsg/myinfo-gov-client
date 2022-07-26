@@ -35,4 +35,5 @@ export type MyInfoSponsoredChildrenRecords = Array<
     | MyInfoNotApplicable
   >
 >
-export type SponsoredChildrenRecordsScope = `${MyInfoAttribute.SponsoredChildrenRecords}.${keyof MyInfoSponsoredChildFull}`
+export type SponsoredChildrenRecordsScope =
+  `${MyInfoAttribute.SponsoredChildrenRecords}.${keyof MyInfoSponsoredChildFull}`
