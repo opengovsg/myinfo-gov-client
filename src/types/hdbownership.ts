@@ -26,4 +26,5 @@ type HdbOwnershipCustomFields = Partial<{
 }>
 
 export type MyInfoHdbOwnership = MyInfoField<HdbOwnershipCustomFields>
-export type HdbOwnershipScope = `${MyInfoAttribute.HDBOwnership}.${keyof HdbOwnershipCustomFields}`
+export type HdbOwnershipScope =
+  `${MyInfoAttribute.HDBOwnership}.${keyof HdbOwnershipCustomFields}`

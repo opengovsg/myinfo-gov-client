@@ -47,4 +47,5 @@ export type MyInfoVehicleFull = Partial<{
 }>
 
 export type MyInfoVehicle = MyInfoField<MyInfoVehicleFull>
-export type VehiclesScope = `${MyInfoAttribute.Vehicles}.${keyof MyInfoVehicleFull}`
+export type VehiclesScope =
+  `${MyInfoAttribute.Vehicles}.${keyof MyInfoVehicleFull}`

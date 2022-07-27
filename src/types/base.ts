@@ -33,13 +33,11 @@ type UnavailableProp<T> = {
   unavailable: T
 }
 
-export type MyInfoUnavailableField<
-  S extends MyInfoSource
-> = MyInfoApplicable<S> & UnavailableProp<true>
+export type MyInfoUnavailableField<S extends MyInfoSource> =
+  MyInfoApplicable<S> & UnavailableProp<true>
 
-export type MyInfoAvailableMetadata<
-  S extends MyInfoSource
-> = MyInfoApplicable<S> & Partial<UnavailableProp<undefined>>
+export type MyInfoAvailableMetadata<S extends MyInfoSource> =
+  MyInfoApplicable<S> & Partial<UnavailableProp<undefined>>
 // Note on Partial<UnavailableProp<undefined>>:
 //
 // This is included for syntactic convenience so that code such as the below can be compiled in TypeScript:
