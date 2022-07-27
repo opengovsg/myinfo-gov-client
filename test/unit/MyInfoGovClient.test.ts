@@ -23,7 +23,6 @@ import {
   TEST_PRIVATE_KEY,
   TEST_PUBLIC_KEY,
 } from '../constants'
-import { mocked } from 'ts-jest/utils'
 import qs from 'qs'
 import {
   DecryptDataError,
@@ -36,10 +35,10 @@ import {
 } from '../../src/errors'
 
 jest.mock('axios')
-const MockAxios = mocked(axios, true)
+const MockAxios = axios as jest.Mocked<typeof axios>
 
 jest.mock('jsonwebtoken')
-const MockJwtModule = mocked(jwt, true)
+const MockJwtModule = jwt as jest.Mocked<typeof jwt>
 
 describe('MyInfoGovClient', () => {
   const clientParams: IMyInfoConfig = {
@@ -267,7 +266,7 @@ describe('MyInfoGovClient', () => {
         () =>
           ({
             update: mockCryptoUpdate,
-          } as unknown as crypto.Signer),
+          } as unknown as crypto.Sign),
       )
 
       const client = new MyInfoGovClient(clientParams)
