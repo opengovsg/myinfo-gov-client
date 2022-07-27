@@ -2,7 +2,7 @@ import qs from 'qs'
 import crypto from 'crypto'
 import axios, { AxiosResponse } from 'axios'
 import jose from 'node-jose'
-import { verify as verifyJwt } from 'jsonwebtoken'
+import { verify as verifyJwt, JwtPayload } from 'jsonwebtoken'
 import { hasProp, objToSearchParams, sortObjKeys } from './util'
 import { IPerson, MyInfoScope } from './types'
 import {
@@ -347,7 +347,7 @@ export class MyInfoGovClient {
    */
   async _decryptJWE(jwe: string): Promise<IPerson> {
     let jwt: string
-    let decoded: string | IPerson
+    let decoded: string | JwtPayload
     try {
       const keystore = await jose.JWK.createKeyStore().add(
         this.clientPrivateKey,
@@ -369,6 +369,6 @@ export class MyInfoGovClient {
     if (typeof decoded !== 'object') {
       throw new WrongDataShapeError()
     }
-    return decoded
+    return decoded as unknown as IPerson // assumes JwtPayload *is* of shape IPerson - could add more checks here
   }
 }
