@@ -1,4 +1,15 @@
-import { MyInfoField, StringValue, CodeAndDesc, MyInfoAttribute } from './base'
+import {
+  MyInfoField,
+  StringValue,
+  CodeAndDesc,
+  MyInfoAttribute,
+  BooleanValue,
+} from './base'
+
+type VaccinationRequirements = {
+  requirement: CodeAndDesc
+  fulfilled: BooleanValue
+}
 
 type MyInfoChildFull = Partial<{
   birthcertno: StringValue
@@ -14,7 +25,7 @@ type MyInfoChildFull = Partial<{
   lifestatus: CodeAndDesc
   dob: StringValue
   tob: StringValue
-  vaccinationrequirements: StringValue
+  vaccinationrequirements: VaccinationRequirements[]
 }>
 
 export type MyInfoChildBirthRecordBelow21 = MyInfoChildFull
