@@ -1,6 +1,6 @@
 {
   "name": "@opengovsg/myinfo-gov-client",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "A lightweight client to easily call the MyInfo Person v3.2 endpoint for the Singapore government. Tested with NodeJS version >=12.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
