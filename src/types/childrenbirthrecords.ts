@@ -25,7 +25,7 @@ type MyInfoChildFull = Partial<{
   lifestatus: CodeAndDesc
   dob: StringValue
   tob: StringValue
-  vaccinationrequirements: VaccinationRequirements
+  vaccinationrequirements: VaccinationRequirements[]
 }>
 
 export type MyInfoChildBirthRecordBelow21 = MyInfoChildFull
