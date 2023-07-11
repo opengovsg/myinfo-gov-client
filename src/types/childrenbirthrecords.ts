@@ -3,7 +3,7 @@ import {
   StringValue,
   CodeAndDesc,
   MyInfoAttribute,
-  BooleanValue
+  BooleanValue,
 } from './base'
 
 type VaccinationRequirements = {
