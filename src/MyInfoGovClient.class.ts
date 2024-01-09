@@ -215,7 +215,6 @@ export class MyInfoGovClient {
       response = await axios.get(url, {
         headers,
         params,
-        paramsSerializer: qs.stringify,
       })
     } catch (err: unknown) {
       throw new MyInfoResponseError(err)
