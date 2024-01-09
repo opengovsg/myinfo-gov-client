@@ -397,7 +397,6 @@ describe('MyInfoGovClient', () => {
 
       expect(MockAxios.get).toHaveBeenCalledWith(expectedUrl, {
         params: expectedQueryParamsObj,
-        paramsSerializer: expect.any(Function),
         headers: {
           'Cache-Control': 'no-cache',
           Authorization: expect.any(String),
@@ -431,7 +430,6 @@ describe('MyInfoGovClient', () => {
 
       expect(MockAxios.get).toHaveBeenCalledWith(expectedUrl, {
         params: expectedQueryParamsObj,
-        paramsSerializer: expect.any(Function),
         headers: {
           'Cache-Control': 'no-cache',
           Authorization: expect.any(String),
@@ -567,7 +565,6 @@ describe('MyInfoGovClient', () => {
 
       expect(MockAxios.get).toHaveBeenCalledWith(expectedUrl, {
         params: expectedQueryParamsObj,
-        paramsSerializer: expect.any(Function),
         headers: {
           'Cache-Control': 'no-cache',
           Authorization: expect.any(String),
@@ -626,7 +623,6 @@ describe('MyInfoGovClient', () => {
 
       expect(MockAxios.get).toHaveBeenCalledWith(expectedUrl, {
         params: expectedQueryParamsObj,
-        paramsSerializer: expect.any(Function),
         headers: {
           'Cache-Control': 'no-cache',
           Authorization: expect.any(String),
