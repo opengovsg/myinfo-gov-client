@@ -35,7 +35,7 @@
     "axios": "^1.6.4",
     "jsonwebtoken": "^8.5.1",
     "node-jose": "^2.2.0",
-    "qs": "^6.11.0"
+    "qs": "^6.11.1"
   },
   "devDependencies": {
     "@opengovsg/eslint-config-opengovsg": "^1.0.7",
