@@ -10,6 +10,9 @@ on:
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # for pushing tags
+      packages: write # for publishing packages
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
