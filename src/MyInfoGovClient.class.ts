@@ -244,7 +244,6 @@ export class MyInfoGovClient {
    * type or shape
    */
   extractUinFin(accessToken: string): string {
-    // eslint-disable-next-line @typescript-eslint/ban-types
     let decoded: string | object
     try {
       decoded = verifyJwt(accessToken, this.myInfoPublicKey, {

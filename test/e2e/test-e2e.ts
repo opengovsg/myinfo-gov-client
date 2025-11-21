@@ -1,3 +1,5 @@
+/* eslint-disable jest/expect-expect */
+/* eslint-disable jest/no-done-callback */
 import { Selector } from 'testcafe'
 import {
   EXPECTED_NESTED_DATA,
@@ -7,6 +9,7 @@ import {
   TEST_SERVER_PORT,
 } from '../constants'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 fixture`MyInfoGovClient`.page`http://localhost:${TEST_SERVER_PORT}`
 
 const nestedLoginLink = Selector(`.${NESTED_RELAY_STATE}`)

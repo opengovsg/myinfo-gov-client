@@ -37,7 +37,6 @@ export const objToSearchParams = (
  * @param prop The property to check for
  */
 export const hasProp = <K extends string>(
-  // eslint-disable-next-line @typescript-eslint/ban-types
   obj: object,
   prop: K,
 ): obj is Record<K, unknown> => {
