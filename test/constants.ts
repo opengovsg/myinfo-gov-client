@@ -254,7 +254,7 @@ export const EXPECTED_NON_NESTED_DATA = {
     code: 'C',
     source: '1',
     classification: 'C',
-    desc: 'Citizen',
+    desc: 'CITIZEN',
   },
   passportnumber: {
     lastupdated: '2020-04-16',
