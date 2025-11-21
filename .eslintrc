@@ -1,0 +1,41 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:prettier/recommended"
+  ],
+  "ignorePatterns": [
+    "build/**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "parser": "@typescript-eslint/parser",
+      "plugins": [
+        "@typescript-eslint",
+        "import"
+      ],
+      "extends": [
+        "plugin:@typescript-eslint/recommended"
+      ],
+    },
+    {
+      "files": [
+        "**/test/**/*.ts",
+        "**/*.spec.ts",
+        "**/*.test.ts",
+        "**/__tests__/**/*.ts"
+      ],
+      "extends": [
+        "plugin:jest/recommended"
+      ],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    }
+  ],
+  "env": {
+    "node": true
+  }
+}

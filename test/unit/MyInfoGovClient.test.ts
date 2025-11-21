@@ -104,7 +104,7 @@ describe('MyInfoGovClient', () => {
       }
       const construct = () =>
         new MyInfoGovClient(params as unknown as IMyInfoConfig)
-      expect(construct).toThrowError(missingParamsErrorMsg)
+      expect(construct).toThrow(missingParamsErrorMsg)
     })
 
     it('should throw an error when client secret is not specified', () => {
@@ -114,7 +114,7 @@ describe('MyInfoGovClient', () => {
       }
       const construct = () =>
         new MyInfoGovClient(params as unknown as IMyInfoConfig)
-      expect(construct).toThrowError(missingParamsErrorMsg)
+      expect(construct).toThrow(missingParamsErrorMsg)
     })
 
     it('should throw an error when e-service ID is not specified', () => {
@@ -124,7 +124,7 @@ describe('MyInfoGovClient', () => {
       }
       const construct = () =>
         new MyInfoGovClient(params as unknown as IMyInfoConfig)
-      expect(construct).toThrowError(missingParamsErrorMsg)
+      expect(construct).toThrow(missingParamsErrorMsg)
     })
 
     it('should throw an error when redirect URL is not specified', () => {
@@ -134,7 +134,7 @@ describe('MyInfoGovClient', () => {
       }
       const construct = () =>
         new MyInfoGovClient(params as unknown as IMyInfoConfig)
-      expect(construct).toThrowError(missingParamsErrorMsg)
+      expect(construct).toThrow(missingParamsErrorMsg)
     })
 
     it('should throw an error when private key is not specified', () => {
@@ -144,7 +144,7 @@ describe('MyInfoGovClient', () => {
       }
       const construct = () =>
         new MyInfoGovClient(params as unknown as IMyInfoConfig)
-      expect(construct).toThrowError(missingParamsErrorMsg)
+      expect(construct).toThrow(missingParamsErrorMsg)
     })
 
     it('should throw an error when public key is not specified', () => {
@@ -154,7 +154,7 @@ describe('MyInfoGovClient', () => {
       }
       const construct = () =>
         new MyInfoGovClient(params as unknown as IMyInfoConfig)
-      expect(construct).toThrowError(missingParamsErrorMsg)
+      expect(construct).toThrow(missingParamsErrorMsg)
     })
   })
 
@@ -344,7 +344,7 @@ describe('MyInfoGovClient', () => {
       const mockError = new Error('rejected')
       MockAxios.post.mockRejectedValueOnce(mockError)
 
-      await expect(client.getAccessToken(MOCK_AUTH_CODE)).rejects.toThrowError(
+      await expect(client.getAccessToken(MOCK_AUTH_CODE)).rejects.toThrow(
         new MyInfoResponseError(mockError),
       )
     })
@@ -357,7 +357,7 @@ describe('MyInfoGovClient', () => {
         },
       })
 
-      await expect(client.getAccessToken(MOCK_AUTH_CODE)).rejects.toThrowError(
+      await expect(client.getAccessToken(MOCK_AUTH_CODE)).rejects.toThrow(
         new MissingAccessTokenError(),
       )
     })
@@ -370,7 +370,7 @@ describe('MyInfoGovClient', () => {
         },
       })
 
-      await expect(client.getAccessToken(MOCK_AUTH_CODE)).rejects.toThrowError(
+      await expect(client.getAccessToken(MOCK_AUTH_CODE)).rejects.toThrow(
         new MissingAccessTokenError(),
       )
     })
@@ -451,7 +451,7 @@ describe('MyInfoGovClient', () => {
       const functionCall = () =>
         client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
-      await expect(functionCall()).rejects.toThrowError(
+      await expect(functionCall()).rejects.toThrow(
         new InvalidTokenSignatureError(mockError),
       )
     })
@@ -463,7 +463,7 @@ describe('MyInfoGovClient', () => {
       const functionCall = () =>
         client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
-      await expect(functionCall()).rejects.toThrowError(
+      await expect(functionCall()).rejects.toThrow(
         new WrongAccessTokenShapeError(),
       )
     })
@@ -477,7 +477,7 @@ describe('MyInfoGovClient', () => {
       const functionCall = () =>
         client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
-      await expect(functionCall()).rejects.toThrowError(
+      await expect(functionCall()).rejects.toThrow(
         new MyInfoResponseError(mockError),
       )
     })
@@ -492,7 +492,7 @@ describe('MyInfoGovClient', () => {
       const functionCall = () =>
         client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
-      expect(functionCall()).rejects.toThrowError(new WrongDataShapeError())
+      await expect(functionCall()).rejects.toThrow(new WrongDataShapeError())
     })
 
     it('should reject in Staging mode if response data is not a string', async () => {
@@ -508,7 +508,7 @@ describe('MyInfoGovClient', () => {
       const functionCall = () =>
         client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
-      expect(functionCall()).rejects.toThrowError(new WrongDataShapeError())
+      await expect(functionCall()).rejects.toThrow(new WrongDataShapeError())
     })
 
     it('should reject in Prod mode if response data is not a string', async () => {
@@ -524,7 +524,7 @@ describe('MyInfoGovClient', () => {
       const functionCall = () =>
         client.getPerson(MOCK_ACCESS_TOKEN, MOCK_REQUESTED_ATTRIBUTES)
 
-      expect(functionCall()).rejects.toThrowError(new WrongDataShapeError())
+      await expect(functionCall()).rejects.toThrow(new WrongDataShapeError())
     })
 
     it('should decrypt the JWE response in Staging mode', async () => {
@@ -686,7 +686,7 @@ describe('MyInfoGovClient', () => {
       mockJWEDecrypt.mockReset()
       mockJWEDecrypt.mockRejectedValueOnce(mockError)
 
-      await expect(client._decryptJWE(mockJwe)).rejects.toThrowError(
+      await expect(client._decryptJWE(mockJwe)).rejects.toThrow(
         new DecryptDataError(mockError),
       )
     })
@@ -699,31 +699,17 @@ describe('MyInfoGovClient', () => {
         throw mockError
       })
 
-      await expect(client._decryptJWE(mockJwe)).rejects.toThrowError(
-        new InvalidDataSignatureError(mockError),
-      )
-    })
-
-    it('should throw InvalidDataSignatureError when signature is invalid', async () => {
-      const client = new MyInfoGovClient(clientParams)
-      const mockError = new Error('mockError')
-      MockJwtModule.verify.mockReset()
-      MockJwtModule.verify.mockImplementationOnce(() => {
-        throw mockError
-      })
-
-      await expect(client._decryptJWE(mockJwe)).rejects.toThrowError(
+      await expect(client._decryptJWE(mockJwe)).rejects.toThrow(
         new InvalidDataSignatureError(mockError),
       )
     })
 
     it('should throw WrongDataShapeError when decoded value is not object', async () => {
       const client = new MyInfoGovClient(clientParams)
-      const mockError = new Error('mockError')
       MockJwtModule.verify.mockReset()
       MockJwtModule.verify.mockImplementationOnce(() => 'someString')
 
-      await expect(client._decryptJWE(mockJwe)).rejects.toThrowError(
+      await expect(client._decryptJWE(mockJwe)).rejects.toThrow(
         new WrongDataShapeError(),
       )
     })
@@ -756,9 +742,7 @@ describe('MyInfoGovClient', () => {
 
       const functionCall = () => client.extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrowError(
-        new InvalidTokenSignatureError(mockError),
-      )
+      expect(functionCall).toThrow(new InvalidTokenSignatureError(mockError))
     })
 
     it('should throw error when decoded JWT has invalid type', () => {
@@ -768,7 +752,7 @@ describe('MyInfoGovClient', () => {
 
       const functionCall = () => client.extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrowError(new WrongAccessTokenShapeError())
+      expect(functionCall).toThrow(new WrongAccessTokenShapeError())
     })
 
     it('should throw error when decoded JWT is object with invalid shape', () => {
@@ -778,7 +762,7 @@ describe('MyInfoGovClient', () => {
 
       const functionCall = () => client.extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrowError(new WrongAccessTokenShapeError())
+      expect(functionCall).toThrow(new WrongAccessTokenShapeError())
     })
 
     it('should throw error when NRIC has invalid type', () => {
@@ -788,7 +772,7 @@ describe('MyInfoGovClient', () => {
 
       const functionCall = () => client.extractUinFin(MOCK_JWT)
 
-      expect(functionCall).toThrowError(new WrongAccessTokenShapeError())
+      expect(functionCall).toThrow(new WrongAccessTokenShapeError())
     })
   })
 })
